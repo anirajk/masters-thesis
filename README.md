@@ -4,7 +4,7 @@
 
 # README for 2016-04-04 University of Utah sample thesis files
 
-The file [uuthesis-2016-guide.pdf](uuthesis-2016-guide.pdf)
+The file [uuthesis-2016-guide.pdf](uuthesis-2016-guide/uuthesis-2016-guide.pdf)
 documents the new practices and typographical features.
 It has associated source, style, and spelling dictionary
 files as well.  A template for a new thesis can be
