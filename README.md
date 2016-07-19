@@ -1,3 +1,9 @@
+## Fork this repository for your own thesis.
+
+It's designed to be compliant with the University of Utah's thesis office, so probably a minimal amount of tweaking is appropriate.
+Feel free to issue merge/pull requests, especially ones that update the files to the latest specs.
+
+Below is what's in the official README.html from [the official LaTeX templates](http://ftp.math.utah.edu/pub/uuthesis/).
 
 <!-- Converting to markdown, John Moeller, 2016-7-19 -->
 <!-- Edit by Nelson H. F. Beebe <beebe@math.utah.edu> -->
