@@ -1,6 +1,6 @@
 
-[//] # (Converting to markdown, John Moeller, 2016-7-19)
-[//] # (Edit by Nelson H. F. Beebe <beebe@math.utah.edu>)
+<!-- Converting to markdown, John Moeller, 2016-7-19 -->
+<!-- Edit by Nelson H. F. Beebe <beebe@math.utah.edu> -->
 
 # README for 2016-04-04 University of Utah sample thesis files
 
