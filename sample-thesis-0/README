@@ -1,0 +1,26 @@
+This directory contains a minimal sample University of Utah thesis
+without color, and without indexing.  You are encouraged to
+investigate sample-thesis-1 and sample-thesis-2 for examples of how to
+exploit those additional features.
+
+The easiest way to compile the minimal sample thesis on any Unix
+platform is to simply type
+
+	make
+
+That runs the rough equivalent of these commands
+
+	pdflatex sample-thesis-0.ltx
+	bibtex sample-thesis-0
+
+repeated FOUR (4) times to achieve consistency.
+
+During the writing process, the fastest update is done by
+
+	make pdf-pass
+
+It runs pdflatex and bibtex just once.  If the bibliography is already
+stable, then only pdflatex needs to be run:
+
+	pdflatex sample-thesis-0.ltx
+

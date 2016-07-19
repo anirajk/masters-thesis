@@ -1,0 +1,345 @@
+%%% -*-LaTeX-*-
+%%% ====================================================================
+%%% This file is intended to be included as a front-matter section of
+%%% the sample thesis, with a command like this
+%%%
+%%% \optionalfront{Typesetting Experiments}{\input{samples}}
+%%%
+%%% just before the \maintext macro that begins the body of the thesis,
+%%% and starts chapter numbering.
+%%%
+%%% [16-Mar-2016]
+%%% ====================================================================
+
+\input{rgb.sty}
+
+\definecolor{utahred} {rgb} {0.8, 0.0, 0.0} % official definition for University of Utah Printing Services
+
+\doublespace
+
+%% \showthe \baselineskip
+
+In this section, we use color in several places.
+The \verb=\colorbox= command takes two arguments
+--- a named color and text to be in black on a
+background of that color --- and sets the text in
+a box with a small margin of width \verb=\fboxsep=
+(set to \texttt{\the\fboxsep} in this document).
+
+Here, we want a tighter colored box that has a
+fixed height, and is independent of letter shape.
+We set the margin to zero inside a group so that
+the change is purely local, and so that height and
+depth of the line are not increased over what they
+would be if the colored box were not used.  We
+prefix a \TeX{} \verb=\strut= to the user-supplied
+text, because that command expands to a zero-width
+box of the height and depth of parentheses, which,
+in most fonts, delimit the extent of letter
+shapes.
+
+\begin{verbatim}
+\newcommand {\hilitebox} [1] {{\fboxsep = 0pt\colorbox{pink}{\strut #1}}}
+\end{verbatim}
+
+\newcommand {\hilitebox} [1] {{\fboxsep = 0pt\colorbox{pink}{\strut #1}}}
+
+Here is a fragment from the first chapter in another
+thesis, set in \emph{emphasized text} to distinguish it
+from the rest of this section:
+
+\begin{itshape}
+    In light of the known results, the consistency
+    of empirical semivariogram and related
+    estimators is widely considered a settled
+    matter.  For example, Lahiri, Lee, and Cressie
+    \cite{Lahiri:2002:ADA} state:
+
+    \begin{quote}
+        The simpler and more commonly used
+        nonparametric estimators of the variogram,
+        such as the method of moments estimator of
+        Matheron (1962) and its robustified
+        versions due to Cressie and Hawkins (1980)
+        have many desirable properties like,
+        unbiasedness, consistency, etc. \ldots
+    \end{quote}
+    \noindent
+    Regarding a kernel estimator of the covariance
+    function, Hall and Patil
+    \cite{Hall:1994:PNE} remarked:
+    \begin{quote}
+        It is not difficult to see that if, as $ n
+        $ increases, the points $ t_i $ become
+        increasingly dense in each bounded subset
+        of $ \mathbb{R}^d $, then the bandwidth $
+        h $ may be chosen so that $ \check \rho(t)
+        \to \rho(t) $ as $ n \to \infty $, for
+        each $ t \in \mathbb{R}^d $.
+    \end{quote}
+    However, in order to be true, such statements
+    would need to be qualified by many assumptions
+    on the random field as well as on the
+    observation locations. We will see in
+    \S2.3 that even for well-behaved
+    random fields (e.g., $\rho^*$-mixing Gaussian
+    random fields), it is not enough to assume
+    that the observation locations become
+    increasingly dense in each bounded subset; a
+    stronger assumption must be made to ensure
+    that the observation locations do not become
+    denser in one region too much faster than in
+    others.
+\end{itshape}
+
+The text before the previous paragraph contained
+two \texttt{quote} environments separated by a
+line of prose.  Here are some more tests of both
+kinds of \LaTeX{} environments for showing text
+written by someone else.
+
+This is a \hilitebox{\texttt{quote}} environment
+with one short line, following a fairly short
+paragraph of prose (in this, and following
+examples, the text is explicitly colored with a
+command like \verb=\color{purple}= inside the
+environment before the text):
+%
+\begin{singlespace}
+\color{darkblue}
+\begin{verbatim}
+\begin{quote}
+    \color{purple}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+\end{quote}
+\end{verbatim}
+\end{singlespace}
+%
+\begin{quote}
+    \color{purple}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+\end{quote}
+
+This is a \hilitebox{\texttt{quote}} environment
+with three short lines, each a separate paragraph,
+following a fairly short paragraph of prose.
+
+\begin{singlespace}
+\color{darkblue}
+\begin{verbatim}
+\begin{quote}
+    \color{forestgreen}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+\end{quote}
+\end{verbatim}
+\end{singlespace}
+%
+\begin{quote}
+    \color{forestgreen}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+\end{quote}
+
+Here is another example, this time with separate
+colors for each paragraph:
+
+\begin{singlespace}
+\color{darkblue}
+\begin{verbatim}
+\begin{quote}
+    \color{darkkhaki}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    \color{darkmagenta}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    \color{darkcyan}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    \color{darkorange}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \linebreak
+    \strut
+    \hfill \emph{Web news reports}
+\end{quote}
+\end{verbatim}
+\end{singlespace}
+%
+\begin{quote}
+    \color{darkkhaki}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    \color{darkmagenta}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    \color{darkcyan}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \hfill \emph{Web news reports}
+
+    \color{darkorange}
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    14 March 2016 is $\pi \approx 3.1416$ day in funny notation.
+    \linebreak
+    \strut
+    \hfill \emph{Web news reports}
+\end{quote}
+
+Notice that \hilitebox{\texttt{quote}} paragraphs
+are \emph{not} indented, but the environment
+itself \emph{is} indented on the left and right by
+the value of \verb=\leftmargin= (set to
+\texttt{\the\leftmargin} in this document, which
+should be identical to \verb=2.5em=, where
+\verb=1em= = \texttt{\dimen0 = 1em \the\dimen0}).
+
+For debugging purposes, we also have
+\verb=\leftmargini= set to
+\texttt{\the\leftmargini}, and we have
+\verb=\leftmarginii= set to
+\texttt{\the\leftmarginii}.
+
+This is a \hilitebox{\texttt{quotation}}
+environment with one paragraph, following a fairly
+short paragraph of prose (notice that the
+\texttt{quotation} paragraphs \emph{are}
+indented):
+
+\begin{singlespace}
+\color{darkblue}
+\begin{verbatim}
+\begin{quotation}
+    \color{blue}
+    Algebra is concerned with manipulation in
+    \emph{time}, and geometry is concerned with
+    \emph{space}. These are two orthogonal aspects
+    of the world, and they represent two different
+    points of view in mathematics.  Thus the
+    argument or dialogue between mathematicians in
+    the past about the relative importance of
+    geometry and algebra represents something very
+    fundamental.
+    \hfill
+    \emph{Sir Michael Atiyah}
+    % Mathematics in the 20$^{th}$ century
+    % NTM {\bf 10}(1--3) 25--39 (September 2002)
+    % http://dx.doi.org/10.1007/BF03033096
+\end{quotation}
+\end{verbatim}
+\end{singlespace}
+%
+\begin{quotation}
+    \color{blue}
+    Algebra is concerned with manipulation in
+    \emph{time}, and geometry is concerned with
+    \emph{space}. These are two orthogonal aspects
+    of the world, and they represent two different
+    points of view in mathematics.  Thus the
+    argument or dialogue between mathematicians in
+    the past about the relative importance of
+    geometry and algebra represents something very
+    fundamental.
+    \hfill
+    \emph{Sir Michael Atiyah}
+    % Mathematics in the 20$^{th}$ century
+    % NTM {\bf 10}(1--3) 25--39 (September 2002)
+    % http://dx.doi.org/10.1007/BF03033096
+\end{quotation}
+
+This is a \hilitebox{\texttt{quotation}} environment with three
+paragraphs, following a fairly short paragraph of prose:
+
+\begin{quotation}
+    \color{utahred}
+    Algebra is concerned with manipulation in
+    \emph{time}, and geometry is concerned with
+    \emph{space}. These are two orthogonal aspects
+    of the world, and they represent two different
+    points of view in mathematics.  Thus the
+    argument or dialogue between mathematicians in
+    the past about the relative importance of
+    geometry and algebra represents something very
+    fundamental.
+    \hfill
+    \emph{Sir Michael Atiyah}
+
+    Algebra is concerned with manipulation in
+    \emph{time}, and geometry is concerned with
+    \emph{space}. These are two orthogonal aspects
+    of the world, and they represent two different
+    points of view in mathematics.  Thus the
+    argument or dialogue between mathematicians in
+    the past about the relative importance of
+    geometry and algebra represents something very
+    fundamental.
+    \hfill
+    \emph{Sir Michael Atiyah}
+
+    Algebra is concerned with manipulation in
+    \emph{time}, and geometry is concerned with
+    \emph{space}. These are two orthogonal aspects
+    of the world, and they represent two different
+    points of view in mathematics.  Thus the
+    argument or dialogue between mathematicians in
+    the past about the relative importance of
+    geometry and algebra represents something very
+    fundamental.
+    \hfill
+    \emph{Sir Michael Atiyah}
+\end{quotation}
+
+%% \showthe \baselineskip
+
+Now all following text should be back in
+double-spaced mode, and just go on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on \ldots{}.
+
+%% \showthe \baselineskip
+
+Now all following text should be back in
+double-spaced mode, and just go on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on and on and on and on
+and on and on and on and on \ldots{}.
+
+%%% \showthe \baselineskip

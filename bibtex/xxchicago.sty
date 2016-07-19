@@ -1,0 +1,51 @@
+%%% -*-LaTeX-*-
+%%% ====================================================================
+%%%  @LaTeX-style-file{
+%%%     author          = "Nelson H. F. Beebe",
+%%%     version         = "1.00",
+%%%     date            = "23 November 2015",
+%%%     time            = "16:20:12 MST",
+%%%     filename        = "xxchicago.sty",
+%%%     address         = "University of Utah
+%%%                        Department of Mathematics, 110 LCB
+%%%                        155 S 1400 E RM 233
+%%%                        Salt Lake City, UT 84112-0090
+%%%                        USA",
+%%%     telephone       = "+1 801 581 5254",
+%%%     FAX             = "+1 801 581 4148",
+%%%     URL             = "http://www.math.utah.edu/~beebe",
+%%%     checksum        = "58978 51 258 2444",
+%%%     email           = "beebe@math.utah.edu, beebe@acm.org,
+%%%                        beebe@computer.org (Internet)",
+%%%     codetable       = "ISO/ASCII",
+%%%     keywords        = "bibliography style, BibTeX, Chicago
+%%%                        Manual of Style bibliography style",
+%%%     license         = "public domain",
+%%%     supported       = "yes",
+%%%     docstring       = "This is a LaTeX style file to accompany
+%%%                        xxchicago.bst, the extended Chicago-style
+%%%                        BibTeX bibliography style.
+%%%
+%%%                        The checksum field above contains a CRC-16
+%%%                        checksum as the first value, followed by the
+%%%                        equivalent of the standard UNIX wc (word
+%%%                        count) utility output of lines, words, and
+%%%                        characters.  This is produced by Robert
+%%%                        Solovay's checksum utility.",
+%%%  }
+%%% ====================================================================
+
+\ifx \xxchicagoversion        \undefined
+    %%
+    \def \xxchicagoversion {xxchicago.sty version 1.00 <23 November 2015>}%
+    \input chicago.sty
+    % OLD in chicago.sty: \def\newblock{}
+    % NEW on 23 November 2015: guarantee visual separation between
+    % output blocks: value taken from book.cls:698 (version 2014/09/29 v1.4h)
+    % \def \newblock {\hskip .11em\@plus.33em\@minus.07em}
+    % 0.11em is not enough for visual separation of URL and DOI values: try 0.25em
+    \def \newblock {\hskip .25em\@plus.33em\@minus.07em}
+    \input xxbbl.sty
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%% End of xxchicago.sty %%%%%%%%%%%%%%%%%%%%%%%%%

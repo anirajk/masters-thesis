@@ -1,0 +1,45 @@
+%%% -*-LaTeX-*-
+%%% This is mythesis.sty.
+%%% Put your own private macro definitions, and style modifications, here.
+%%%
+%%% However, avoid introducing shorthands for standard LaTeX markup,
+%%% such as \beq and \eeq for \begin{equation} and \end{equation},
+%%% because it makes your input unreadable to others, and publishers
+%%% may reject your LaTeX files because nonstandard markup interferes
+%%% with their large-volume production practices.
+
+\newcommand {\mainindex}   [1] {\index{#1|mainpage}}
+\newcommand {\mainpage}    [1] {\textbf{#1}}
+
+\newcommand {\gobblearg}   [1] {}
+
+%%% We need a hidden keyword in each index entry to allow extraction
+%%% of entries for specialized indexes
+\newcommand {\bioname} [1] {\emph {\color {blue}#1}\index{#1@\emph {#1}\gobblearg{bioname}}}
+
+\definecoloralias {fsfcolor} {forestgreen}
+
+\newcommand {\fsfname}     [1] {\texttt {\color {fsfcolor}#1}\index{#1@\texttt {#1}\gobblearg{fsfname}}}
+
+\newcommand {\figlabel}    [1] {\label{fig:#1}}
+\newcommand {\tablabel}    [1] {\label{tab:#1}}
+
+\newcommand {\shortfigref} [1] {{\color {utahheadingcolor}\textbf{Figure~\ref{fig:#1}}}}
+\newcommand {\figref}      [1] {{\color {utahheadingcolor}\textbf{Figure~\ref{fig:#1}}} \vpageref{fig:#1}}
+
+\newcommand {\shorttabref} [1] {{\textbf{Table~\ref{tab:#1}}}}
+\newcommand {\tabref}      [1] {{\color {utahheadingcolor}\textbf{Table~\ref{tab:#1}}}  \vpageref{tab:#1}}
+
+\newcommand{\blah}
+{%
+    Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah.
+    Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah.
+    Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah.
+}
+
+%%% We want \verb and \begin{verbatim} ... \end{verbatim} environments to be
+%%% set in color to make them stand out.
+
+\definecoloralias {verbatimcolor} {royalblue3}
+
+\def \verbatim@font {\normalfont \ttfamily \color{verbatimcolor}}

@@ -1,0 +1,30 @@
+This sample thesis extends that in ../sample-thesis-0/ to incorporate
+color and indexing.
+
+The easiest way to compile this sample thesis on any Unix platform is
+to simply type
+
+	make
+
+That runs the rough equivalent of these commands:
+
+	pdflatex sample-thesis-1.ltx
+	bibtex sample-thesis-1
+	fgrep -v fsfname sample-thesis-1.idx | makeindex -c -s sample-thesis-1.ist > sample-thesis-1.ind
+	fgrep bioname sample-thesis-1.idx | fgrep -v '|see' | makeindex -c -s sample-thesis-1.ist > sample-thesis-1-bioname.ind
+	fgrep fsfname sample-thesis-1.idx | fgrep -v '|see' | makeindex -c -s sample-thesis-1.ist > sample-thesis-1-fsfname.ind
+
+Repeat them FOUR (4) times to achieve consistency.
+
+If there are no indexes, then repeat just the first two commands four
+times.
+
+During the writing process, the fastest update is done by
+
+	make pdf-pass
+
+It runs pdflatex, bibtex, and makeindex just once.  If the
+bibliography and index are already stable, then only pdflatex needs to
+be run:
+
+	pdflatex sample-thesis-1.ltx

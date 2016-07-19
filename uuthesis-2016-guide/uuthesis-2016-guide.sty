@@ -1,0 +1,111 @@
+%%% ====================================================================
+%%% This file contains definitions, and redefinitions of LaTeX 
+%%% internals, for typesetting the document in uuthesis-2016-guide.ltx.
+%%% [24-Mar-2016]
+%%% ====================================================================
+
+\usepackage{tgbonum}
+
+\renewcommand{\ttdefault}{zi4} % bad: produces irregular spacing
+\renewcommand{\ttdefault}{txtt}
+\renewcommand{\ttdefault}{ntxtt}
+\renewcommand{\ttdefault}{lmtt}
+\renewcommand{\ttdefault}{fdm}
+\renewcommand{\ttdefault}{cmtl}
+\renewcommand{\ttdefault}{ntxtt}
+
+\usepackage{color}
+\usepackage{coloralias}
+\usepackage{rgb}
+
+\definecolor{utahred}      {rgb}           {0.8, 0.0, 0.0}
+\definecoloralias          {filecolor}     {darkgreen}    % too much like black on Xerox 7545 printers!
+\definecoloralias          {filecolor}     {forestgreen}
+\definecoloralias          {headingcolor}  {utahred}
+\definecoloralias          {envcolor}      {royalblue2}
+\definecoloralias          {pgmcolor}      {forestgreen}
+\definecoloralias          {pkgcolor}      {royalblue1}
+\definecoloralias          {urlcolor}      {darkgreen}
+\definecoloralias          {verbatimcolor} {royalblue3}
+
+\newcommand{\heading}[1]{{\color{utahred}#1}}
+\let \MakeUppercase = \relax
+
+\def\@sect#1#2#3#4#5#6[#7]#8{%
+  \ifnum #2>\c@secnumdepth
+    \let\@svsec\@empty
+  \else
+    \refstepcounter{#1}%
+    \protected@edef\@svsec{\@seccntformat{#1}\relax}%
+  \fi
+  \@tempskipa #5\relax
+  \ifdim \@tempskipa>\z@
+    \begingroup
+      \color{headingcolor}#6{%
+        \@hangfrom{\hskip #3\relax\@svsec}%
+          \interlinepenalty \@M \color{headingcolor}#8\@@par}%
+    \endgroup
+    \csname #1mark\endcsname{#7}%
+    \addcontentsline{toc}{#1}{%
+      \ifnum #2>\c@secnumdepth \else
+        \protect\numberline{\csname the#1\endcsname}%
+      \fi
+      #7}%
+  \else
+    \def\@svsechd{%
+      #6{\hskip #3\relax
+      \@svsec #8}%
+      \csname #1mark\endcsname{#7}%
+      \addcontentsline{toc}{#1}{%
+        \ifnum #2>\c@secnumdepth \else
+          \protect\numberline{\csname the#1\endcsname}%
+        \fi
+        #7}}%
+  \fi
+  \@xsect{#5}}
+
+\renewcommand {\contentsname} {\color{headingcolor}Contents}
+
+\renewcommand*\l@section[2]{%
+  \ifnum \c@tocdepth >\z@
+    \addpenalty\@secpenalty
+    \addvspace{1.0em \@plus\p@}%
+    \setlength\@tempdima{1.5em}%
+    \begingroup
+      \color{headingcolor}%
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode \bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak\hfil \nobreak\hb@xt@\@pnumwidth{\hss #2}%
+      \vspace*{-1.5ex}%
+      \par
+    \endgroup
+  \fi}
+
+
+\pagestyle{headings}
+
+\def \verbatim@font {\normalfont \ttfamily \color{verbatimcolor}}
+% \def \verbatim@font {\normalfont \ttfamily \color{blue}}
+% \def \verbatim@font {\color{blue}\normalfont \ttfamily}
+
+\newcommand{\booktitle} [1] {\emph{#1}}
+\newcommand{\env}       [1] {\texttt{\color{envcolor}#1}}
+\newcommand{\file}      [1] {\texttt{\color{filecolor}#1}}
+\newcommand{\pgm}       [1] {\texttt{\color{pgmcolor}#1}}
+\newcommand{\pkg}       [1] {\texttt{\color{pkgcolor}#1}}
+\newcommand{\url}       [1] {\texttt{\color{urlcolor}#1}}
+
+%%% Usage: \begin{epigraph} text \end{epigraph}
+\newenvironment{epigraph}%
+{%
+    \begin{flushright}%
+        \index{epigraph}%
+        \small
+        \scshape
+}
+{%
+    \end{flushright}
+}

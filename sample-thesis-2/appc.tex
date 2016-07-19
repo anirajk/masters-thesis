@@ -1,0 +1,189 @@
+%%% -*-LaTeX-*-
+
+\chapter{The Third}
+
+This is an appendix.
+
+There are several books
+\cite{%
+    Farmelo:2009:SMH,%
+    Knuth:1986:TB,%
+    Knuth:1986:MB,%
+    Knuth:1999:DT,%
+    Lamport:1985:LDP,%
+    Mittelbach:2004:LC,%
+    Olver:2010:NHM,%
+    Randell:1982:ODC,%
+    Robbins:2005:CSS,%
+    Salomon:1995:AT,%
+    Singh:1997:FEE%
+}
+listed in our bibliography.
+
+We also reference several journal articles
+\cite{%
+    Babbage:1910:BBA,%
+    Beebe:2007:ETM,%
+    Beebe:1989:PCP,%
+    Cody:1981:APF,%
+    Einstein:1906:NBM,%
+    Einstein:1911:BMAa,%
+    Einstein:1911:BMAb,%
+    Goldstine:1946:ENI,%
+    Hall:1994:PNE,%
+    Heilbron:1969:GBA,%
+    Huskey:1980:LLC,%
+    Johnson:1978:LDT,%
+    Kim:1999:AFC,%
+    Lahiri:2002:ADA,%
+    Taylor:1995:RTP,%
+    Wiles:1995:MEC%
+}
+and three famous doctoral theses of later winners
+\cite{%
+    Bohr:1911:SME,%
+    Dirac:1926:QM,%
+    Einstein:1905:NBM%
+}
+of the Nobel Prize in Physics (1922, 1933, and
+1921):
+
+%%% NB: The citesort package does not work properly
+%%% with the chapterbib package: entries do not get
+%%% sorted, so we suppress this paragraph, and we
+%%% ordered the entries manual into citation order.
+
+%%: Notice that, even though those citations appeared
+%%: in \LaTeX{} \verb=\cite{...}= commands with their
+%%: \BibTeX{} citation labels in reverse alphabetical
+%%: order, thanks to the \verb=citesort= package,
+%%: their reference-list numbers have been sorted in
+%%: numerically ascending order, and then
+%%: range-reduced.
+
+Mention should also be made of a famous Dutch
+computer scientist's first publication
+\cite{Dijkstra:1953:FBV}.
+
+Font metrics are an important, albeit low-level,
+aspect of typesetting. See the \emph{Adobe
+Systems} manual about that company's procedures
+\cite{Adobe:1990:AFM}.
+
+The bibliography at the end of this thesis contains several examples
+of documents with non-English titles, and their \BibTeX{} entries
+provide title translations following the practice recommended by the
+American Mathematical Society and SIAM\@.  Here is a sample entry that
+shows how to do so:
+%
+\begin{verbatim}
+@PhdThesis{Einstein:1905:NBM,
+  author =       "Albert Einstein",
+  title =        "{Eine Neue Bestimmung der Molek{\"u}ldimensionen}.
+                 ({German}) [{A} new determination of molecular
+                 dimensions]",
+  type =         "Inaugural dissertation",
+  school =       "Bern Wyss.",
+  address =      "Bern, Switzerland",
+  year =         "1905",
+  bibdate =      "Fri Dec 17 10:46:57 2004",
+  bibsource =    "http://www.math.utah.edu/pub/tex/bib/einstein.bib",
+  note =         "Published in \cite{Einstein:1906:NBM}.",
+  acknowledgement = ack-nhfb,
+  language =     "German",
+  advisor =      "Alfred Kleiner (24 April 1849--3 July 1916)",
+  URL =          "http://en.wikipedia.org/wiki/Alfred_Kleiner",
+  remark =       "Received August 19, 1905 and published February 8,
+                 1906.",
+  Schilpp-number = "6",
+}
+\end{verbatim}
+
+The \verb=note= field in that entry refers to another bibliography
+entry that need not have been directly cited in the document text.
+Such cross-references are common in \BibTeX{} files, especially for
+journal articles where there may be later comments and corrigenda that
+should be mentioned.  Embedded \verb=\cite{}= commands ensure that
+those possibly-important other entries are always included in the
+reference list when the entry is cited.  The last bibliography entry
+\cite{Wiles:1995:MEC} in this thesis has a long \verb=note= field
+that tells more about what some may view as the most important paper
+in mathematics in the last century.
+
+When entries cite other entries that cite other entries that cite
+other entries that \ldots{}, multiple passes of \LaTeX{} and \BibTeX{}
+are needed to ensure consistency.  That is another reason why document
+compilation should be guided by a \verb=Makefile= or a batch script,
+rather than expecting the user to remember just how many passes are
+needed.
+
+\BibTeX{} entries are \emph{extensible}, in that arbitrary key\slash
+value pairs may be present that are not necessarily recognized by any
+bibliography style files.  The \verb=advisor=,
+\verb=acknowledgement=, \verb=bibdate=, \verb=bibsource=,
+\verb=language=, \verb=remark=, and \verb=Schilpp-number= fields
+are examples, and may be used by other software that processes
+\BibTeX{} entries, or by humans who read the entries.  \verb=DOI=
+and \verb=URL= fields are currently recognized by only a few styles,
+but that situation will likely change as publishers demand that such
+important information be included in reference lists.
+
+In \BibTeX{} \verb=title= fields, braces protect words, such as
+proper nouns and acronyms, that cannot be downcased if the selected
+bibliography style would otherwise do so.  In German, all nouns are
+capitalized, and the simple way to ensure their protection is to brace
+the entire German text in the title, as we did in the entry above.
+
+The world's first significant computer program may
+have been that written in 1842 by Lady Augusta Ada
+Lovelace%
+\mainindex{Lovelace, Lady Augusta Ada (1815--1852)}
+(1815--1852) for the computation of Bernoulli
+numbers \cite{Huskey:1980:LLC,Kim:1999:AFC}.  She
+was the assistant to Charles Babbage%
+\mainindex{Babbage, Charles (1791--1871)}
+(1791--1871), and they are the world's first
+computer programmers. The programming language
+\emph{Ada} is named after her, and is defined in
+the ANSI/MIL-STD-1815A Standard; its number
+commemorates the year of her birth.
+
+We do not discuss mathematical \emph{transforms}%
+\index{transform}
+much in this dissertation, but you can find that phrase in the index.
+
+\blah
+
+\blah
+\blah
+
+\blah
+
+\index{gnu hair}
+\index{gnu  hair}
+\index{ gnu  hair}
+\index{ gnu hair }
+\index{E. coli bacterium@\bioname{E. coli} bacterium}
+
+\mainindex{GNU Project}
+\mainindex{gnu}
+
+\index{gnu!diet}
+\index{gnu!diet!wet season}
+\index{gnu!diet!dry season}
+
+\index{gnu!hair}
+\index{gnu!hair!color}
+\index{gnu!hair!DNA analysis}
+\index{gnu!hair!texture}
+\index{gnu!hair!thickness}
+
+\index{gnu!predators}
+\index{gnu!predators!crocodiles}
+\index{gnu!predators!hyenas}
+\index{gnu!predators!lions}
+
+\index{Connochaetes gnou@\bioname{Connochaetes gnou}}
+
+\bibliographystyle{siam}
+\bibliography{\jobname}
