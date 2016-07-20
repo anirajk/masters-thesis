@@ -3,6 +3,11 @@
 It's designed to be compliant with the University of Utah's thesis office, so probably a minimal amount of tweaking is appropriate.
 Feel free to issue merge/pull requests, especially ones that update the files to the latest specs.
 
+If you want to keep track of changes in this repository, you might find the following links helpful. 
+They're for github, but the same instructions apply:
+- [Configuring a remote for a fork](https://help.github.com/articles/configuring-a-remote-for-a-fork/)
+- [Syncing a fork](https://help.github.com/articles/syncing-a-fork/)
+
 Below is what's in the official README.html from [the official LaTeX templates](http://ftp.math.utah.edu/pub/uuthesis/).
 
 <!-- Converting to markdown, John Moeller, 2016-7-19 -->
