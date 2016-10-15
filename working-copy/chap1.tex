@@ -1,11 +1,35 @@
 %%% -*-LaTeX-*-
 
-\chapter{The First}
+\chapter{Introduction}
+In-memory databases invoked a new wave of systems research in the 
+networking and database communities. For a long time, while implementing tried
+and tested concepts of locality of reference, conventional \"secondary storage\" devices
+such as disks where the final solution for growing data demands in databases. With the 
+increased demand for scale by the popularization of Web 2.0 in the early 2000s, 
+database designers responded by creating a cached layer of RAM in front of disks
+to combat scale at a reasonable cost. Memcached~\cite{memcached-orig}
+is one such phenomenal system that stood the test of time and led to further developments
+to scale upto billions of operations per second on trillions of items~\cite{nishtala2013scaling}.
+Another lateral area of research was made possible around the same time by the 
+evolution of DRAM technologies and declining cost of main memory was to completely
+store all data in memory. Questions about durability and cost of replication 
+were responded by means of distributed recovery~\cite{ongaro2011fast}. 
+A more recent development was in the area of high throughput and low latency networks. 
+Pioneered by the high performance computing community, these advanced networking fabrics 
+such as infiniband~\cite{pfister2001introduction} became more common place in 
+data center networks. These developments have led to a plethora of storage research 
+exploring multiple verticals and among the particularly notable ones are RAMCloud~\cite{ramcloud},
+MICA~\cite{mica}, FaRM~\cite{farm}, HyPer~\cite{hyper}, H-Store~\cite{hstore} 
+and HERD~\cite{herd}. While each of these systems have been driven by different dimensions 
+of research, they all share the same concerns of large scale in memory storage systems 
+operating on high speed networks. We set out to explore data transmission purely from the
+perspective of a modern network interface card(NIC). We profiled a modern kernel-bypass capable NIC 
+with remote direct memory access (RDMA) with specific attention to large transfers
+and query responses. We proposed our findings and made some concrete suggestions 
+around how NICs might influence data layout and concurrency control in a modern 
+in-memory database. Examining from a bird's eye view, another burden of using these 
+systems are how they would provide 
 
-This is a chapter.  Remember  that there should \emph{always}
-be at least of few lines of prose after each sectional heading:
-failure to do so is a disservice to your readers, and also
-produces incorrect vertical spacing.
 
 \section{The first section}
 
