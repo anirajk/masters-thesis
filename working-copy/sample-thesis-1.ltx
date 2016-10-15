@@ -203,8 +203,8 @@
 \preface    {abstract} {Abstract}
 %\dedicationpage
 \tableofcontents
-\listoffigures
-\listoftables
+%\listoffigures
+%\listoftables
 %
 %%% Optional front matter page(s), made from source "notation.tex". If
 %%% you don't need it, then comment out the \optionalfront command
@@ -223,23 +223,23 @@
 
 %%% Demonstrations of thesis typesetting features for the sample thesis.
 %%% Once you have seen the examples, you can comment out this line.
-\optionalfront {Typesetting Experiments} {\input{samples.tex}}
+%\optionalfront {Typesetting Experiments} {\input{samples.tex}}
 \maintext       % Start normal page numbering: parts and chapters follow.
 
 \pagestyle{headings} % NEW for sample-thesis-6
 
-\include {chap1}
-\include {chap2}
-\include {chap3}
-\include {chap4}
+\include {proposal-introduction}
+%\include {chap2}
+%\include {chap3}
+%\include {chap4}
 
 % \numberofappendices = 1   % Set 0 for none, else number of appendices.
-\numberofappendices = 3
-\appendix       % Chapters, sections are now appendix style A, A.1, A.2, B, C, D, ...
+\numberofappendices = 0
+%\appendix       % Chapters, sections are now appendix style A, A.1, A.2, B, C, D, ...
 
-\include {appa}
-\include {appb}
-\include {appc}
+%\include {appa}
+%\include {appb}
+%\include {appc}
 
 %%% The choice of bibliography style is a major decision, jointly made
 %%% by you, your thesis advisor and the thesis editor. Common choices are
@@ -322,6 +322,6 @@
 \renewcommand {\indexname} {Topic Index}
 
 \overfullrule = 0pt % suppress visible warnings about overfull hboxes
-\printindex
+%\printindex
 
 \end {document}
