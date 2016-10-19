@@ -13,13 +13,13 @@
 In recent years, a new class of storage systems were developed in response to
 the growing needs of throughput and latency demands at scale. While 
 database systems of the previous generation had their design considerations dominated
-in large part by the slow storage mediums. The landscape has changed a lot with 
+in large part by the slow storage mediums, the landscape has changed a lot with 
 newer In-memory databases. Declining cost of DRAM and increasing access of high
 throughput and low latency network fabrics in the datacenters asks a slightly 
 different set of questions to the database designer. Modern NICs provide plenty 
 of optimisations which can result in reduced CPU involvement in data transfer.
 We evaluated the application of zero copy NIC DMA for in memory databases and 
-how data layout in memory affects the speed of network transmission which even today
+how data layout in memory affects the speed of network transmission, which even today
 accounts for a significant portion of end-to-end latency to the user. We believe
 that another aspect of these newer class storage systems that are largely overlooked 
 is efficient reconfiguration of the system in response to varying workloads and capacity.
@@ -28,5 +28,5 @@ and reactive transfer to satiate hotspots, we propose a few experiments that lay
 for a more efficient class of data migration which attempts at data migration an order of 
 magnitude faster than the state of the art while causing minimal disruptions to the state 
 of the system. We propose some experiments that will lay the ground work for a new migration
-protocol in the lens of a in memory log structured database systems such as RAMCloud.
+protocol in the lens of a log structured, in-memory database systems such as RAMCloud.
 
