@@ -132,6 +132,12 @@ STYFILES	= amssymb.sty			\
 TEXFILES        = abstract.tex			\
 		  acknowledge.tex		\
 		  proposal-introduction.tex	\
+		  proposal-bwtree.tex           \
+		  proposal-evaluation.tex       \
+		  proposal-introduction.tex     \
+		  proposal-modernnics.tex       \
+		  proposal-proposedwork.tex     \
+		  proposal-relatedwork.tex      \
 		  chap2.tex			\
 		  chap3.tex			\
 		  chap4.tex			\
@@ -140,7 +146,7 @@ TEXFILES        = abstract.tex			\
 		  appc.tex			\
 		  notation.tex
 
-THESIS		= sample-thesis-1
+THESIS		= proposal
 
 TOPFILE		= $(THESIS).ltx
 
@@ -272,7 +278,7 @@ $(THESIS).dvi:	Makefile $(THESIS).bbl $(EPSFILES) $(FIGFILES) $(STYFILES) $(TEXF
 ### because that gets created anew each LaTeX run, a dependency on the
 ### .aux file causes $(THESIS).dvi or $(THESIS).pdf to be remade
 ### unnecessarily, so we suppress that dependency.
-### $(THESIS).bbl:	$(THESIS).bib $(THESIS).aux
+# $(THESIS).bbl:	$(THESIS).bib $(THESIS).aux
 
 $(THESIS).bbl:	$(THESIS).bib
 	-$(MAKE) $(THESIS).aux
