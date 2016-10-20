@@ -2,3 +2,17 @@
 
 \chapter{Proposed Work}
 
+\section{Timeline}
+
+\begin{itemize}
+\item{\textbf{Till Fall 2016}:} We have evaluated how modern NIC impacts data layout 
+and concurrency by developing a microbenchmark and measuring throughput and cpu 
+impact while transmitting huge amounts of data. We compared how scatter gather DMA 
+and the traditional copy impacts throughput varying record sizes and layout. 
+
+\item{\textbf{Spring 2016}:} We have to explore the impacts of Intel\textregistered 
+DDIO~\cite{ddio} technology which makes the last level cache the primary source and 
+destination memory for the NICs. We need to do this in the context of thread local 
+buffers to conclude the effect of modern NICs.
+
+We also need to set up a few experiments that will motivate 
