@@ -8,14 +8,15 @@ locality of reference. Conventional ``secondary storage" devices
 such as disks where the ultimate solutions for growing capacity demands. With the 
 increased requirements of scale by the popularization of Web 2.0 in the early 2000s, 
 database designers responded by creating a cached layer of RAM in front of disks
-to combat abysmal disk access times at a reasonable cost. Memcached~\cite{memcached-orig}
-is one such phenomenal system that stood the test of time and led to further developments
-to scale upto billions of operations per second on trillions of items~\cite{nishtala2013scaling}.
-Another lateral area of research was made possible around the same time by the 
-evolution of DRAM technologies and declining cost of main memory was to completely
-store all data in memory. Questions about durability and cost of replication 
+to combat abysmal disk access times that was dragging performance at scale. Memcached~\cite{memcached-orig}
+is one such phenomenal system that stood the test of time and it's further development
+enabled it to operate at a scale uof billions of operations per second on trillions of items~\cite{nishtala2013scaling}.
+
+Another orthogonal area of research was to completely store all data in main memory.
+This was made possible in the late 2000s by the evolution of DRAM technologies and declining cost of main memory.
+Questions about durability and cost of replication 
 were responded by means of distributed recovery~\cite{ongaro2011fast}. 
-A more recent development was in the area of high throughput and low latency networks. 
+A more recent development was in the acceptance of high throughput and low latency networks. 
 Pioneered by the high performance computing community, these advanced networking fabrics 
 such as infiniband~\cite{pfister2001introduction} became more common place in 
 data center networks. These developments have led to a plethora of storage systems research 
@@ -25,25 +26,24 @@ and HERD~\cite{herd}. While each of these systems have been driven by different 
 of research, they all share the same concerns of large scale in-memory storage systems 
 operating on high speed networks.
 
-
 With the increasing popularity of In-memory databases, database design landscape changed significantly.
-Spinning disks which were the bottleneck used to touch all aspects of database design, were suddenly 
-of little to no concern. Storage systems started to throw bigger and bigger cache to mitigate 
+Spinning disks which were the primary bottleneck in performance were suddenly 
+of little to no concern. Storage systems started to throw bigger and bigger cache layers to mitigate 
 disk-greater-than-memory~\cite{couchbase} effects for less latency-sensitive data
 from data layout to concurrency control. In-memory databases effectively eleminate disk I/O
 as a concern and are capable of throughputs of the order of millions of operations per second
 at microsecond latencies. While this might tempt us to believe that database I/O is completely
 solved, we argue that there is a new device that dictates the overall performance of these 
-distributed systems: The Network Interface Card (NIC).However, modern
-network cards have grown incredibly complex, partly in response to
-demands for high throughput and low latency.  One key advancement these NICs made 
-is some form of kernel bypass where an on-device DMA engine from the network card 
+distributed systems: The Network Interface Card (NIC).
+
+Modern network cards have grown incredibly complex, partly in response to
+demands for high throughput and low latency. One key advancement these NICs made 
+is the presence of some form of kernel bypass where an on-device DMA engine from the network card 
 can access pre-mapped memory in a system without invoking the CPU. This led to the Remote 
-Direct Memory Access (RDMA)~\cite{rdmapatent} paradigm. These NICs have complex architectures
+Direct Memory Access (RDMA)~\cite{rdmapatent} paradigm. The modern NIC with these  have complex architectures
 which makes understanding them difficult, and it makes designing software to take advantage
-of them even harder. To design for NICs effectively, database
-engineers must understand their characteristics. Database designers encounter
-a number of trade-offs when trying to use the NIC effectively. We specifically 
+of them even harder. To design for NICs effectively, one must understand their characteristics.
+Database designers encounter a number of trade-offs when trying to use the NIC effectively. We specifically 
 looked at three factors that make it especially challenging to design NIC-friendly
 database engines:
 \begin{itemize}
@@ -66,67 +66,68 @@ database engines:
 
 
 These factors make advanced NIC DMA difficult to use effectively. We set out to explore data 
-transmission purely from the perspective of a modern network interface card(NIC). We profiled
+transmission purely from the perspective of a modern NIC. We profiled a cluster of machines with
 Infiniband ConnectX\textregistered-3, a modern kernel-bypass capable NIC
-with RDMA with a specific attention to large transfers and query responses such as range scans.
+with RDMA capabilities, with a specific attention to large transfers and query responses.
 We proposed our findings and made some concrete suggestions around how NICs might
 influence data layout and concurrency control in a modern in-memory 
 databases~\cite{KesavanRicciStutsman:IMDM16}. 
 
-Our primary results gave us ideas about 
-how the Zero Copy paradigm will perform against the traditional approach of transmitting via
-larger buffers. These also pointed to how the use of thread local storage and effective caching
+Our primary results gave us ideas about how the Zero Copy paradigm will perform against
+the traditional approach of transmitting via larger buffers. These also pointed to how the use of thread local storage and effective caching
 such as the Intel\textregistered Data Direct I/O~\cite{ddio} could boost traditional copy performance. 
-While these studies were done with the primary intention of optimising transmit performance 
-for workloads like range scans, it became obvious that another candidate for optimisation 
-of transmit performance involving huge transfers was data migration.
 
-Yet another burden of using these systems are how they would provide effective 
-reconfiguration of clusters. Investment in costly hardware and the need to satisfy
-service level agreements(SLAs) that might appear preposturous to yesteryear systems
-make the task of effective reconfiguration a significant research challenge and 
-one of the key hurdles to overcome before mainstream acceptance of these systems.
+Yet another burden of using these newer reconfiguration systems are how they would provide effective 
+reconfiguration of clusters. Our results from the benchmark led us to believe in the importance of 
+hardware considerations to data migration. Investment in costly hardware and aggressive
+service level agreements(SLAs) make the task of effective reconfiguration a significant research challenge. 
+This is also one of the key hurdles to overcome before mainstream acceptance of these systems.
 We explored the state of the art reconfiguration systems such as Squall~\cite{squall} which 
 introduced live reconfiguration by means of reactivelly pulling data with numerous optimisations.
-While a system like this creates little impact on the source in theory, it's heavily dependent 
-on the workload type and pre partitioning of data. We wanted to aim for a solution that defers 
+While a system like this creates little impact on the source in theory, it's performance improvements
+are dependent on specific workloads and pre partitioning of data. We wanted to aim for a solution that defers 
 partitioning decisions as late as possible while exploring data locality benefits in a complex
 In-memory system such as RAMCloud~\cite{ramcloud}.
 
 
-We evaluate the current state of the art approaches to migration on a log structured, in-memory database
-comparing it with other methods. We lay out some experiments that points out issues with current approaches
-and motivates the necessity for a fast and efficient migration protocol. These will explore the themes 
-of data locality, source impact and numerous workloads which include scaling up and down the cluster, splitting
+RAMCloud has a unique perspective on data locality. Since it's design is driven by low latency access, there is less incentive
+to design for locality. At the same time, improvement such as multiple secondary indices~\cite{slik} and need for reconfiguration 
+makes colocation of data a nice-to-have to say the least. 
+
+We evaluate the current state of the art approaches to migration on a log structured,
+in-memory database comparing it with other methods. We lay out some experiments
+that points out issues with current approaches and motivates the necessity 
+for a fast and efficient migration protocol. These will explore the themes of data locality,
+source impact and the effect of numerous workloads which include scaling up and down the cluster, splitting
 and migrating hot index tables, the impact on locality by the distributed recovery which sprays data across the 
 cluster and responding to changes in access patterns taking into account the multi dimensional resource contentions
-that could occur in a practical system. Finally, we propose the basics for an effective migration protocol that leverages
+that could occur in a practical system. Finally, we propose the outline for an effective migration protocol that leverages
 the log structured memory of RAMCloud as well as the distributed crash recovery mechanism
 to provide fast and jitter free data movement in a cluster for reconfiguration with a focus to
 defer partitioning decisions as much as possible.
 
 \section{Thesis Contributions}
-The following are the key contributions from this thesis
+The following are the key contributions that will support the thesis
 \begin{itemize}
-\item{\em Evaluation of Impact of Modern NICs on data layout}: We profiled a modern NIC for various 
+\item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: We profiled a modern NIC for various 
 scenarios data transfer mechanisms exploring the scatter gather DMA engine of the NIC in contrast
 with the conventional copy out approach of pre aggregating data in a buffer and sending data from the buffer.
 We found a few arguments against the use of the new kernel by pass approach considering the overhead
 of concurrency management and difficulty of implementation. We evaluated various scenarios on top of a
 microbenchmark to measure transmit performance of responses varying message sizes and number of records
 transmitted.
-\item{\em Design of client assisted responses for better transmit performance}: While evaluating the results,
+\item{\textbf{Design of client assisted responses for better transmit performance}}: While evaluating the results,
 we saw that there are certain circumstances that can uniquely take advantage of the hardware limited 
 scatter gather entries of a modern NIC. One such exploration was around a lock-free, no update in place 
 indexing data structure such as the Bw-Tree~\cite{bw-tree}. We propose a design with client assisted 
 validation techniques in the light of these observations that essentially proposes sending more data than 
 needed might in fact boost overall throughput of a system.
-\item{\em Experiments to motivate fast and efficient data transfer}: We will lay out experiments that will 
+\item{\textbf{Experiments to motivate fast and efficient data transfer}}: We will lay out experiments that will 
 show how even the state of the art systems for cluster reconfiguration becomes suboptimal with it's locality
 constraints and overall slowness. We will layout experiments that will call for fast and efficient migration protocol
 especially suited for an In-memory database system with a decentralized log structured data model such as RAMCloud
-\item{\em Preliminary design for a migration protocol}: We will learn the most important bottlenecks in the current design
+\item{\textbf{Preliminary design for a migration protocol}}: We will learn the most important bottlenecks in the current design
 that makes it infeasible for fast and efficient migration and in turn propose the basics of a migration protocol that 
-will effectively eleminiate these bottlenecks and pave the way forward for fast and efficient migration of data in RAMCloud.
+will effectively eleminiate these bottlenecks and pave the way forward for fast and efficient transfer of huge chunks of data.
 \end{itemize}
 

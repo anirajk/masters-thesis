@@ -2,6 +2,17 @@
 
 \chapter{Proposed Work}
 
+This is a forward looking section listing out a few experiments that will
+strengthen the thesis and pave way for a fast and efficient migration protocol.
+We need to find conclusive evidence about the impact of synchronization and 
+advanced caching mechanism on our experiments. The synchronisation primitives 
+that are used in the microbenchmarks should not have a driving effect to the 
+conclusions we make from them. Another aspect that needs further investigation 
+is the access patterns. For our initial experiments, we completely randomised the data which is often 
+not the case in a practical system. We need to thoroughly investigate the effects
+of caching on transmit performance especially since newer NICs have the last level
+cache as their primary source and destination for data transfer.
+
 \section{Timeline}
 
 \begin{itemize}
@@ -10,9 +21,16 @@ and concurrency by developing a microbenchmark and measuring throughput and cpu
 impact while transmitting huge amounts of data. We compared how scatter gather DMA 
 and the traditional copy impacts throughput varying record sizes and layout. 
 
-\item{\textbf{Spring 2016}:} We have to explore the impacts of Intel\textregistered 
+\item{\textbf{Fall 2016 - Spring 2017}:} We have to explore the impacts of Intel\textregistered 
 DDIO~\cite{ddio} technology which makes the last level cache the primary source and 
 destination memory for the NICs. We need to do this in the context of thread local 
-buffers to conclude the effect of modern NICs.
-
-We also need to set up a few experiments that will motivate 
+buffers to conclude the effect of modern NICs. We also need to set up a few experiments
+that will motivate fast and efficient migration protocol. This would involve 
+setting up migrations involving huge amount of data and measuring it's impact on overall throughput
+and experiments where it can be proved that SLAs of the system are violated as an effect of migration.
+One such possible experiment is to split and migrate a hot index table which has it's 
+records spanning multiple files. Other possible experiments include measuring the 
+impact of distributed recovery on locality, scaling a cluster up and down and measuring
+difference in performance characteristics, shifting $\theta$ on a workload which follows 
+Zipfian distribution etc.
+\end{itemize}
