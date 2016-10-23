@@ -1,4 +1,45 @@
 %%% -*-LaTeX-*-
 
 \chapter{Related Work}
+In-memory databases and low latency networks are very heavily researched areas
+these days. Our work borrows concepts from numerous efforts both $\grave{a}$
+ la mode and prior from the database, networking and systems research communities.
+RAMCloud~\cite{ramcloud} itself was a research product built on top of previous 
+work on log-structured file systems, striping filesystems and database server 
+crash recovery~\cite{ryan-thesis}
 
+\section{In-memory Databases}
+There have been many systems that were using DRAM as a caching mechanism even before
+In-memory database systems became commonplace. Memcached~\cite{memcached} is 
+the most popular form of such generic caching mechanism. Declining cost of DRAM 
+technologies paved way for designs that are completely reliant on DRAM.
+FaRM~\cite{farm} is a phenomenal In-memory, distributed computing platform that leverage lock free reads over RDMA~\cite{rdma},
+collocating objects and function shipping to provide performance characteristics of the 
+highest order for an In-memory database. They could even scale distributed transactions to
+hundreds of millions of operations with recovery times of the order of milliseconds. There 
+are other systems such as Silo~\cite{silo} which effectively utilises multi core CPUs.
+
+\subsection{Lock freedom}
+Lock freedom is a design philosophy which was perfected on previous work on fine grained concurrency 
+primitives~\cite{finegrained} and lock free hash tables ~\cite{lockfreeht}. Lock freedom is commonly
+used in databases these days~\cite{htm} since they gained practicality by common use of
+epochs~\cite{lockfreedom} based reclamation. 
+More recent iterations of SQL engines such as Hekaton~\cite{hekaton} are 
+examples for In-memory optimised  database engines. Bw-Tree~\cite{bw-tree}, a 
+data structure that is lock and latch free and follows a no-update-in-place philosophy to indexing.
+Others have worked on exploiting Hardware Transactional Memory~\cite{htm-old}
+for In-memory transaction processing~\cite{drtm} as well as lock free indexing~\cite{htm}.
+
+\section{RDMA in Databases}
+The merits of RDMA have been widely accepted by database researchers by now. From
+the early arguments~\cite{rdmacase} calling for the need for offloading CPUs to 
+research aiming for a billion key value operations on key value servers ~\cite{rdmabillion},
+RDMA has proven to be the future of data transfer for large scale databases. Key value stores
+such as HERD~\cite{herd} and MICA~\cite{mica} and systems that provide more complex
+data models such as RAMCloud~\cite{ramcloud} use RDMA effectively and there have been 
+published guidelines to maximise performance for dispatch heavy workloads~\cite{rdma}
+
+\section{Fast Networks and Databases}
+As pointed out by various researchers in the past, the days of slow networks are over~\cite{slow}
+and the thesis is a key supporting statement to that fact. Several efforts in the past have exploited
+user level NIC access as well as RDMA for highly performant distributed database systems~\cite{ramcloud,farm,farmtx,drtm,hyper}

@@ -90,9 +90,12 @@ partitioning decisions as late as possible while exploring data locality benefit
 In-memory system such as RAMCloud~\cite{ramcloud}.
 
 
-RAMCloud has a unique perspective on data locality. Since it's design is driven by low latency access, there is less incentive
+RAMCloud has a unique perspective on data locality. While there are obvious benefits to locality
+for building distributed transactions and operations such as multi-gets that are supported by 
+RAMCloud, RAMCloud doesn't prohibitively limit flexibility of data placement like other systems 
+such as H-Store~\cite{hstore}. Since it's design is driven by low latency access, there is less incentive
 to design for locality. At the same time, improvement such as multiple secondary indices~\cite{slik} and need for reconfiguration 
-makes colocation of data a nice-to-have to say the least. 
+makes collocation of data a nice-to-have to say the least. 
 
 We evaluate the current state of the art approaches to migration on a log structured,
 in-memory database comparing it with other methods. We lay out some experiments
@@ -101,10 +104,13 @@ for a fast and efficient migration protocol. These will explore the themes of da
 source impact and the effect of numerous workloads which include scaling up and down the cluster, splitting
 and migrating hot index tables, the impact on locality by the distributed recovery which sprays data across the 
 cluster and responding to changes in access patterns taking into account the multi dimensional resource contentions
-that could occur in a practical system. Finally, we propose the outline for an effective migration protocol that leverages
+that could occur in a practical system.
+
+We will also propose the outline for an effective migration protocol that leverages
 the log structured memory of RAMCloud as well as the distributed crash recovery mechanism
-to provide fast and jitter free data movement in a cluster for reconfiguration with a focus to
-defer partitioning decisions as much as possible.
+to provide fast and jitter free data movement in a cluster for reconfiguration and improved 
+performance for range queries and distributed transactions. We will try to do so while
+defering partitioning decisions as much as possible.
 
 \section{Thesis Contributions}
 The following are the key contributions that will support the thesis
