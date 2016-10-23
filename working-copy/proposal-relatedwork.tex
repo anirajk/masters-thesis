@@ -12,7 +12,11 @@ crash recovery~\cite{ryan-thesis}
 There have been many systems that were using DRAM as a caching mechanism even before
 In-memory database systems became commonplace. Memcached~\cite{memcached} is 
 the most popular form of such generic caching mechanism. Declining cost of DRAM 
-technologies paved way for designs that are completely reliant on DRAM.
+technologies paved way for designs that are completely reliant on DRAM. Main memory
+database systems of today offers a plethora of features that are at par with traditional
+database systems including data storage and indexing, concurrency control, durability and 
+recovery techniques, query processing and compilation, support for high availability, and 
+ability to support hybrid transactional and analytics workloads~\cite{mmdbmstutorial}
 FaRM~\cite{farm} is a phenomenal In-memory, distributed computing platform that leverage lock free reads over RDMA~\cite{rdma},
 collocating objects and function shipping to provide performance characteristics of the 
 highest order for an In-memory database. They could even scale distributed transactions to
@@ -39,7 +43,24 @@ such as HERD~\cite{herd} and MICA~\cite{mica} and systems that provide more comp
 data models such as RAMCloud~\cite{ramcloud} use RDMA effectively and there have been 
 published guidelines to maximise performance for dispatch heavy workloads~\cite{rdma}
 
-\section{Fast Networks and Databases}
+\section{Data Transfer in Fast Networks}
 As pointed out by various researchers in the past, the days of slow networks are over~\cite{slow}
-and the thesis is a key supporting statement to that fact. Several efforts in the past have exploited
+and the thesis argues heavily in favor of that fact. Several efforts in the past have exploited
 user level NIC access as well as RDMA for highly performant distributed database systems~\cite{ramcloud,farm,farmtx,drtm,hyper}
+Our findings should also complement other efforts such as transactional key value stores~\cite{deuteronomy} 
+and shared-data databases~\cite{tell}. Small, fixed-size request/response cycles have been optimized in
+existing research~\cite{farm,herd,mica,rdma,ramcloud}, but the efficient
+transmission of larger responses like range query results or data
+migrations has been less well studied. Studies focused on large transmissions
+have so far been limited to relatively static block-oriented data.
+Our work focuses on optimizing transmission of large and complex query
+results, which differs from these two categories.
+
+A complementary study by Kalia, Kaminsky, and Andersen~\cite{rdma} provides a
+different analysis of host interaction with Mellanox Infiniband network adapters,
+and they extract rules of thumb to help developers get the best performance from the hardware.
+The low-level nature of their analysis is especially suited for
+optimizing dispatch-heavy workloads with a high-volume of small
+request-response operations. Our focus is on operations that require heavy
+responses where the precise size or the content of the response cannot be anticipated or is
+under heavy mutation.
