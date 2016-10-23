@@ -14,8 +14,10 @@
 
 While exploiting modern hardware innovation and better algorithms leads to better performance 
 in storage systems, pursuing one without due consideration of the other leads to
-suboptimal performace for voluminous data transfers. In recent years, a new class
-of storage systems were developed in response to the growing needs of throughput
+suboptimal performace for voluminous data transfers.
+
+
+In recent years, a new class of storage systems were developed in response to the growing needs of throughput
 and latency demands at scale. Declining cost of DRAM and increasing access of 
 high throughput and low latency network fabrics in the datacenters guided their development.
 
@@ -25,9 +27,9 @@ implementation closer to that of a key value store to aid these decisions.These 
 decisions have an inadvertent consequence that these systems perform disproportionately
 well for smaller request response cycles. Practicality of these systems is also subject to 
 how well they perform in scenarios involving transfer of larger data blocks such as range queries 
-and cluster reconfigurations. We found that when you perform large data transfers in a live cluster 
-of systems optimised for smaller responses, it has a detrimental to their primary intent. 
-SLAs of these systems are often calculated with primary workloads and these larger transfers end 
+and cluster reconfigurations. We found that performing large data transfers in a live cluster 
+of systems optimised for smaller responses, it has a detrimental effects to their primary intent. 
+SLAs of these systems are often calculated with primary workloads and these larger than usual transfers end 
 up violating them in practice.
 
 We evaluated the impact of modern NICs on data layout by measuring transmit performance

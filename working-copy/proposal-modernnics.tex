@@ -121,3 +121,16 @@ in order to conclusively comment on the impact of traditional copy mechanisms.
 
 
 \section{Inlining}
+Mellanox NICs allow some data to be {\em inlined} inside the control message
+sent to the NIC over PCIe. Our NICs allow up to 912~B to be included inside the
+descriptor that is posted to the NIC control ring buffer.  Inlining can improve
+messaging latency by eliminating the delay for the NIC to DMA the message data
+from host DRAM, which can only happen after the NIC receives the descriptor.
+Inlining benefits small request/response exchanges, but it does not help for
+larger transmissions. This is because even though there is an extra delay
+before the NIC receives the actual record data, that delay can be overlapped
+with the DMA and transmission of other responses. Other researchers have shown
+that sending data to the NIC via MMIO also wastes PCIe bandwidth~\cite{rdma}.
+Almost all of our experiments have inlining disabled. Enabling inlining
+gives almost identical throughput and overhead to copy-out, except it only
+works for transmissions of ~912 B or less.

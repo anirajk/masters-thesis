@@ -1,13 +1,13 @@
 %%% -*-LaTeX-*-
 
 \chapter{Introduction}
-In-memory databases invoked a new wave of systems research in the 
-networking and database communities. For a long time, while developing storage
-systems, researchers didn't diverge from the  tried and tested concepts of
+In-memory databases sparked a new wave of systems research in the 
+networking and database communities. For a long time while developing storage
+systems, researchers didn't diverge from the  tried and tested model for
 locality of reference. Conventional ``secondary storage" devices
-such as disks where the ultimate solutions for growing capacity demands. With the 
-increased requirements of scale by the popularization of Web 2.0 in the early 2000s, 
-database designers responded by creating a cached layer of RAM in front of disks
+such as disks where the final resting place of evergrowing amounts of managed data. With the 
+enhanced requirements of scale by the popularization of Web 2.0 in the early 2000s, 
+database designers created a cached layer of RAM in front of disks
 to combat abysmal disk access times that was dragging performance at scale. Memcached~\cite{memcached-orig}
 is one such phenomenal system that stood the test of time and it's further development
 enabled it to operate at a scale uof billions of operations per second on trillions of items~\cite{nishtala2013scaling}.
@@ -19,12 +19,13 @@ were responded by means of distributed recovery~\cite{ongaro2011fast}.
 A more recent development was in the acceptance of high throughput and low latency networks. 
 Pioneered by the high performance computing community, these advanced networking fabrics 
 such as infiniband~\cite{pfister2001introduction} became more common place in 
-data center networks. These developments have led to a plethora of storage systems research 
-exploring multiple verticals and among the particularly notable ones are RAMCloud~\cite{ramcloud},
+data center networks. These developments have led to a deluge of storage systems research~\cite{mmdbmstutorial} 
+exploring multiple verticals. Among the particularly notable ones are RAMCloud~\cite{ramcloud},
 MICA~\cite{mica}, FaRM~\cite{farm}, HyPer~\cite{hyper}, H-Store~\cite{hstore} 
 and HERD~\cite{herd}. While each of these systems have been driven by different dimensions 
 of research, they all share the same concerns of large scale in-memory storage systems 
 operating on high speed networks.
+
 
 With the increasing popularity of In-memory databases, database design landscape changed significantly.
 Spinning disks which were the primary bottleneck in performance were suddenly 
@@ -35,6 +36,7 @@ as a concern and are capable of throughputs of the order of millions of operatio
 at microsecond latencies. While this might tempt us to believe that database I/O is completely
 solved, we argue that there is a new device that dictates the overall performance of these 
 distributed systems: The Network Interface Card (NIC).
+
 
 Modern network cards have grown incredibly complex, partly in response to
 demands for high throughput and low latency. One key advancement these NICs made 
@@ -112,8 +114,9 @@ to provide fast and jitter free data movement in a cluster for reconfiguration a
 performance for range queries and distributed transactions. We will try to do so while
 defering partitioning decisions as much as possible.
 
-\section{Thesis Contributions}
-The following are the key contributions that will support the thesis
+\section{Supporting Evidence}
+A few experiments were done to provide supporting evidence for the thesis. The primary set 
+of evidences were found by the following:
 \begin{itemize}
 \item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: We profiled a modern NIC for various 
 scenarios data transfer mechanisms exploring the scatter gather DMA engine of the NIC in contrast

@@ -2,3 +2,19 @@
 
 \chapter{Evaluation}
 
+We explored hows the different designs trade-off database server efficiency and
+performance, by building a simple model of an in-memory database system that
+concentrates on data transfer rather than full query processing. In all experiments,
+one node acts as a server and transmits results to 15 client nodes.
+Our experiments were run on the Apt~\cite{Ricci+:OSR15} cluster of the
+CloudLab~\cite{Cloudlab:URL} testbed: this testbed provides exclusive bare-metal
+access to a large number of machines with RDMA-capable Infiniband NICs.
+
+Table~\ref{tbl:config} shows the Experiment Setup for the cluster where we profiled
+the Mellanox Infiniband ConnectX-3\textregistered NIC and impact of data layout and 
+use of no update in place structures on transmission throughput. The cluster has 7
+Mellanox SX6036G FDR switches arranged in two layers. The switching fabric is
+oversubscribed and provides about 16~Gbps of bisection bandwidth per node
+when congested.
+
+\input{config}

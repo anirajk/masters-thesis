@@ -1,0 +1,17 @@
+\begin{table}[t]
+\def\arraystretch{1.25}%  1 is the default, change whatever you need
+\begin{tabular}{@{}l@{\hskip 12pt}l@{}}
+\toprule
+\textbf{CPU} & Intel Xeon E5-2450 (2.1~GHz, 2.9~GHz Turbo) \\
+    & 8 cores, 2 hardware threads each \\
+\textbf{RAM} & 16~GB DDR3 at 1600~MHz \\
+\textbf{Network} & Mellanox MX354A ConnectX-3 Infiniband HCA (56 Gbps Full Duplex) \\
+        & Connected via PCIExpress 3.0 x8 (63~Gbps Full Duplex) \\
+%        & 7 Mellanox SX6036G FDR Switches \\
+\textbf{Software} & CentOS 6.6, Linux 2.6.32, gcc 4.9.2, libibverbs 1.1.8, mlx4 1.0.6 \\
+\bottomrule
+\end{tabular}
+\vspace{0.25eX}
+\caption{Experimental cluster configuration.}
+\label{tbl:config}
+\end{table}
