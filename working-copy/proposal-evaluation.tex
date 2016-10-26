@@ -15,14 +15,18 @@ The proposed work that is pending will give more conclusive evidence for the
 
 \input{config}
 Table~\ref{tbl:config} shows the Experiment Setup for the cluster where we profiled
-the Mellanox Infiniband ConnectX-3\textregistered NIC and impact of data layout and 
+the Mellanox Infiniband ConnectX-3 \textregistered NIC and impact of data layout and 
 use of no update in place structures on transmission throughput. The cluster has 7
 Mellanox SX6036G FDR switches arranged in two layers. The switching fabric is
 oversubscribed and provides about 16~Gbps of bisection bandwidth per node
 when congested.
 
-We set out to explore the benefits of Zero Copy and started out by an experiment 
-which exploited the fact that the NIC supported varying number of descriptors 
-that could be posted in a single transmission. 
-
-
+We started out by getting measurements of transmission speeds using RDMA Reads.
+We implemented rdma operations using infinibands ib verbs library. We implemented 
+RDMA reads and write as op codes on the \cpp{ibv_send_wr} request which 
+transmit data as \cpp{ibv_post_send} and also tried to measure the transmit
+performance while using zero copy using \cpp{IBV_WR_SEND} as the operation.
+We found that send operations can transmit multiple transmit buffer
+It became evident quickly that one sided RDMA reads are not well positioned to 
+take advantage of the zero copy paradigm since it only supports a remote read 
+from a given location from the source. We also tried implementing RDMA reads 
