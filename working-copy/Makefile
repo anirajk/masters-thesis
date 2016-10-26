@@ -138,6 +138,8 @@ TEXFILES        = abstract.tex			\
 		  proposal-modernnics.tex       \
 		  proposal-proposedwork.tex     \
 		  proposal-relatedwork.tex      \
+		  proposal-timeline.tex         \
+                  config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\
 		  chap4.tex			\

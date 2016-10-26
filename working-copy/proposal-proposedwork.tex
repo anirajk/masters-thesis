@@ -7,13 +7,25 @@ strengthen the thesis and pave way for a fast and efficient migration protocol.
 We need to find conclusive evidence about the impact of synchronization and 
 advanced caching mechanism on our experiments. The synchronisation primitives 
 that are used in the microbenchmarks should not have a driving effect to the 
-conclusions we make from them. Another aspect that needs further investigation 
-is the access patterns. For our initial experiments, we completely randomised the data which is often 
-not the case in a practical system. We need to thoroughly investigate the effects
-of caching on transmit performance especially since newer NICs have the last level
-cache as their primary source and destination for data transfer.
+conclusions we make from them. This includes fully investigating the impact
+of DDIO~\cite{ddio} ad well as coming up with uncore and off-core performance
+measurements to pinpoint the areas of contention while transmitting huge blocks
+of data.
+
+We also need to motivate the need for a fast and efficient migration protocol 
+by virtue of analysing and presenting the current bottlenecks. This would entail
+setting up the experiments showing data migration of RAMCloud using the latest 
+protocol and analysing and finding pain points that hamper performance. There needs
+to be another experiment too which measures the impact of indexes in migration 
+for change in load and skew on indexed reads in a system such as RAMCloud. We are
+hopeful that it will provide interesting insights on data locality.
 
 \section{Timeline}
+
+Table~\ref{tbl:config} shows the expected amount of work that needs to be done 
+in the coming months to conclusively gather evidences that support the thesis. 
+This will also serve as the schedule guideline for the rest of my program.
+
 
 \begin{itemize}
 \item{\textbf{Till Fall 2016}:} We have evaluated how modern NIC impacts data layout 
@@ -34,3 +46,4 @@ impact of distributed recovery on locality, scaling a cluster up and down and me
 difference in performance characteristics, shifting $\theta$ on a workload which follows 
 Zipfian distribution etc.
 \end{itemize}
+\input{proposal-timeline}
