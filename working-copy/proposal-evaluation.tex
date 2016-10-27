@@ -40,7 +40,12 @@ operation.
 
 Figure~\ref{fig:100B_transrate} shows a comparison of transmission
 peformance of various verbs transmitting 100 Byte records varying the number of records
-that could be transmitted at a time for various operations. The record sizes were 
+that could be transmitted at a time for various operations.The green dot shows
+the performance for RDMA reads which is also unfair
+since RDMA reads can only transmit a single record at a time. The yellow dot
+shows RDMA write performance. The modes shown was an enum of the format 
+\cpp{enum Mode \{ MODE_SEND, MODE_WRITE, MODE_READ\}} and infiniband 
+\cpp{<infiniband/verbs.h>} verbs library provides the  The record sizes were 
 also an interesting measure to arrive at. It was obvious even from an earlier stage
 that higher data sizes such as shown in Figure~\ref{fig:1000B_transrate} almost 
 always results in better throughput measurements. In the world of In-memory databases,
@@ -61,4 +66,13 @@ DMA operations to host memory during address translation~\cite{farm,rdma}. For
 our experiments, the reach of the NIC's virtual-to-physical mapping is
 sufficient, and hugepages have no impact on the results.
 
+
+\section{Preliminary Results}
+Pure comparison of Zero Copy vs Copy Out for efficient transmission of heavy range query
+results that improves throughput by 1.7$\times$ (from 3.4~GB/s to 5.7~GB/s) and
+reduces CPU overhead by 75\% compared to fully scattered zero-copy by relaxing
+the structure of the results that clients receive.  We start with an
+overview of related work in this space, then describe a modern kernel-bypass NIC
+and the Bw-Tree. We continue with a set of microbenchmarks and draw
+conclusions for data structure/networking layer co-design.
 
