@@ -45,7 +45,7 @@ the performance for RDMA reads which is also unfair
 since RDMA reads can only transmit a single record at a time. The yellow dot
 shows RDMA write performance. The modes shown was an enum of the format 
 \cpp{enum Mode \{ MODE_SEND, MODE_WRITE, MODE_READ\}} and infiniband 
-\cpp{<infiniband/verbs.h>} verbs library provides the  The record sizes were 
+(\cpp{<infiniband/verbs.h>}) verbs library provides the  The record sizes were 
 also an interesting measure to arrive at. It was obvious even from an earlier stage
 that higher data sizes such as shown in Figure~\ref{fig:1000B_transrate} almost 
 always results in better throughput measurements. In the world of In-memory databases,
