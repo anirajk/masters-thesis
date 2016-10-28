@@ -140,6 +140,8 @@ TEXFILES        = abstract.tex			\
 		  proposal-relatedwork.tex      \
 		  proposal-timeline.tex         \
 		  fig-100B-manymodes.tex        \
+		  fig-1000B-manymodes.tex       \
+		  fig-bw-tree.tex                \
                   config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\

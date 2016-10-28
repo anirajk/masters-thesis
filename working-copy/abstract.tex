@@ -12,10 +12,10 @@
 
 %K most systems optimise for small responses, others require hardware software balance
 
-While exploiting modern hardware innovation and better algorithms leads to better performance 
-in storage systems, pursuing one without due consideration of the other leads to
-suboptimal performace for voluminous data transfers.
-
+Efficient movement of heavy chunks of data over the network at high throughput 
+is essential for a modern day In-memory database. Modern NICs offers interesting
+opportunities and challenges in achieving this by leveraging smart data layout
+and concurrency control.
 
 In recent years, a new class of storage systems were developed in response to the growing needs of throughput
 and latency demands at scale. Declining cost of DRAM and increasing access of 
@@ -23,18 +23,19 @@ high throughput and low latency network fabrics in the datacenters guided their 
 
 A significant fraction of these systems were developed keeping quick dispatch in mind
 such as OLTP workloads and an overwhelming number of of these systems have their underlying
-implementation closer to that of a key value store to aid these decisions.These design 
+implementation closer to that of a key value store to aid these decisions. These design 
 decisions have an inadvertent consequence that these systems perform disproportionately
-well for smaller request response cycles. Practicality of these systems is also subject to 
-how well they perform in scenarios involving transfer of larger data blocks such as range queries 
-and cluster reconfigurations. We found that performing large data transfers in a live cluster 
-of systems optimised for smaller responses, it has a detrimental effects to their primary intent. 
-SLAs of these systems are often calculated with primary workloads and these larger than usual transfers end 
-up violating them in practice.
+well for smaller request response cycles. Heavy responses to workloads such as range queries
+and migration of huge amounts of data for load balancing and cluster reconfiguration
+poses challenges orthogonal to this design. We found that performing large data transfers in a live cluster 
+of systems optimised for smaller responses has a detrimental effect to their primary intent. 
+SLAs of these systems are often calculated with primary workloads and huge transfers end 
+up violating them in practice. The ability to effectively transfer huge amounts of
+data will add to acceptance of these systems.
 
 We evaluated the impact of modern NICs on data layout by measuring transmit performance
-while tuning the effects of DMA, RDMA and caching advancements. We proposed a client assisted design
-for bulk responses leveraging a smart co-design of data layout, concurrency control and
-unique hardware advancements that results in increased overall efficiency and throughput.
-We will also set up experiments that outline bottlenecks in current approaches to data migration
-and call for fast and efficient migration with minimal to no disruption to their normal operation.
+while tuning the effects of DMA, RDMA and caching advancements. We proposed guidelines
+leveraging a smart co-design of data layout, concurrency control and advancements to the
+NICs that results in increased overall efficiency and throughput. We will also set up experiments
+that outline bottlenecks in current approaches to data migration and call for fast and 
+efficient migration with minimal disruption to their normal operation.

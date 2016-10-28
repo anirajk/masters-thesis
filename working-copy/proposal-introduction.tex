@@ -7,10 +7,10 @@ systems, researchers didn't diverge from the  tried and tested model for
 locality of reference. Conventional ``secondary storage" devices
 such as disks where the final resting place of evergrowing amounts of managed data. With the 
 enhanced requirements of scale by the popularization of Web 2.0 in the early 2000s, 
-database designers created a cached layer of RAM in front of disks
+database designers created a caching layer of RAM in front of disks
 to combat abysmal disk access times that was dragging performance at scale. Memcached~\cite{memcached-orig}
 is one such phenomenal system that stood the test of time and it's further development
-enabled it to operate at a scale uof billions of operations per second on trillions of items~\cite{nishtala2013scaling}.
+enabled it to operate at a scale of billions of operations per second on trillions of items~\cite{nishtala2013scaling}.
 
 Another orthogonal area of research was to completely store all data in main memory.
 This was made possible in the late 2000s by the evolution of DRAM technologies and declining cost of main memory.
@@ -19,7 +19,7 @@ were responded by means of distributed recovery~\cite{ongaro2011fast}.
 A more recent development was in the acceptance of high throughput and low latency networks. 
 Pioneered by the high performance computing community, these advanced networking fabrics 
 such as infiniband~\cite{pfister2001introduction} became more common place in 
-data center networks. These developments have led to a deluge of storage systems research~\cite{mmdbmstutorial} 
+data center networks. These developments have led to a deluge of storage systems research~\cite{mmdbmstutorial} ,
 exploring multiple verticals. Among the particularly notable ones are RAMCloud~\cite{ramcloud},
 MICA~\cite{mica}, FaRM~\cite{farm}, HyPer~\cite{hyper}, H-Store~\cite{hstore} 
 and HERD~\cite{herd}. While each of these systems have been driven by different dimensions 
@@ -42,11 +42,10 @@ Modern network cards have grown incredibly complex, partly in response to
 demands for high throughput and low latency. One key advancement these NICs made 
 is the presence of some form of kernel bypass where an on-device DMA engine from the network card 
 can access pre-mapped memory in a system without invoking the CPU. This led to the Remote 
-Direct Memory Access (RDMA)~\cite{rdmapatent} paradigm. The modern NIC with these  have complex architectures
-which makes understanding them difficult, and it makes designing software to take advantage
-of them even harder. To design for NICs effectively, one must understand their characteristics.
-Database designers encounter a number of trade-offs when trying to use the NIC effectively. We specifically 
-looked at three factors that make it especially challenging to design NIC-friendly
+Direct Memory Access (RDMA)~\cite{rdmapatent} paradigm. The modern NIC with it's complex architecture
+makes understanding it's characteristics difficult, and it makes designing software to take advantage
+of them even harder. Database designers encounter a number of trade-offs when trying to use the NIC effectively.
+We specifically  looked at three factors that make it especially challenging to design NIC-friendly
 database engines:
 \begin{itemize}
   \item {\em Zero-copy} DMA engines reduce server load for transferring large data
@@ -76,25 +75,27 @@ influence data layout and concurrency control in a modern in-memory
 databases~\cite{KesavanRicciStutsman:IMDM16}. 
 
 Our primary results gave us ideas about how the Zero Copy paradigm will perform against
-the traditional approach of transmitting via larger buffers. These also pointed to how the use of thread local storage and effective caching
-such as the Intel\textregistered Data Direct I/O~\cite{ddio} could boost traditional copy performance. 
+the traditional approach of transmitting via larger buffers. These also pointed 
+to how the use of thread local storage and effective caching such as the 
+Intel\textregistered Data Direct I/O~\cite{ddio} could boost performance and 
+efficiency of copying data. 
 
-Yet another burden of using these newer reconfiguration systems are how they would provide effective 
+Yet another burden of using these newer storage systems are how they would provide effective 
 reconfiguration of clusters. Our results from the benchmark led us to believe in the importance of 
-hardware considerations to data migration. Investment in costly hardware and aggressive
+hardware considerations in data migration. Investment in costly hardware and aggressive
 service level agreements(SLAs) make the task of effective reconfiguration a significant research challenge. 
 This is also one of the key hurdles to overcome before mainstream acceptance of these systems.
 We explored the state of the art reconfiguration systems such as Squall~\cite{squall} which 
 introduced live reconfiguration by means of reactivelly pulling data with numerous optimisations.
 While a system like this creates little impact on the source in theory, it's performance improvements
 are dependent on specific workloads and pre partitioning of data. We wanted to aim for a solution that defers 
-partitioning decisions as late as possible while exploring data locality benefits in a complex
-In-memory system such as RAMCloud~\cite{ramcloud}.
+partitioning decisions as much as possible while still exploring benefits of data locality in a complex
+In-memory system optimised for low latency such as RAMCloud~\cite{ramcloud}.
 
 
 RAMCloud has a unique perspective on data locality. While there are obvious benefits to locality
 for building distributed transactions and operations such as multi-gets that are supported by 
-RAMCloud, RAMCloud doesn't prohibitively limit flexibility of data placement like other systems 
+RAMCloud, RAMCloud doesn't prohibitively couple flexibility of data placement with performance like other systems 
 such as H-Store~\cite{hstore}. Since it's design is driven by low latency access, there is less incentive
 to design for locality. At the same time, improvement such as multiple secondary indices~\cite{slik} and need for reconfiguration 
 makes collocation of data a nice-to-have to say the least. 
@@ -115,8 +116,10 @@ performance for range queries and distributed transactions. We will try to do so
 defering partitioning decisions as much as possible.
 
 \section{Supporting Evidence}
-A few experiments were done to provide supporting evidence for the thesis. The primary set 
-of evidences were found by the following:
+A few experiments were done to provide supporting evidence for the thesis. There will be 
+a few more experiments that will be done in order to support the statement. These are the 
+list of evidences that will strengthen the thesis:
+
 \begin{itemize}
 \item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: We profiled a modern NIC for various 
 scenarios data transfer mechanisms exploring the scatter gather DMA engine of the NIC in contrast
