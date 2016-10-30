@@ -12,18 +12,18 @@
 
 %K most systems optimise for small responses, others require hardware software balance
 
-Efficient movement of heavy chunks of data over the network at high throughput 
-is essential for a modern day In-memory database. Modern NIC offers interesting
-opportunities and challenges in achieving this by leveraging smart data layout
+Efficient movement of huge amounts of data over fast networks at high throughput 
+is essential for a modern day In-memory storage system. Modern NIC offers interesting
+opportunities and challenges in this area and we can achieve this by leveraging smart data layout
 and concurrency control.
 
-In recent years, a new class of storage systems were developed in response to the growing needs of throughput
-and latency demands at scale. Declining cost of DRAM and increasing access of 
-high throughput and low latency network fabrics in the datacenters guided their development.
+In recent years, a new class of database systems were developed in response to the growing needs of throughput
+and latency demands at scale. Declining cost of DRAM and increasing access to 
+high throughput, low latency network fabrics in the datacenters guided their development.
 
-A significant fraction of these systems were developed keeping quick dispatch in mind
-such as OLTP workloads and an overwhelming number of of these systems have their underlying
-implementation closer to that of a key value store to aid these decisions. These design 
+A significant fraction of these systems were developed keeping OLTP workloads in mind 
+and an overwhelming number of of these systems have their underlying
+implementation closer to that of a key value store to aid quick dispatch decisions. These design 
 decisions have an inadvertent consequence that these systems perform disproportionately
 well for smaller request response cycles. Heavy responses to workloads such as range queries
 and migration of huge amounts of data for load balancing and cluster reconfiguration
