@@ -1,18 +1,24 @@
 %%% -*-LaTeX-*-
 
 \chapter{Proposed Work}
-
-
-\section{DDIO}
 This is a forward looking section listing out a few experiments that will
 strengthen the thesis and pave way for a fast and efficient migration protocol.
+Table~\ref{tbl:timeline} shows the expected amount of work that needs to be done 
+in the coming months to conclusively gather evidences that support the thesis. 
+This will also serve as the schedule guideline for the rest of my program.
+
+\section{DDIO}
 We need to find conclusive evidence about the impact of synchronization and 
 advanced caching mechanism on our experiments. The synchronisation primitives 
 that are used in the microbenchmarks should not have a driving effect to the 
 conclusions we make from them. This includes fully investigating the impact
 of DDIO~\cite{ddio} as well as coming up with uncore and off-core performance
 measurements to pinpoint the areas of contention while transmitting huge blocks
-of data.
+of data. So far, we have analysed the impacts on memory bandwidth by the traditional
+copy out approach without considering the changes in access patterns and the effects
+of Direct Caching~\cite{dca}. We should investiaate the last level cache characteristics 
+and other performance events as prescribed in Intel\textregistered 's software development
+manual in order to gather accurate performance measurements using the perf tool.
 
 \section{Data Migration}
 We also need to motivate the need for a fast and efficient migration protocol 
@@ -32,11 +38,8 @@ in a system such as RAMCloud. We are hopeful that these will provide interesting
 insights on data locality.
 
 \section{Timeline}
-
 \input{proposal-timeline}
-Table~\ref{tbl:timeline} shows the expected amount of work that needs to be done 
-in the coming months to conclusively gather evidences that support the thesis. 
-This will also serve as the schedule guideline for the rest of my program.
+
 
 
 \begin{itemize}
@@ -48,11 +51,19 @@ and the traditional copy impacts throughput varying record sizes and layout.
 \item{\textbf{Fall 2016 - Spring 2017}:} We have to explore the impacts of Intel\textregistered 
 DDIO~\cite{ddio} technology which makes the last level cache the primary source and 
 destination memory for the NICs. We need to do this in the context of thread local 
-buffers to conclude the effect of modern NICs. We also need to set up a few experiments
-that will motivate fast and efficient migration protocol. This would involve 
-setting up migrations involving huge amount of data and measuring it's impact on overall throughput
+buffers to conclude their effect on modern NICs. We also need to set up a few experiments
+that will motivate fast and efficient migration protocol. 
+
+This would involve  setting up migrations involving huge amount of data and measuring it's impact on overall throughput
 and experiments where it can be proved that SLAs of the system are violated as an effect of migration.
-One such possible experiment is to split and migrate a hot index table which has it's 
+We would examine the performance of current migration protocol and come up with in depth measurements
+that will help analyse the protocol both conceptually and from the perspective of implementation in RAMCloud.
+The primary set of experiments that need to be done will migrate data and measure throughput and time 
+spent on each individual step in migration and finding ways to mitigate the bottlenecks to analyse
+the impact as part of a big picture.
+
+In addition to the the primary experiment, there could also be other experiments which will pave 
+the way for a new protocol. One such possible experiment is to split and migrate a hot index table which has it's 
 records spanning multiple files. Other possible experiments include measuring the 
 impact of distributed recovery on locality, scaling a cluster up and down and measuring
 difference in performance characteristics, shifting $\theta$ on a workload which follows 

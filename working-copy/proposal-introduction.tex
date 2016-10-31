@@ -123,12 +123,12 @@ list of evidences that will strengthen the thesis:
 \item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: We profiled a modern NIC under various 
 scenarios and data transfer mechanisms exploring the scatter gather DMA engine of the NIC in contrast
 with the conventional copy out approach of pre aggregating data in a buffer and sending data from the buffer.
-We found a few arguments against the use of the new kernel by pass approach considering the overhead
+We even found a few arguments against the blind use of the new kernel by pass approach considering the overhead
 of concurrency management and difficulty of implementation. We evaluated various scenarios on top of a
 microbenchmark to measure transmit performance of responses varying message sizes and number of records
 transmitted.
 \item{\textbf{Design of client assisted responses for better transmit performance}}: While evaluating the results,
-we saw that there are certain circumstances that can uniquely take advantage of the hardware limited 
+we saw that there are certain structures and circumstances that can uniquely take advantage of the hardware limited 
 scatter gather entries of a modern NIC. One such exploration was around a lock-free, no update in place 
 indexing data structure such as the Bw-Tree~\cite{bw-tree}. We propose a design with client assisted 
 validation techniques in the light of these observations that essentially proposes sending more data than 
