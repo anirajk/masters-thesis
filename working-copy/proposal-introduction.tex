@@ -114,10 +114,15 @@ to provide fast and jitter free data movement in a cluster for reconfiguration a
 performance for range queries and distributed transactions. We will try to do so while
 defering partitioning decisions as much as possible.
 
-\section{Supporting Evidence}
-A few experiments were done to provide supporting evidence for the thesis. There will be 
-a few more experiments that will be done in order to conclusively support the statement. These are the 
-list of evidences that will strengthen the thesis:
+\section{Contributions}
+
+\blockquote{\textbf{Scale-out In-Memory stores are optimised for small requests
+under tight SLAs, and bulk data movement, for rebalancing and range queries, interfere;
+We hypothesize that carefully leveraging data layout and advancements in modern NICs
+will yield to gains in performance and efficiency for large transfers in these systems
+without disrupting their primary obligation}}
+
+
 
 \begin{itemize}
 \item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: We profiled a modern NIC under various 
