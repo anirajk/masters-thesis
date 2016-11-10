@@ -116,6 +116,8 @@
 \usepackage{booktabs}
 \usepackage{listings}
 \usepackage{csquotes}
+\usepackage{float}
+\usepackage{caption}
 %%% The default heading color is utahred (defined by University Printing
 %%% Services as 0.8 red, 0.0 green, 0.0 blue), but you could redefine
 %%% that to, for example, a dark blue color, like this AFTER including
@@ -187,11 +189,11 @@
 \copyrightyear          {2016}
 
 %%% Dates on which committee members approved the thesis
-\chairdateapproved      {\ \ /\hspace{0.5cm} /2016}%17 Feb 2016}
-\firstdateapproved      {\ \ /\hspace{0.5cm} /2016}%17 Feb 2016}
-\seconddateapproved     {\ \ /\hspace{0.5cm} /2016}%17 Feb 2016}
-\thirddateapproved      {\ \ /\hspace{0.5cm} /2016}%17 Feb 2016}
-\fourthdateapproved     {\ \ /\hspace{0.5cm} /2016}%17 Feb 2016}
+\chairdateapproved      {11 Nov 2016}
+\firstdateapproved      {11 Nov 2016}
+\seconddateapproved     {11 Nov 2016}
+\thirddateapproved      {11 Nov 2016}
+\fourthdateapproved     {11 Nov 2016}
 
 %%% ====================================================================
 %%% Typesetting begins here:
@@ -205,6 +207,7 @@
 \dissertationapproval
 \setcounter {page}     {2}             % UofU Thesis Office demands abstract on p. iii: start one lower
 \preface    {abstract} {Abstract}
+\preface {timeline-preface} {Timeline}
 %\dedicationpage
 \tableofcontents
 \listoffigures
@@ -233,10 +236,10 @@
 \pagestyle{headings} % NEW for sample-thesis-6
 \graphicspath{{figures/}}
 \include {proposal-introduction}
-\include {proposal-relatedwork}
 \include {proposal-modernnics}
 \include {proposal-bwtree}
 \include {proposal-evaluation}
+\include {proposal-relatedwork}
 \include {proposal-proposedwork}
 
 

@@ -116,35 +116,58 @@ defering partitioning decisions as much as possible.
 
 \section{Contributions}
 
-\blockquote{\textbf{Scale-out In-Memory stores are optimised for small requests
+\textbf{\blockquote{Scale-out in-memory stores are optimised for small requests
 under tight SLAs, and bulk data movement, for rebalancing and range queries, interfere;
 We hypothesize that carefully leveraging data layout and advancements in modern NICs
 will yield to gains in performance and efficiency for large transfers in these systems
 without disrupting their primary obligation}}
+ 
+We have shown that careful co-design of data layout, concurrency control
+ and networking can lead up 75\% reduction of CPU overhead and  get a throughput
+boost of 1.7x compared to blindly using the kernel bypass available
+in the NICs. We also profiled the bottlenecks in the way data migration is set up
+in RAMCloud and in conjunction with the benchmarks, delivers concrete suggestions
+on how to design an fast and efficient migration protocol which causes minimal 
+disruption.
 
-
+The following are the main contributions from this work which supports and provides
+evidence for the thesis statement.
 
 \begin{itemize}
-\item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: We profiled a modern NIC under various 
-scenarios and data transfer mechanisms exploring the scatter gather DMA engine of the NIC in contrast
-with the conventional copy out approach of pre aggregating data in a buffer and sending data from the buffer.
-We even found a few arguments against the blind use of the new kernel by pass approach considering the overhead
-of concurrency management and difficulty of implementation. We evaluated various scenarios on top of a
-microbenchmark to measure transmit performance of responses varying message sizes and number of records
-transmitted.
+
+\item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: In order to show 
+the significance of influence of network cards on data layout, we profiled a modern NIC under various 
+scenarios and data transfer mechanisms. This is the first published research exploring
+the scatter gather DMA engine of the NIC in contrast with the conventional copy out approach
+in the context of bulk transfers. We have found a few arguments against the blind use of the
+new kernel by pass approach considering the overhead of concurrency management and difficulty
+of implementation.
+\begin{itemize}
+
+\item Developed a microbenchmark to assess performance of infiniband verbs
+
+\item Measured transmission throughput and CPU overhead in the face of varying
+data layouts
+
+\item Compared the performance of Zero Copy and Copy Out mechanisms of transmitting
+data from an RDMA capable modern NIC.
+
+\end{itemize} 
+
 \item{\textbf{Design of client assisted responses for better transmit performance}}: While evaluating the results,
 we saw that there are certain structures and circumstances that can uniquely take advantage of the hardware limited 
-scatter gather entries of a modern NIC. One such exploration was around a lock-free, no update in place 
-indexing data structure such as the Bw-Tree~\cite{bw-tree}. We propose a design with client assisted 
-validation techniques in the light of these observations that essentially proposes sending more data than 
-needed might in fact boost overall throughput of a system.
-\item{\textbf{Experiments to motivate fast and efficient data transfer}}: We will lay out experiments that will 
+scatter gather entries of a modern NIC. Chapter~\ref{chap:bw-tree} explores ways in which a modern Btree indices
+can exploit NIC hardware. Through the benchmark, we show 70\% improvement in throughput using such a design.
+
+\item{\textbf{Experiments to motivate fast and efficient data transfer}}: We laid out experiments that  
 show how even the state of the art systems for cluster reconfiguration becomes suboptimal with it's locality
-constraints and overall slowness. We will layout experiments that will call for fast and efficient migration protocol
+constraints and overall slowness. Our experiments call for fast and efficient migration protocol
 especially suited for an In-memory database system with a decentralized log structured data model such as RAMCloud.
 This will involve analysing the existing protocol in depth and zeroing in on the fractions of time spent on migration.
-\item{\textbf{Preliminary design for a migration protocol}}: We will learn the most important bottlenecks in the current design
-that makes it infeasible for fast and efficient migration and in turn propose the basics of a migration protocol that 
-will effectively eleminiate these bottlenecks and pave the way forward for fast and efficient transfer of huge chunks of data.
+
+\item{\textbf{Preliminary design for a migration protocol}}: After careful analysis of the current migration protocolm
+we discovered the most important bottlenecks in the current design that makes it infeasible for fast and efficient 
+migration and in turn propose the basics of a migration protocol that  will effectively eleminiate these bottlenecks
+and pave the way forward for fast and efficient transfer of huge chunks of data.
 \end{itemize}
 

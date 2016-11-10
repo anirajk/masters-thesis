@@ -131,6 +131,8 @@ STYFILES	= amssymb.sty			\
 
 TEXFILES        = abstract.tex			\
 		  acknowledge.tex		\
+		  timeline-preface.tex          \
+		  tbl-timeline-preface.tex      \
 		  proposal-introduction.tex	\
 		  proposal-bwtree.tex           \
 		  proposal-evaluation.tex       \
