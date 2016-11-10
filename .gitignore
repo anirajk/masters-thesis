@@ -1,7 +1,6 @@
 *.blg
 *.dw
 *.ilg
-*.log
 *.o
 *.ser
 *.tmp
@@ -20,3 +19,9 @@ sample-thesis-0.pdf
 sample-thesis-1.pdf 
 sample-thesis-2.pdf 
 proposal.pdf
+keith_proposal/*.log
+sample-thesis-0/*.log
+sample-thesis-2/*.log
+uuthesis-2016-guide/*.log
+working-copy/*.log
+!working-copy/data/*.log
