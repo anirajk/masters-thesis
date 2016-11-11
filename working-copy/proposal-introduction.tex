@@ -135,13 +135,10 @@ evidence for the thesis statement.
 
 \begin{itemize}
 
-\item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: In order to show 
-the significance of influence of network cards on data layout, we profiled a modern NIC under various 
-scenarios and data transfer mechanisms. This is the first published research exploring
-the scatter gather DMA engine of the NIC in contrast with the conventional copy out approach
-in the context of bulk transfers. We have found a few arguments against the blind use of the
-new kernel by pass approach considering the overhead of concurrency management and difficulty
-of implementation.
+\item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: We profiled the trasmit performance of a modern NIC in depth to show the influence of NICs on data layout.
+ This is the first published research exploring the scatter gather DMA engine of the NIC in contrast with the traditional copy out approach in the context of bulk transfers. 
+ We have found a few arguments against the blind use of the new kernel bypass approach considering
+the overhead of concurrency management and difficulty of implementation.
 \begin{itemize}
 
 \item Developed a microbenchmark to assess performance of infiniband verbs
@@ -149,25 +146,27 @@ of implementation.
 \item Measured transmission throughput and CPU overhead in the face of varying
 data layouts
 
-\item Compared the performance of Zero Copy and Copy Out mechanisms of transmitting
-data from an RDMA capable modern NIC.
+\item Compared the performance of Zero-Copy and Copy Out mechanisms of 
+transmitting data from an RDMA capable modern NIC.
 
 \end{itemize} 
 
-\item{\textbf{Design of client assisted responses for better transmit performance}}: While evaluating the results,
-we saw that there are certain structures and circumstances that can uniquely take advantage of the hardware limited 
-scatter gather entries of a modern NIC. Chapter~\ref{chap:bw-tree} explores ways in which a modern Btree indices
-can exploit NIC hardware. Through the benchmark, we show 70\% improvement in throughput using such a design.
 
-\item{\textbf{Experiments to motivate fast and efficient data transfer}}: We laid out experiments that  
-show how even the state of the art systems for cluster reconfiguration becomes suboptimal with it's locality
-constraints and overall slowness. Our experiments call for fast and efficient migration protocol
-especially suited for an In-memory database system with a decentralized log structured data model such as RAMCloud.
-This will involve analysing the existing protocol in depth and zeroing in on the fractions of time spent on migration.
+\item{\textbf{Experiments to motivate fast and efficient data transfer}}: We laid out experiments that show how even the state of the art systems for cluster reconfiguration becomes suboptimal with its locality constraints and overall slowness.
+ RAMCloud assumes relatively uniform access cost to all nodes.
+ We quantify the gains from explicitly colocating records and indexes.
+ Our experiments call for fast and efficient migration protocol especially suited for an In-memory database system with a decentralized log structured data model such as RAMCloud.
+ This is the first published analysis of RAMCloud’s migration protocol in depth which zeroed in on the fractions of time spent on migration.
 
-\item{\textbf{Preliminary design for a migration protocol}}: After careful analysis of the current migration protocolm
-we discovered the most important bottlenecks in the current design that makes it infeasible for fast and efficient 
-migration and in turn propose the basics of a migration protocol that  will effectively eleminiate these bottlenecks
-and pave the way forward for fast and efficient transfer of huge chunks of data.
+\item{\textbf{Design of client assisted responses for better transmit performance}}: Our measurements inform a new design for migration in RAMCloud, but it also has impacts on other database operations.
+ While evaluating the results, we saw that there are certain structures and circumstances that can uniquely take advantage of the hardware limited scatter gather entries of a modern NIC.
+ Chapter~\ref{chap:bw-tree} explores ways in which a modern B-tree indices can exploit NIC hardware.
+ Through the benchmark, we show 70\% improvement in throughput using such a design.
+
+
+\item{\textbf{Preliminary design for a migration protocol}}: After careful analysis of the current migration protocol
+ we discovered the most important bottlenecks in the current design that makes it infeasible for fast and efficient migration.
+ We propose the basics of a migration protocol that will effectively eliminate these bottlenecks and pave the way
+ forward for fast and efficient transfer of huge chunks of data.
 \end{itemize}
 
