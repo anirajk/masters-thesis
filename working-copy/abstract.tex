@@ -23,8 +23,11 @@ request-response scenarios. However, heavy responses such as range queries and d
 This thesis analyzes the effects of large transfers on scale-out systems
 through the lens of a modern NICs. The present-day NIC offers exciting opportunities and challenges for large transfers, and we can make them efficient by leveraging smart data layout and concurrency control.
 
-We evaluated the impact of modern NICs on data layout by measuring transmit performance while tuning the effects of DMA, RDMA and caching advancements. We proposed guidelines
-leveraging a smart co-design of data layout, concurrency control, and recent improvements to the NICs that result in increased overall efficiency and throughput. We also set up experiments that underlined the bottlenecks in current approaches to data migration. We propose guidelines for a fast and efficient migration protocol with minimal disruption to the normal case operation.
+We evaluated the impact of modern NICs on data layout by measuring transmit performance while tuning the effects of DMA, RDMA and caching advancements.
+We proposed guidelines leveraging a smart co-design of data layout, concurrency control, and recent improvements to the NICs that result in increased overall efficiency and throughput. We also set up experiments that underlined the bottlenecks in current approaches to data migration in RAMCloud.
+We propose guidelines for a fast and efficient migration protocol with minimal disruption to the normal case operation.
 
 We have found evidence to prove that performing large data transfers in a live cluster of systems optimized for smaller responses has a detrimental effect to their primary intent. 
-We have analyzed the new possibilities that open up as a result of an enhanced migration protocol. The ability to effectively transfer huge amounts of data will also add to acceptance of these systems.
+We have analyzed the new possibilities that open up as a result of an enhanced migration protocol.
+We propose the guidelines for a new migration protocol which will will supplement the
+mainstream acceptance of these systems.
