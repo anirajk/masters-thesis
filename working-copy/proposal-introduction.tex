@@ -116,19 +116,19 @@ defering partitioning decisions as much as possible.
 
 \section{Contributions}
 
-\textbf{\blockquote{Scale-out in-memory stores are optimised for small requests
+\textbf{\blockquote{Scale-out in-memory stores are optimized for small requests
 under tight SLAs, and bulk data movement, for rebalancing and range queries, interfere;
 We hypothesize that carefully leveraging data layout and advancements in modern NICs
 will yield to gains in performance and efficiency for large transfers in these systems
-without disrupting their primary obligation}}
+without disrupting their primary obligations}}
  
 We have shown that careful co-design of data layout, concurrency control
- and networking can lead up 75\% reduction of CPU overhead and  get a throughput
+and networking can lead up 75\% reduction of CPU overhead and  get a throughput
 boost of 1.7x compared to blindly using the kernel bypass available
 in the NICs. We also profiled the bottlenecks in the way data migration is set up
-in RAMCloud and in conjunction with the benchmarks, delivers concrete suggestions
-on how to design an fast and efficient migration protocol which causes minimal 
-disruption.
+in RAMCloud and in conjunction with the benchmarks. In the light of our discoveries,
+we make concrete suggestions on how to design an fast and efficient migration 
+protocol which causes minimal disruption.
 
 The following are the main contributions from this work which supports and provides
 evidence for the thesis statement.

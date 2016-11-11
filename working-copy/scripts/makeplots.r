@@ -14,7 +14,7 @@
 
 source('common.R')
 
-load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/cx3_noperf/30sge-20161110140704-15-clients-r320-out.log') {
+load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/connectib/chinmay-8depth-0161008193717-15-clients-r320-out.log') {
   d <- read.table(filename
                   , header=T)
   d$bytesPerMessage <- d$chunkSize * d$chunksPerMessage
@@ -34,7 +34,7 @@ plot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
     geom_point(size=1) +
     scale_x_continuous(name='Bytes per Send',
                        trans=log2_trans(),
-                       breaks=c(128, 256, 512, 1024, 2048, 4096, 8192, 16384)) +
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
 #    scale_x_continuous(name='Bytes per Send',
 #                       breaks=seq(0, 1024 * 1024, by=2 * 1024)) +
     scale_y_continuous(name='Transfer Rate (MB/s)') +
@@ -249,7 +249,7 @@ makeZeroCopyTputFigure <- function () {
   d <- load()
   d <- d[d$chunkSize %in% c(128, 1024),]
   p <- plot(d) +
-    coord_cartesian(ylim=c(0, 6000), xlim=c(2*1024, 16 * 1024))
+    coord_cartesian(ylim=c(0, 6000), xlim=c(128, 16 * 1024))
  p
    #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
   #       width=5, height=2, units='in')
