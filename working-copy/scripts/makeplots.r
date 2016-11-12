@@ -14,7 +14,7 @@
 
 source('common.R')
 
-load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/connectib/chinmay-8depth-0161008193717-15-clients-r320-out.log') {
+load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/cx3_noperf/before-tlocal-20161111093502-15-clients-r320-out.log') {
   d <- read.table(filename
                   , header=T)
   d$bytesPerMessage <- d$chunkSize * d$chunksPerMessage

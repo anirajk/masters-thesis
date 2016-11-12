@@ -9,6 +9,32 @@ work on log-structured file systems, striping filesystems and distributed
 crash recovery~\cite{ryan-thesis}
 
 \section{In-memory Databases}
+In-memory databases sparked a new wave of systems research in the 
+networking and database communities. For a long time while developing storage
+systems, researchers didn't diverge from the  tried and tested model for
+locality of reference. Conventional ``secondary storage" devices
+such as disks were the final resting place of evergrowing amounts of managed data. With the 
+enhanced requirements of scale by the popularization of Web 2.0 in the early 2000s, 
+database designers created a caching layer of RAM in front of disks
+to combat abysmal disk access times that was dragging performance at scale. Memcached~\cite{memcached-orig}
+is one such phenomenal system that stood the test of time and it's further development
+enabled it to operate at a scale of billions of operations per second on trillions of items~\cite{nishtala2013scaling}.
+
+Another orthogonal area of research was to completely store all data in main memory.
+This was made possible in the late 2000s by the evolution of DRAM technologies and declining cost of main memory.
+Questions about durability and cost of replication 
+were responded by means of distributed recovery~\cite{ongaro2011fast}. 
+A more recent development was in the acceptance of high throughput and low latency networks. 
+Pioneered by the high performance computing community, these advanced networking fabrics 
+such as infiniband~\cite{pfister2001introduction} became more commonplace in 
+data center networks. These developments have led to a deluge of storage systems research~\cite{mmdbmstutorial} ,
+exploring multiple verticals. Among the particularly notable ones are RAMCloud~\cite{ramcloud},
+FaRM~\cite{farm} and H-Store~\cite{hstore} (Scale out memory stores) and
+MICA~\cite{mica}, HyPer~\cite{hyper} and HERD~\cite{herd} (Focused on single node research).
+While each of these systems have been driven by different dimensions 
+of research, they all share the same concerns of In-memory storage systems 
+operating on high speed networks.
+
 There have been many systems that were using DRAM as a caching mechanism even before
 In-memory database systems became commonplace. Memcached~\cite{memcached-orig} is 
 the most popular form of such generic caching mechanism. Declining cost of DRAM 
