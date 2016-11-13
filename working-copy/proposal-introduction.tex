@@ -93,7 +93,7 @@ access times and 99.9th of reads within 10$\mu$s) mean any disruption to perform
 has a serious impact. For an in-memory database, we would ideally like to saturate the
 available NIC bandwidth which is 8-12GB/s~\cite{cx3,cx4} while state of the art 
 transfer mechanisms offer many orders of magnitudes lower than that at ~10MB/s 
-throughput and only offer 1000-10000x higher latency than RAMCloud~\cite{ramcloud}.
+throughput and only offer latencies that are 1000-10000x higher than that of RAMCloud~\cite{ramcloud}.
 We wanted our protocol to strike a balance between fast operation and minimal disruption without drastically affecting
 the latency and throughput available for the system. Our design for fast and efficient migration
 for RAMCloud is guided by the following key principles:

@@ -20,14 +20,14 @@ network devices offering throughputs and latencies a couple of orders of magnitu
 than what was possble with prior transports such as TCP.
 
 
-\section{Zero Copy vs Copy Out}
+\section{Zero Copy and Copy Out}
 Kernel bypass is a ubiquitous feature in the modern NIC and key to accessing remote memory directly 
 from across the network. While the literal definition just defines any data movement that doesn't 
 involve copying between user space and kernel space, even packet capturing libraries~\cite{pcap} could fall
 under those definitions. Newer network controllers make use of vectored I/O, otherwise known as scatter/gather I/O
 where a single procedure reads data from multiple buffers and writes it to single buffer. The Mellanox Infiniband ConnectX\textregistered-3
 NIC that we profiled provides a scatter/gather list which powers it's on NIC DMA engine. This specific kernel bypass
-mechanism is colloqially known as Zero Copy.
+mechanism what we are going to colloqially refer in the thesis as Zero Copy.
 
 Zero Copy should be christened in the context of traditional copy. Before kernel bypass became 
 commonplace, the steps for copying data over the network using socket programming was as follows. 
