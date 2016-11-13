@@ -6,7 +6,7 @@ challenges as part of a modern distributed system. It is imperative that today's
 database system designer treats network transmission as a first class citizen in every design decision.
 Previous research for optimising databases were focussed more on processing time spent on a 
 database query~\cite{dbmsproctime}, but today's truth is that lion's share of the end-to-end latency
-while processing a query is spent in network transmission
+while processing a query is spent in network.
 Since we are not reeling from slow disks anymore, the bulk of I/O bottleneck in a distributed system today is in network transmission.
 Adding this to the fact that the modern NIC allows us to offload CPU from the data transfer path,
 the saved memory bandwidth and CPU cycles could be utilised for useful work 
@@ -20,7 +20,7 @@ network devices offering throughputs and latencies a couple of orders of magnitu
 than what was possble with prior transports such as TCP.
 
 
-\section{Zero Copy}
+\section{Zero Copy vs Copy Out}
 Kernel bypass is a ubiquitous feature in the modern NIC and key to accessing remote memory directly 
 from across the network. While the literal definition just defines any data movement that doesn't 
 involve copying between user space and kernel space, even packet capturing libraries~\cite{pcap} could fall
@@ -29,6 +29,16 @@ where a single procedure reads data from multiple buffers and writes it to singl
 NIC that we profiled provides a scatter/gather list which powers it's on NIC DMA engine. This specific kernel bypass
 mechanism is colloqially known as Zero Copy.
 
+Zero Copy should be christened in the context of traditional copy. Before kernel bypass became 
+commonplace, the steps for copying data over the network using socket programming was as follows. 
+The application calls something similar to a socket send and the data for sending is assembled 
+in a transmit buffer, this transmit buffer is copied on to the on-NIC buffers and the data is 
+send out of the door. We could employ the same technique in the kernel bypass capable NIC as well.
+Instead of employing a multi entry scatter/gather list, the records could be assembled on 
+to a temporary buffer and this buffer could be treated as a single entry scatter/gather list
+and then transmitted over the network. We will be calling this technique \enquote{Copy Out} from now on.
+
+
 Zero copy DMA facilitates a scatter gather list of buffer descriptors
 which could be mapped to non contigous locations in memory on demand. These provide
 the added benefit that network headers don't need to exist along with data and helps bring more flexibility 
@@ -36,8 +46,8 @@ in deciding the transport layer. One subtle thing to note here is that Zero Copy
 of a memcopy from the records to a buffer. The data still needs to be copied to the on-NIC buffers before 
 it is sent out via the network cable. This is different from what happens when we call socket send on a traditional 
 tcp stack where the data for transmission is pre assembled in a huge buffer and then copied across the network.
-We evaluate how Zero Copy performs in contrast with the more traditional network copy approach, which we will refer
-to as the ``copy out" approach in later sections.
+We evaluate how Zero Copy performs in contrast with the more traditional network copy approach reffered
+ as Copy Out from now on.
 
 \section{Memory Bandwidth}
 Interestingly, the additional copy involved in the traditional approach hurts memory bandwidth of the system more than contributing 
@@ -159,13 +169,16 @@ the Mellanox Infiniband ConnectX-3 \textregistered NIC and impact of data layout
 use of no update in place structures on transmission throughput. The cluster has 7
 Mellanox SX6036G FDR switches arranged in two layers. The switching fabric is
 oversubscribed and provides about 16~Gbps of bisection bandwidth per node
-when congested.
+when congested. All of the experiments are
+publicly available online\footnote{\url{https://github.com/utah-scs/ibv-bench}}.
+
+
 
 
 \input{fig-100B-manymodes}
 \input{fig-1000B-manymodes}
 
-\section{RDMA modes}
+\subsection{RDMA modes}
 We started out by getting measurements of transmission speeds using RDMA Reads.
 We implemented rdma operations using infinibands ib verbs library. We implemented 
 RDMA reads and write as op codes on the \cpp{ibv_send_wr} request which 
@@ -195,7 +208,7 @@ database designers can aggresively normalise and this has proven increasingly to
 the liking of companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload}.
 
 
-\section{Paging}
+\subsection{Paging}
 All our experiments transmit from a large region of memory backed by 4~KB pages
 that contains all of the records. The region is also
 registered with the NIC, which has to do virtual-to-physical address
@@ -208,22 +221,10 @@ our experiments, the reach of the NIC's virtual-to-physical mapping is
 sufficient, and hugepages have no impact on the results.
 
 
-\section{Experimental Results}
-\label{sec:eval}
-
 To explore how different designs trade-off database server efficiency and
 performance, we built a simple model of an in-memory database system that
-concentrates on data transfer
-rather than full query processing.  In all experiments, one node acts
+concentrates on data transfer rather than full query processing.  In all experiments, one node acts
 as a server and transmits results to 15~client nodes.
-Our experiments were run on the Apt~\cite{Ricci+:OSR15} cluster of the
-CloudLab testbed: this testbed provides exclusive bare-metal
-access to a large number of machines with RDMA-capable Infiniband NICs.
-Details of the configuration are given in Table~\ref{tbl:config}.
-All of the experiments are
-publicly available online\footnote{\url{https://github.com/utah-scs/ibv-bench}}.
-
-\input{config}
 
 Experiments transmit from a large region of memory backed by 4~KB pages that contains all of
 the records.  The region is also
@@ -320,7 +321,7 @@ zero-copy transmission when there are enough results to group per transmission.
 In fact, copy-out can saturate the network with small records, and it
 performs identically to copy-out with larger 1024~B records.
 
-\subsection{Zero-copy Savings}
+\subsubsection{Zero-copy Savings}
 \label{sec:overhead}
 
 \input{fig-overheads}
@@ -422,21 +423,3 @@ copy-out can transmit in larger, more efficient batches.
 % [1] 4438.671
 
 
-\subsection{Inlining Data Into Transmit Descriptors}
-
-%K Inlining doesn't really help anything.
-Mellanox NICs allow some data to be {\em inlined} inside the control message
-sent to the NIC over PCIe. Our NICs allow up to 912~B to be included inside the
-descriptor that is posted to the NIC control ring buffer.  Inlining can improve
-messaging latency by eliminating the delay for the NIC to DMA the message data
-from host DRAM, which can only happen after the NIC receives the descriptor.
-Inlining benefits small request/response exchanges, but it does not help for
-larger transmissions. This is because even though there is an extra delay
-before the NIC receives the actual record data, that delay can be overlapped
-with the DMA and transmission of other responses. Other researchers have shown
-that sending data to the NIC via MMIO also wastes PCIe bandwidth~\cite{rdma}.
-All experiments in this paper have inlining disabled. Enabling inlining
-gives almost identical throughput and overhead to copy-out, except it only
-works for transmissions of 912~B or less.
-
-% Show config that gives best total tx bw. Best per client bw?
