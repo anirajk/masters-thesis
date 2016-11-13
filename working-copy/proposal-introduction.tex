@@ -82,28 +82,49 @@ somehow refutes the argument for paging records together.
 
 Another burden of using these newer storage systems are how they would provide effective 
 reconfiguration. Our results from the benchmark led us to believe in the importance of 
-hardware considerations in data migration. Investment in costly hardware and aggressive
-service level agreements(SLAs) make the task of active reconfiguration a significant research challenge. 
-This is also one of the key hurdles to overcome before mainstream acceptance of these systems.
-We explored the state of the art reconfiguration systems such as Squall~\cite{squall} which 
-introduced live reconfiguration by reactively pulling data with numerous optimizations.
-While a system like this creates little impact on the source, in theory, it's performance improvements
-are dependent on specific workloads and pre-partitioning of data. We wanted to aim for a solution that defers 
-partitioning decisions as much as possible while still exploring benefits of data locality in a complex
-In-memory system optimized for low latency such as RAMCloud~\cite{ramcloud}.
+hardware considerations in data migration. State of the art systems like RAMCloud has around 1000x
+lower latency than traditional storage systems, and these tight SLAs make it harder to do migrations
+without interfering with regular requests. This is also one of the key hurdles 
+to overcome before mainstream acceptance of these systems.
+Our findings about modern NICS inform a new design for cluster reconfiguration
+in the RAMCloud storage system. Low-cost load balancing improves RAMCloud’s
+efficiency since indexes~\cite{slik} and transactions~\cite{ramcloudtx} benefit from collocation, but, at the same time, RAMCloud’s exceedingly tight SLAs (5 us median
+access times and 99.9th of reads within 10$\mu$s) mean any disruption to performance
+has serious impact. For an in-memory database, we would ideally like to saturate the
+available NIC bandwidth which is 8-12GB/s~\cite{cx3,cx4} while state of the art 
+transfer mechanisms offer many orders of magnitudes lower than that at ~10MB/s 
+throughput and only offer 1000-10000x higher latency than RAMCloud~\cite{ramcloud}.
+We wanted our protocol to strike the balance between fast operation and minimal disruption without drastically affecting
+the latency and throughput available for the system. Our design for fast and efficient migration
+for RAMCloud is guided by the following key principles:
+\begin{itemize}
+\item{\textbf High Throughput}: State of the art systems do migrations at $<$100 Mb/s. Our plan
+should result in 100-1000x faster data migrations
+\item{\textbf Low Impact}: RAMCloud has 99.9 percentile read latency at $<$10$\mu$s and write latency
+at $<$100$\mu$s. Our proposed protocol will be of minimal impact to the normal case operation and it'll
+still have SLAs that are 10-100x tighter than other systems~\cite{squall}.
+\item{\textbf Late-partitioning}: RAMCloud promises uniform access latency regardless of level of data locality.
+Most other systems diverge from this approach to make data movement faster. We would like to stick with
+defering partitioning decisions as much as possible and this adds a challenge in preparing data for migration.
+\end{itemize}
 
 
-RAMCloud has a unique perspective on data locality. While there are obvious benefits to the locality
-for building distributed transactions and operations such as multi-gets that are supported by 
-RAMCloud, RAMCloud doesn't prohibitively couple flexibility of data placement with the performance like a few other systems 
-such as H-Store~\cite{hstore}. Since it's designed to be driven by low latency access, there is less incentive
-to design for locality. At the same time, improvement such as multiple secondary indices~\cite{slik} and need for reconfiguration 
-makes collocation of data an interesting property. 
-
-We evaluate the current state of the art approaches to migration on a log structured,
-in-memory database comparing it with other methods. We lay out some experiments
-that point out issues with current approaches and motivates the necessity 
-for a fast and efficient migration protocol. These will explore the themes of data locality,
+We evaluate the current state of the art approaches to migration in RAMCloud storage system.
+We lay out some experiments that highlight issues with current approaches and motivates our new 
+fast and efficient migration protocol. To motivate and demonstrate our approach, we explore
+the following experiments:
+\begin{itemize}
+\item Measuring impacts of throughput at {\em source of migration}; Load balancing is a key problem that 
+could be addressed with migration and measuring the overhead introduced by migration is helpful here.
+\item Analyzing the effect of splitting and migrating {\em hot indexes}; Indexed reads add value to in-memory
+stores in utilizing them as a complete database. 
+\item Exploring effects of {\em locality of data}; RAMCloud's unique take on locality makes it's distributed 
+recovery~\cite{ongaro2011fast,ryan-thesis} interesting because of it's effect of distributing recovered data.
+We will explore the impact of recovery on locality and how reconfiguration can repair to restore locality.
+\item {\em Scaling clusters up and down} will show the effects of data movement in many-to-one and one-to-many
+data redistribution.
+\end{itemize} 
+ These will explore the themes of data locality,
 source impact and the effect of numerous workloads which include scaling up and down the cluster, splitting
 and migrating hot index tables, the impact on locality by the distributed recovery which sprays data across the 
 cluster and responding to changes in access patterns taking into account the multi-dimensional resource contentions
