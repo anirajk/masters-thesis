@@ -1,0 +1,8 @@
+\begin{figure}[t]
+\includegraphics{fig-zero-copy-tput.pdf}
+\caption{Transmission throughput when using conventional copy-out into transmit
+buffers and when the NIC directly copies records via DMA (zero-copy). The
+line for 128-byte zero-copy stops at 4K, as this is the maximum size of a send
+with 32 records of this size. }
+\label{fig:zero-copy-tput}
+\end{figure}

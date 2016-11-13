@@ -3,7 +3,7 @@
 \chapter{Introduction}
 
 For decades, the performance characteristics of storage devices have dominated
-     thinking in database design and implementation. From data layout to
+ thinking in database design and implementation. From data layout to
 concurrency control, to recovery, to threading model, disks touch every aspect
 of database design. In-memory databases effectively eliminate disk I/O as a
 concern, and these systems now execute millions of operations per second,
@@ -15,7 +15,7 @@ However, modern network cards have grown incredibly complex, partly in response
 to demands for high throughput and low latency.
 
 We set out to improve the efficiency of RAMCloud's~\cite{ramcloud} data migration mechanism. 
-RAMCloud is a storage system that keeps all data in DRAM and provides low latency access by
+RAMCloud is a storage system that keeps all data in DRAM at all times and provides low latency access by
 leveraging advancements like kernel bypass which are present in a modern NIC.
 To thoroughly understand the complexities involved in NIC in doing huge
 transfers of data, we profiled a modern NIC with a focus on heavy data transfers.
@@ -60,7 +60,7 @@ database engines:
       lifetime}, as objects must remain in memory and must be
       unchanged for the life of the DMA operation (which includes transmission
       time).
-  \item {\em Direct Cache Access}, now rephrased as Intel\textregistered  Data Direct I/O~\cite{ddio},
+  \item {\em Direct Cache Access}, now rephrased as Intel\textregistered Data Direct I/O~\cite{ddio},
       provide direct access to last level cache from an I/O device. This effect
       impacts the memory pressure significantly.
 
@@ -98,12 +98,12 @@ We wanted our protocol to strike a balance between fast operation and minimal di
 the latency and throughput available for the system. Our design for fast and efficient migration
 for RAMCloud is guided by the following key principles:
 \begin{itemize}
-\item{\textbf High Throughput}: State of the art systems do migrations at $<$100 Mb/s. Our plan
+\item{\textbf{High Throughput}}: State of the art systems do migrations at $<$100 Mb/s. Our plan
 should result in 100-1000x faster data migrations
-\item{\textbf Low Impact}: RAMCloud has 99.9 percentile read latency at $<$10$\mu$s and write latency
+\item{\textbf{Low Impact}}: RAMCloud has 99.9 percentile read latency at $<$10$\mu$s and write latency
 at $<$100$\mu$s. Our proposed protocol will be of minimal impact to the normal case operation, still keeping
 up with SLAs that are 10-100x tighter than other systems~\cite{squall}.
-\item{\textbf Late-partitioning}: RAMCloud promises uniform access latency regardless of the level of data locality.
+\item{\textbf{Late-partitioning}}: RAMCloud promises uniform access latency regardless of the level of data locality.
 Most other systems diverge from this approach to make data movement faster. We would like to stick with
 deferring partitioning decisions as much as possible and this adds a challenge in preparing data for migration.
 \end{itemize}
@@ -122,7 +122,7 @@ stores in utilizing them as a complete database.
 recovery~\cite{ongaro2011fast,ryan-thesis} interesting because of its effect of distributing recovered data.
 We will explore the impact of recovery on locality and how reconfiguration can repair to restore locality.
 \item {\em Scaling clusters up and down} will show the effects of data movement in many-to-one and one-to-many
-data redistribution.
+data redistributions.
 \end{itemize} 
  These will explore the themes of data locality,
 source impact and the effect of numerous workloads which include scaling up and down the cluster, splitting

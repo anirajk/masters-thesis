@@ -2,11 +2,40 @@
 
 \chapter{Bw-Trees}
 \label{chap:bw-tree}
-\section{Lock-free Indexing}
 
-To show how these NIC features can be applied to in-memory database systems,
-we now examine a data structure that is well-positioned to take advantage
-of them.
+We have seen the impact of Zero Copy on network transmission and how that 
+compares to the more traditional way of sending data over the network. The difference
+in throughput is explicitly seen for smaller 128~B records. Since databases have started
+to store all data in memory at all times, database designers have started to normalize 
+aggressively and as a result, record sizes are trending smaller and 128~B records show
+a more realistic depiction of record sizes in the futures.
+
+At first, the throughput results from comparing Zero Copy and Copy Out for 128~B 
+records might tempt  us to think that
+it's always better to use a traditional copy. This might be more alluring since we 
+ have established that the absolute savings on CPU cycles using Zero Copy may not be 
+ significant. 
+
+ One might overlook the bigger problem that lies behind the use of traditional
+ copy, that the memory pressure while doing Copy Out occupies a lion share of available
+ memory bandwidth. While transmitting at around 7~GB/s(near line rate for the Connect-X3\textregistered),
+  we believe the memory pressure will be closer to ~21GB/s which might take up a third of
+  all available memory bandwidth in a modern server.
+
+Zero Copy promises memory bandwidth savings in addition to eliminating CPU overhead, 
+while Copy Out can saturate the NIC throughput. We wanted to extract the best of both worlds 
+and we wanted to analyse structures that can uniquely take advantage of the 
+Zero Copy paradigm. 
+
+Microsoft\textregistered Research came up with a modern B-tree structure called 
+the Bw-Tree~\cite{bw-tree}, which is a high performance ordered index employing
+ lock and latch free concurrency and effective utilisation of caches in 
+ modern multi core processors. We discuss it's lock freedom and it's NIC implications
+ that make it well suited for Zero Copy in the following sections. We then present
+ our evaluation to show the gains in throughput by using delta records in our benchmarks. 
+
+
+\section{Lock-free Indexing}
 The Bw-Tree~\cite{bw-tree} is an atomic record store designed for extreme
 concurrency. It is an ordered index that supports basic record create, update,
 and delete (CRUD) operations in addition to search and range scans.  It is
@@ -33,6 +62,8 @@ even on portions of the tree). Bw-Tree solves this problem by eliminating
 update-in-place. All mutations are written to newly allocated memory, then
 the changes are installed with a single atomic compare-and-swap instruction
 that publishes the change.  Figure~\ref{fig:bw-tree} shows how this works.
+A 16KB base page is transmitted here along with a varying number of delta records,
+results are shown for both 128~B and 1024~B records.
 In place update are avoided by creating delta records ``off to the side'' 
 that describe a logical modification to a page. Delta records are
 prefixed to a chain ultimately attached to a base page.  When delta chains
@@ -116,6 +147,8 @@ How does zero-copy impact state reclamation in the Bw-Tree? Might long transmit
 times hinder performance by delaying garbage collection of stale records?
 \end{itemize}
 
+
+
 % Answering these questions?
 % - When to tx zero copy versus not?
 % - Show tx perf CPU use.
@@ -145,3 +178,104 @@ times hinder performance by delaying garbage collection of stale records?
 % K: Zero-copy? Then data structure must be tied into messaging layer. Can work
 % with epoch-based GC, but what about long scans? Could hold back GC and stall
 % tree in the limit.
+
+\section{Evaluation}
+
+\subsection{Extending the Delta Format to Clients}
+
+The experiments in the previous chapters consider delivering a clean, ordered set of records to the
+client. That is, the server collects and transmits the precise set of records
+in the correct order, either via copy-out or zero-copy. Another option is to
+transmit base pages along with their deltas and have clients merge the results.
+This approach is attractive because it organically fits with the design of the
+Bw-Tree and it suits the DMA engine of the NIC well.  The NIC can transmit the
+large contiguous base pages (16~KB, for example) with little CPU overhead.
+It also eliminates copy-out for small records, but avoids the transmission
+throughput ceiling longer gather lists suffer. %(\ref{Chnics-sec:zero-copy-tput}).
+Merging records on the client side is cheap; the server can even append them to
+the response in a sort order that matches the record order in the base page for
+efficient $O(n)$ iteration over the records that requires no copies or sorting.
+
+Figure~\ref{fig:deltas} shows the benefits of this approach. In this
+experiment, each transmission consists of a single 16~KB base page while the
+number and size of the delta records attached to each transmission is varied.
+The NIC benefits from the large base page, and it manages to keep the network
+saturated. CPU overhead ranges from less than 1\% when there are a few delta
+records up to about 2\% when there are more. Compared to zero-copy of scattered
+small records this approach also yields a 1.7$\times$ throughput advantage;
+Figure~\ref{fig:zero-copy-tput} shows that throughput peaks at 3.4~GB/s when
+records are scattered, while the delta format achieves 5.7~GB/s.
+The main cost to this approach is
+the cost of consolidating delta records into new base pages when chains grow
+long; we consider this overhead in more detail in the next section.
+
+% 3446.988 32 128 B chunks per zero-copy send.
+% 5749.283 1 16 KB base page with 4 128 B deltas all zero-copied.
+% 5749.283 / 3446.988
+% 1.6679150028952816
+% = 1.7x
+
+\subsection{Tuning Page Consolidation}
+\label{sec:consolidation}
+
+
+Bw-Tree and many indexing structures are paged in order to amortize storage
+access latency, and paging can have similar benefits for network transmission
+as well. However, the userlevel access of modern NICs makes interacting with
+them much lower-latency than storage devices. This raises the question of
+whether paging is still beneficial for in-memory structures. That is, is the
+cost of preemptively consolidating updates into pages worth the cost, or is it
+better to transmit fine-grained scattered records via zero-copy or copy-out?
+
+\input{fig-deltas}
+
+The results of our earlier experiments help answer this question.  If copy-out
+is used to gain faster transmission of small records, then the answer is
+simple. Even if every update created a complete copy of the full base page, the
+extra copies would still be worthwhile so long as more pages are read per
+second than updated. This true for most update/lookup workloads, and read-only
+range queries make this an even better trade-off.
+
+However, consolidation must be more conservative when using zero-copy to yield
+savings, since zero-copy can collect scattered records with less overhead than
+copy-out. Yet, there is good reason to be optimistic.  Delta records
+reduce the cost of updates for paged structures. If each base page is limited
+to $d$ delta records before consolidation, the number of consolidations is
+$\frac{1}{d}$. This means that allowing short delta chains dramatically reduces
+consolidation costs, while longer chains offer decreasing returns. This fits with
+the NIC's preference for short gather lists; allowing delta chains of length 4
+would reduce consolidation by 75\% while maintaining transmit throughput that
+meets or exceeds on-the-fly copy-out.  The large 16~KB base pages also
+improve transmit throughput slightly, which improves efficiency.
+
+For small records, transmitting compacted base pages that have a few deltas gives
+a total CPU savings of about 8\%. For the same CPU cost, a server can perform
+about 5.2~GB/s of page compaction or about 340,000 compactions per second for
+16~KB pages. Even in the worst case scenario where all updates are focused on a
+single page, delta chains of length 4 would tolerate 1.3~million updates per
+second with CPU overhead lower than copy-out. So, delta records can give the
+efficiency of zero-copy with the performance of copy-out.
+
+
+\subsection{Impact on Garbage Collection}
+
+Using zero-copy tightly couples the higher-level database engine's record
+allocation and deallocation, since records submitted must remain stable until
+transmission completes. Fortunately, existing mechanisms in systems that avoid
+update-in-place accommodate this well, like Bw-Tree's epoch mechanism described
+in Section~\ref{sec:indexing}. Normally, the Bw-Tree copies-out returned records.
+While an operation and its copy-out are ongoing, memory that contains records
+that have been unlinked or superseded cannot be reclaimed. Zero-copy
+effectively defers the copy until the actual time of transmission. As a result,
+transmissions completions must notify the higher level database of transmission
+completion to allow reclamation. This delay results in more latent garbage and
+hurts the effective memory utilization of the system.
+
+In practice, this effect will be small for two reasons. First, zero-copy adds a
+transmission, which completes within a few microseconds; however, it also saves a
+\memcpy/  which accounts for 1~to~2~$\mu$s for a 16~KB transmission. Second, the
+amount of resulting data held solely for transmission should generally be
+more than compensated for by eliminating the need for explicit transmit
+buffers. With copy-out, the size of the transmit buffer pool is necessarily
+larger than the amount of data under active transmission, and internal
+fragmentation in the transmit buffers makes this worse.

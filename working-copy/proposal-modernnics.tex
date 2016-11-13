@@ -134,3 +134,309 @@ that sending data to the NIC via MMIO also wastes PCIe bandwidth~\cite{rdma}.
 Almost all of our experiments have inlining disabled. Enabling inlining
 gives almost identical throughput and overhead to copy-out, except it only
 works for transmissions of ~912 B or less.
+
+
+\section{Evaluation}
+% TODO
+% Should we put the tx buffers in huge pages?
+% Knowing measured peak mem bw of our machines would be good, but it looks like
+%   not all channels are populated?
+
+
+\input{config}
+
+
+We explored hows the different designs trade-off database server efficiency and
+performance, by building a simple model of an in-memory database system that
+concentrates on data transfer rather than full query processing. In all experiments,
+one node acts as a server and transmits results to 15 client nodes.
+Our experiments were run on the Apt~\cite{Ricci+:OSR15} cluster of the
+CloudLab~\cite{Cloudlab:URL} testbed: this testbed provides exclusive bare-metal
+access to a large number of machines with RDMA-capable Infiniband NICs.
+The proposed work that is pending will give more conclusive evidence for the 
+Table~\ref{tbl:config} shows the Experiment Setup for the cluster where we profiled
+the Mellanox Infiniband ConnectX-3 \textregistered NIC and impact of data layout and 
+use of no update in place structures on transmission throughput. The cluster has 7
+Mellanox SX6036G FDR switches arranged in two layers. The switching fabric is
+oversubscribed and provides about 16~Gbps of bisection bandwidth per node
+when congested.
+
+
+\input{fig-100B-manymodes}
+\input{fig-1000B-manymodes}
+
+\section{RDMA modes}
+We started out by getting measurements of transmission speeds using RDMA Reads.
+We implemented rdma operations using infinibands ib verbs library. We implemented 
+RDMA reads and write as op codes on the \cpp{ibv_send_wr} request which 
+transmit data as \cpp{ibv_post_send} and also tried to measure the transmit
+performance while using zero copy using \cpp{IBV_WR_SEND} as the operation.
+We found that send operations can transmit multiple transmit buffer
+It became evident quickly that one sided RDMA reads are not well positioned to 
+take advantage of the zero copy paradigm since it only supports a remote read 
+from a given location from the source. The rest of the experiments concerning
+the impacts of NIC's impact on data layout were all done with send as the primary
+operation. 
+
+
+Figure~\ref{fig:100B_transrate} shows a comparison of transmission
+peformance of various verbs transmitting 100 Byte records varying the number of records
+that could be transmitted at a time for various operations.The green dot shows
+the performance for RDMA reads which is also unfair
+since RDMA reads can only transmit a single record at a time. The yellow dot
+shows RDMA write performance. The modes shown was an enum of the format 
+\cpp{enum Mode \{ MODE_SEND, MODE_WRITE, MODE_READ\}} and infiniband 
+(\cpp{<infiniband/verbs.h>}) verbs library provides the  The record sizes were 
+also an interesting measure to arrive at. It was obvious even from an earlier stage
+that higher data sizes such as shown in Figure~\ref{fig:1000B_transrate} almost 
+always results in better throughput measurements. In the world of In-memory databases,
+there is an argument to be made that record sizes will be getting smaller since 
+database designers can aggresively normalise and this has proven increasingly to
+the liking of companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload}.
+
+
+\section{Paging}
+All our experiments transmit from a large region of memory backed by 4~KB pages
+that contains all of the records. The region is also
+registered with the NIC, which has to do virtual-to-physical address
+translation to DMA records for transmission.
+In some cases, using 1~GB hugepages reduces translation look aside buffer
+(TLB) misses. We have realised that the NIC can benefit from
+hugepages as well, since large page tables can result in additional
+DMA operations to host memory during address translation~\cite{farm,rdma}. For
+our experiments, the reach of the NIC's virtual-to-physical mapping is
+sufficient, and hugepages have no impact on the results.
+
+
+\section{Experimental Results}
+\label{sec:eval}
+
+To explore how different designs trade-off database server efficiency and
+performance, we built a simple model of an in-memory database system that
+concentrates on data transfer
+rather than full query processing.  In all experiments, one node acts
+as a server and transmits results to 15~client nodes.
+Our experiments were run on the Apt~\cite{Ricci+:OSR15} cluster of the
+CloudLab testbed: this testbed provides exclusive bare-metal
+access to a large number of machines with RDMA-capable Infiniband NICs.
+Details of the configuration are given in Table~\ref{tbl:config}.
+All of the experiments are
+publicly available online\footnote{\url{https://github.com/utah-scs/ibv-bench}}.
+
+\input{config}
+
+Experiments transmit from a large region of memory backed by 4~KB pages that contains all of
+the records.  The region is also
+registered with the NIC, which has to do virtual-to-physical address
+translation to DMA records for transmission.
+In some cases, using 1~GB hugepages reduces translation look aside buffer
+(TLB) misses.  The NIC can benefit from
+hugepages as well, since large page tables can result in additional
+DMA operations to host memory during address translation~\cite{farm,rdma}.  For
+our experiments, the reach of the NIC's virtual-to-physical mapping is
+sufficient, and hugepages have no impact on the results.
+
+\subsection{Zero-copy Performance}
+\label{sec:zero-copy-tput}
+
+% stutsman: some old dead text, probably totally worthless.
+% At some point make sure the rest of the text contains all of these ideas
+% already.
+%
+% Smaller transmissions require more NIC interaction and PCI Express (PCIe)
+% writes to transmit query results, but they can deal with discontinuous
+% in-memory data layouts. In the case of zero-copy transmission, smaller
+% transmissions may also reduce the amount of time that the database must keep
+% records stable for the NIC.  Larger transmissions can also accommodate
+% discontinuity through two different methods: copy-out or zero-copy, but
+% discontinuity results in increased transmit descriptor size and complexity.
+
+The first key question is understanding how database record layout affects the
+performance of the transmission of query results.  The transmission of large
+result sets presents a number of complex choices that affect
+database layout and design as well as NIC parameters.  Range query
+results can be transmitted in small batches or large batches and either via
+copy-out or zero-copy.
+
+To understand these trade-offs, we measure the aggregate transmission
+throughput of a server to its 15~clients under several
+configurations.  In each experiment, the record size, $s$, is either 1024~B or
+128~B. Given a set of records that must be transmitted, they are then grouped
+for transmission. For zero-copy, an $n$ entry DMA gather descriptor is created
+to transmit those records where $ns$ bytes are transmitted per NIC transmit
+operation. For copy-out, each of the $n$ records is copied into a single
+transmit buffer that is associated with a transmit descriptor that only points
+to the single transmit buffer. Each transmission still sends exactly $ns$
+bytes, but copy-out first requires $ns$ bytes to be copied into the transmit buffer.
+Intuitively, larger groups of records (larger sends) result in less host-to-NIC
+interaction, which reduces host load and can increase throughput; the benefits
+depend on the specific configuration and are explored below.
+
+\input{fig-zero-copy-tput}
+Figure~\ref{fig:zero-copy-tput} shows how each of these configurations impact
+transmission throughput. For larger 1024~B records, using the NIC's DMA engine
+for zero-copy shows clear benefits (aside from CPU and memory bandwidth
+savings, which we explore in \S\ref{sec:overhead}). The database server is able
+to saturate the network with zero-copy so long as it can post 6 or more
+records per transmit operation to the NIC (that is, if it sends 6~KB or larger
+messages at a time).
+
+The figure also shows that using copy-out with 1024~B records, the NIC can also
+saturate the network, but records must be packed into buffers of 16~KB or more.
+This is significant, since it determines the transmission
+throughput of the database when range queries only return a few
+results. In this case, the DMA engine could provide a throughput boost
+of up to 29\% over copy-out, but the benefit is specific to
+that scenario. If range scans return even just 16 records per query, the
+throughput benefits of zero-copy are almost eliminated.
+
+% > computePctTputImprovementForZeroCopy(d)
+% [1] "128 B item pct improvement in tput for zero-copy"
+%  [1] 0.2885523 0.6737804 0.7556923 1.0578913 0.8368473 0.4902850 0.4175114 1.0497317 1.1253015
+% [10] 1.3644198 1.5404678 1.8245272 1.9373502 2.1325012 2.3802205 2.0281382 2.1098626 2.4204983
+% [19] 2.7852797 3.0194681 3.2164592 3.6277455 4.0564271 4.4175073 5.0087870 5.9296169 6.6387935
+% [28] 7.0509243 6.9693410 6.0570942 4.8689572 3.6496472
+% [1] "Max 7.05092431454015"
+% [1] "1024 B item pct improvement in tput for zero-copy"
+%  [1]  0.5701993  2.8384221  5.8680513 10.6753031 13.6589851 29.0683755 25.2356193 19.4198239
+%  [9] 16.4500840 13.4597108 12.0303832  9.8764406  9.3891568  8.6854489  7.5337426  5.3175060
+% [17]  5.1075058  4.4539948  3.7917091  2.7403365  3.6782391  3.3542165  2.6673768  2.6509770
+% [25]  2.5055659  1.6448940  1.5512472  1.7176160  0.7314995  0.6425915  2.4780659  2.4728174
+% [1] "Max 29.0683755136904"
+
+Next, we consider 128~B records. The decreased access latency of
+in-memory databases makes them well-suited to smaller, finer-grained records
+than were previously common. One expectation is that this will drive databases
+toward more aggressively normalized layouts with small records. This
+seems to be increasingly the case as records of a few hundreds bytes or less
+are now typical~\cite{fb-memcache,fb-workload}.
+
+Figure~\ref{fig:zero-copy-tput} shows that for small 128~B records, the NIC DMA
+engine provides little throughput benefit. Our NIC is limited to gather lists
+of 32~entries, which is insufficient to saturate the network with such a small
+record size. Transmission peaks at 3.5~GB/s.
+Copying 128~B records on-the-fly can significantly outperform
+zero-copy transmission when there are enough results to group per transmission.
+In fact, copy-out can saturate the network with small records, and it
+performs identically to copy-out with larger 1024~B records.
+
+\subsection{Zero-copy Savings}
+\label{sec:overhead}
+
+\input{fig-overheads}
+In addition to improved performance, a goal of zero-copy DMA is to mitigate
+server-side CPU and memory load. Figure~\ref{fig:overheads} breaks down
+CPU time for each of the scenarios in Figure~\ref{fig:zero-copy-tput}: small
+and large records both with and without zero-copy. Most of the server
+CPU time is spent idle waiting for the NIC to complete transmissions.  The
+results show that zero-copy always reduces the CPU load of the server, and,
+as expected, the effect is larger for larger records. With 1024~B records,
+the \memcpy/  step of copy-out uses 6.8\% of the total CPU cycles of the
+socket at peak transmission speed.
+
+Zero-copy eliminates copy overhead, but it adds overhead to create
+larger transmit descriptors.  Each gather entry adds
+16~B to the descriptor that is posted to the NIC.
+These entries are considerable in size compared to
+small records, and they are copied twice. The gather list
+is first staged on the thread's stack and passed to the userlevel NIC driver. Next,
+the driver makes a posted PCIe write by copying the descriptor (including the
+gather entry) into a memory-mapped device buffer.  For large records,
+constructing the list uses between 1~and~4\% of total CPU time, so zero-copy
+saves about 3~to~6\% of CPU time over copy-out.
+
+The memory bandwidth savings for zero-copy are more substantial.
+Figure~\ref{fig:zero-copy-tput} shows that copy-out transmit performance nearly
+matches zero-copy (5.6~GB/s versus 5.8~GB/s). Copy-out introduces exactly one
+extra copy of the data, and \memcpy/  reads each cache line once and writes it
+once. So, copy-out increases memory bandwidth consumption
+by 2$\times$ the transmit rate of the NIC or 11.2~GB/s in the worst case.  This
+accounts for about 32\% of the available memory bandwidth for the machine that we used. Whether
+using zero-copy or copy-out, the NIC must
+copy data from main memory, across the PCIe bus, to its own buffers, which
+uses another 6~GB/s of memory bandwidth.
+
+% Need to know how much memory bw \memcpy/  actually burns.
+% Based on pcm-memory.x and the membench tool I stuff in the ibv-bench
+% directory \memcpy/  does one read and one write for each cache line it copies,
+% probably at least when the copies are larger enough.
+% Based on Erik's work it looks like row-buffers are 8 KB! Wow, this might
+% actually impact our story in terms of energy efficiency!
+
+For smaller 128~B records, the CPU and memory bandwidth savings are nearly the
+same as for larger records.  In this case, copy-out uses up to 10.8\% of the
+CPU cycles on the socket, and zero-copy uses 5.5\%.  Eliminating the extra
+\memcpy/  halves CPU overhead for transmission; a savings of about 5\% of the
+total socket's CPU cycles.  Just as before, the memory bandwidth savings is
+twice the transmission rate or 11.2~GB/s.  Overall, this makes copy-out
+reasonable for small records scattered throughout memory, especially since zero-copy cannot saturate the network in these cases (\S\ref{sec:zero-copy-tput}).
+
+\input{fig-cycles}
+The results break down where the CPU and memory bandwidth savings come from,
+but not all configurations result in the same transmit performance. For
+example, Figure~\ref{fig:zero-copy-tput} shows that when transmitting
+128~B~records, copy-out gets up to 53\% better throughput than zero-copy. As a result,
+minimizing CPU overhead can come at the expense of transmit
+performance.  The real efficiency of the server in transmission is shown in
+Figure~\ref{fig:cycles}. The figure shows how many cycles of work the CPU does
+to transmit a byte in each of the configurations, which reveals two key things.
+First, it shows that, though the absolute savings in total CPU cycles is small
+for zero-copy, it does reduce CPU overhead due to transmission by up to 76\%.
+Second, the improvement is a modest 12\% for small records, since
+copy-out can transmit in larger, more efficient batches.
+
+% LMBench 3.0 Memory Results from our Machines
+% *Local* Communication bandwidths in MB/s - bigger is better
+% -----------------------------------------------------------------------------
+%  Host                OS  Pipe AF    TCP  File   Mmap  Bcopy  Bcopy  Mem   Mem
+%                               UNIX      reread reread (libc) (hand) read write
+% --------- ------------- ---- ---- ---- ------ ------ ------ ------ ---- -----
+% node-0.st Linux 2.6.32-                              4813.3 5606.8 8349 6797.
+%
+
+% Copy 512 MB between two regions of a single hugepage 100 times.
+% One process at a time:
+% [stutsman@node-0 ~]$ ./membench
+% CPU Secs 12.023564
+% bw 4.158501 GB/cpuS
+%
+% 8 processes at a time:
+% [stutsman@node-0 ~]$ CPU Secs 49.799340
+% bw 1.004029 GB/cpuS
+% CPU Secs 49.842697
+% bw 1.003156 GB/cpuS
+% CPU Secs 49.905588
+% bw 1.001892 GB/cpuS
+% CPU Secs 50.420696
+% bw 0.991656 GB/cpuS
+% CPU Secs 50.585852
+% bw 0.988419 GB/cpuS
+% CPU Secs 50.699039
+% bw 0.986212 GB/cpuS
+% CPU Secs 50.757823
+% bw 0.985070 GB/cpuS
+% CPU Secs 50.850676
+% bw 0.983271 GB/cpuS
+
+% > sum(d[d$chunkSize == 128 & d$chunksPerMessage == 64,]$mbs)
+% [1] 4438.671
+
+
+\subsection{Inlining Data Into Transmit Descriptors}
+
+%K Inlining doesn't really help anything.
+Mellanox NICs allow some data to be {\em inlined} inside the control message
+sent to the NIC over PCIe. Our NICs allow up to 912~B to be included inside the
+descriptor that is posted to the NIC control ring buffer.  Inlining can improve
+messaging latency by eliminating the delay for the NIC to DMA the message data
+from host DRAM, which can only happen after the NIC receives the descriptor.
+Inlining benefits small request/response exchanges, but it does not help for
+larger transmissions. This is because even though there is an extra delay
+before the NIC receives the actual record data, that delay can be overlapped
+with the DMA and transmission of other responses. Other researchers have shown
+that sending data to the NIC via MMIO also wastes PCIe bandwidth~\cite{rdma}.
+All experiments in this paper have inlining disabled. Enabling inlining
+gives almost identical throughput and overhead to copy-out, except it only
+works for transmissions of 912~B or less.
+
+% Show config that gives best total tx bw. Best per client bw?

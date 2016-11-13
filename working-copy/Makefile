@@ -143,7 +143,11 @@ TEXFILES        = abstract.tex			\
 		  proposal-timeline.tex         \
 		  fig-100B-manymodes.tex        \
 		  fig-1000B-manymodes.tex       \
-		  fig-bw-tree.tex                \
+		  fig-bw-tree.tex               \
+		  fig-deltas.tex                \
+		  fig-cycles.tex                \
+		  fig-overheads.tex             \
+		  fig-zero-copy-tput.tex        \
                   config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\
