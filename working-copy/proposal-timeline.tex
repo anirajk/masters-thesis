@@ -1,20 +1,40 @@
-\begin{table}[t]
-\def\arraystretch{1.25}%  1 is the default, change whatever you need
-\begin{tabular}{lll}
-\toprule
-\textbf{DDIO} & & 4 weeks \\
-\midrule
-i & Calculate Impact on memory bandwidth & 2 weeks \\
-ii & Get uncore/off-core measurements  & 2 weeks \\
-\midrule
-\textbf{Migration} & & 6 weeks\\
-\midrule
-i & Setup experiment to motivate index migration & 1 weeks \\
-ii & Analyse current protocol to get bottlenecks & 3 weeks \\
-iii & Come up with guidelines based on analysis & 2 weeks \\
-\bottomrule
+\begin{table}[H]
+\def\arraystretch{1}%  1 is the default, change whatever you need
+\begin{tabular}{|l|l|l|l|}
+\hline
+{Task 1} & \begin{tabular}{@{}l@{}} Develop a microbenchmark to measure\\
+performance of infiniband verbs \end{tabular} & Feb 2016 & Done\\
+{Task 2} & \begin{tabular}{@{}l@{}} Analyze performance of RDMA\\
+ verbs over ibverbs library \end{tabular} & Mar 2016 & Done\\
+{Task 3} & \begin{tabular}{@{}l@{}} Measure Transmit performance\\
+ and CPU cycles for Zero Copy and Copy Out \end{tabular}& Apr 2016 & Done\\
+{Task 4} & Compare Peformance of Delta Records  & May 2016 & Done\\
+{Task 5} & Write up and submit results to IMDM-2016  & Jul 2016 & Done\\
+{Task 6} & \begin{tabular}{@{}l@{}} Follow up measurements on \\
+Connect-IB\textregistered and hugepages\end{tabular} & Aug 2016 & Done\\
+{Task 7} & \begin{tabular}{@{}l@{}} Researching state of the art\\ 
+protocols for in-memory migration\end{tabular} & Oct 2016 & Done\\
+{Task 8} & Write up Abstract & Oct 2016 & Done\\
+{Task 9} & Finish Writing Chapter on Introduction & Nov 2016 & Done\\
+
+\hline
+\textbf{Task 10} & \begin{tabular}{@{}l@{}} Analyse effects of DDIO\textregistered \\
+ on memory bandwidth \end{tabular}& Nov 2016 & In Progress\\
+\textbf{Task 11} & Finish the chapter on modern NICs & Nov 2016 & Done\\
+\textbf{Task 12} & Defend the thesis proposal & Nov 2016 & In Progress\\
+\textbf{Task 13} & \begin{tabular}{@{}l@{}} Get uncore and offcore performance \\
+measurements from the microbenchmark\end{tabular} & Dec 2016 & TBD\\
+\textbf{Task 14} & \begin{tabular}{@{}l@{}}Analysing bottlenecks in \\
+RAMCloud migration protocol\end{tabular} & Dec 2016 & TBD\\
+\hline
+\textbf{Task 15} & Finish writing migration chapter & Jan 2017 & TBD\\
+\textbf{Task 16} & Come up with guidelines for new protocol & Jan 2017 & TBD\\
+\textbf{Task 17} & Finish writing Conclusion & Jan 2017 & TBD\\
+\textbf{Task 18} & Final thesis defense & Feb 2017 & TBD\\
+\hline
 \end{tabular}
 \vspace{0.25eX}
-\caption{Expected Timeline for pending experiments.}
-\label{tbl:timeline}
+\captionsetup{justification=centering}
+\caption{Thesis Timeline. Pending tasks boldfaced.}
+\label{tbl:timeline-pending}
 \end{table}

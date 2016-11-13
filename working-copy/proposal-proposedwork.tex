@@ -4,16 +4,27 @@
 \label{chap:proposed-work}
 This is a forward looking section listing out a few experiments that will
 strengthen the thesis and pave way for a fast and efficient migration protocol.
-Table~\ref{tbl:timeline} shows the expected amount of work that needs to be done 
+Table~\ref{tbl:timeline-pending} shows the expected amount of work that needs to be done 
 in the coming months to conclusively gather evidences that support the thesis. 
 This will also serve as the schedule guideline for the rest of my program.
 
+
 \section{DDIO}
-We need to find conclusive evidence about the impact of synchronization and 
-advanced caching mechanism on our experiments. The synchronisation primitives 
-that are used in the microbenchmarks should not have a driving effect to the 
-conclusions we make from them. This includes fully investigating the impact
-of DDIO~\cite{ddio} as well as coming up with uncore and off-core performance
+Modern NICs can directly transmit or receive data from CPU's last level cache.
+We haven’t yet fully evaluated this effect, and it could have significant impact on
+the design of efficient migration. For example, the overhead of \memcpy and CPU
+cache misses might at the source of migration may be offset by reduced transmission
+costs. We plan to repeat our ibv-bench experiments from the IMDM paper
+to assess whether we can exploit this effect for migration.
+
+
+\textbf{Analyse effects of Direct Caching on memory bandwidth}: We need to find conclusive evidence about the impact of synchronization and 
+advanced caching mechanism on our experiments. This would involve fully 
+investigating the impact of DDIO~\cite{ddio} on memory bandwidth and figuring out 
+a way to toggle the effect to compare before and after effects of Direct Caching.
+
+\textbf{Get uncore and offcore performance measurements from the microbenchmark}: 
+We need to re-run the ibv-benchmark to come sup with uncore and off-core performance
 measurements to pinpoint the areas of contention while transmitting huge blocks
 of data. So far, we have analysed the impacts on memory bandwidth by the traditional
 copy out approach without considering the changes in access patterns and the effects
@@ -21,15 +32,34 @@ of Direct Caching~\cite{dca}. We should investiaate the last level cache charact
 and other performance events as prescribed in Intel\textregistered 's software development
 manual in order to gather accurate performance measurements using the perf tool.
 
+\textbf{Evaluating the effect of thread local storage}: The synchronisation primitives 
+that are used in the microbenchmarks should not have a driving effect to the 
+conclusions we make from them. We need to get new numbers for our measurements with
+thread local buffers to see the impact.
+
+\textbf{Recalibrating measurements for Connect-IB\textregistered}: Once we get the 
+measurements accounting for the effects of Direct Caching and thread local buffers,
+we need to re-evaluate Connect-IB\textregistered (newer) cards and compare them 
+with the Connect-X 3\textregistered cards to evaluate the difference in 
+throughput that can be achieved by Zero Copy by these devices in the light of new findings.
+
+
+
 \section{Data Migration}
-We also need to motivate the need for a fast and efficient migration protocol 
+We are currently profiling RAMCloud’s existing migration mechanism, which seems to max out
+at around 100MB/s, which is about two orders of magnitude away from the NIC's full line rate.
+The key deliverable is a piece-wise assessment of the bottlenecks of the existing migration
+protocol, obtained by progressively removing bottlenecks and measuring gains. Since 
+indexes and data tables in RAMCloud are handled differently for migration, we need
+to assess them both separately.
+
+
+\textbf{Analysing bottlenecks in RAMCloud migration protocol}: We need to motivate the need for a fast and efficient migration protocol 
 by virtue of uncovering bottlenecks in the current state of the art. This would entail
 setting up the experiments showing data migration of RAMCloud using the latest 
 available protocol and analysing and finding pain points that hamper performance.
-After careful analysis, this needs to translate to performance benefits in the absense
-of thus found bottlenecks. 
-
-We will analyse the upperbound of each measurements with the help
+After the analysis, this needs to translate to performance benefits in the absense
+of disovered bottlenecks.  We will analyse the upperbound of each measurements with the help
 of previous benchmarks showing the maximum transmission rate achieveable under 
 a cluster of modern hardware. This will show how far we are away from 
 operating at line rate and provide concrete evidence of limitations present in 
@@ -38,38 +68,12 @@ the impact of indexes in migration for change in load and skew on indexed reads
 in a system such as RAMCloud. We are hopeful that these will provide interesting
 insights on data locality.
 
-\section{Timeline}
+\textbf{Come up with guidelines for new protocol}: Based on all our measurements,
+we need to come up with guidelines for a new migration protocol that will be efficient
+and jitter free while keeping up with the tight SLAs of RAMCloud. This new protocol 
+will be at least a 1000x faster than the state of the art migration mechanism 
+for in-memory stores.
 \input{proposal-timeline}
-
-
-
-\begin{itemize}
-\item{\textbf{Till Fall 2016}:} We have evaluated how modern NIC impacts data layout 
-and concurrency by developing a microbenchmark and measuring throughput and cpu 
-impact while transmitting huge amounts of data. We compared how scatter gather DMA 
-and the traditional copy impacts throughput varying record sizes and layout. 
-
-\item{\textbf{Fall 2016 - Spring 2017}:} We have to explore the impacts of Intel\textregistered 
-DDIO~\cite{ddio} technology which makes the last level cache the primary source and 
-destination memory for the NICs. We need to do this in the context of thread local 
-buffers to conclude their effect on modern NICs. We also need to set up a few experiments
-that will motivate fast and efficient migration protocol. 
-
-This would involve  setting up migrations involving huge amount of data and measuring it's impact on overall throughput
-and experiments where it can be proved that SLAs of the system are violated as an effect of migration.
-We would examine the performance of current migration protocol and come up with in depth measurements
-that will help analyse the protocol both conceptually and from the perspective of implementation in RAMCloud.
-The primary set of experiments that need to be done will migrate data and measure throughput and time 
-spent on each individual step in migration and finding ways to mitigate the bottlenecks to analyse
-the impact as part of a big picture.
-
-In addition to the the primary experiment, there could also be other experiments which will pave 
-the way for a new protocol. One such possible experiment is to split and migrate a hot index table which has it's 
-records spanning multiple files. Other possible experiments include measuring the 
-impact of distributed recovery on locality, scaling a cluster up and down and measuring
-difference in performance characteristics, shifting $\theta$ on a workload which follows 
-Zipfian distribution etc.
-\end{itemize}
 
 
 %\section{Evaluation}

@@ -30,19 +30,15 @@ such as infiniband~\cite{pfister2001introduction} became more commonplace in
 data center networks. These developments have led to a deluge of storage systems research~\cite{mmdbmstutorial} ,
 exploring multiple verticals. Among the particularly notable ones are RAMCloud~\cite{ramcloud},
 FaRM~\cite{farm} and H-Store~\cite{hstore} (Scale out memory stores) and
-MICA~\cite{mica}, HyPer~\cite{hyper} and HERD~\cite{herd} (Focused on single node research).
+MICA~\cite{mica}, HyPer~\cite{hyper} and HERD~\cite{herd} (Focused on single node performance).
 While each of these systems have been driven by different dimensions 
 of research, they all share the same concerns of In-memory storage systems 
 operating on high speed networks.
 
-There have been many systems that were using DRAM as a caching mechanism even before
-In-memory database systems became commonplace. Memcached~\cite{memcached-orig} is 
-the most popular form of such generic caching mechanism. Declining cost of DRAM 
-technologies paved way for designs that are completely reliant on DRAM. Main memory
-database systems of today offers a plethora of features that are at par with traditional
+Main memory database systems of today offers a plethora of features that are at par with traditional
 database systems including data storage and indexing, concurrency control, durability and 
 recovery techniques, query processing and compilation, support for high availability, and 
-ability to support hybrid transactional and analytics workloads~\cite{mmdbmstutorial}
+ability to support hybrid transactional and analytics workloads~\cite{mmdbmstutorial}.
 FaRM~\cite{farm} is a phenomenal In-memory, distributed computing platform that leverage lock free reads over RDMA~\cite{rdma},
 collocating objects and function shipping to provide performance characteristics of the 
 highest order for an In-memory database. They could even scale distributed transactions to
@@ -50,7 +46,9 @@ hundreds of millions of operations with recovery times of the order of milliseco
 are other systems such as Silo~\cite{silo} which effectively utilises multi core CPUs.
 
 \subsection{Lock freedom}
-Lock freedom is a design philosophy which was perfected on previous work on fine grained concurrency 
+Lock freedom is important for Zero Copy and RDMA since these complicates concurrency since
+you have less control over NIC read and writes. Lock and latch freedom are 
+design philosophies perfected on previous work on fine grained concurrency 
 primitives~\cite{finegrained} and lock free hash tables ~\cite{lockfreeht}. Lock freedom is commonly
 used in databases these days~\cite{htm} since they gained practicality by common use of
 epochs~\cite{lockfreedom} based reclamation. 
@@ -61,7 +59,9 @@ Others have worked on exploiting Hardware Transactional Memory~\cite{htm-old}
 for In-memory transaction processing~\cite{drtm} as well as lock free indexing~\cite{htm}.
 
 \section{RDMA in Databases}
-The merits of RDMA have been widely accepted by database researchers by now. From
+The merits of RDMA have been widely accepted by database researchers by now. The 
+ability to offload CPU from transmission make it appealing while the necessity for 
+multiple round trips to fetch data made people hesitant. From
 the early arguments~\cite{rdmacase} calling for the need for offloading CPUs to 
 research aiming for a billion key value operations on key value servers ~\cite{rdmabillion},
 RDMA has proven to be the future of data transfer for large scale databases. Key value stores
@@ -80,13 +80,17 @@ transmission of larger responses like range query results or data
 migrations has been less well studied. Studies focused on large transmissions
 have so far been limited to relatively static block-oriented data.
 Our work focuses on optimizing transmission of large and complex query
-results, which differs from these two categories.
-
-A complementary study by Kalia, Kaminsky, and Andersen~\cite{rdma} provides a
+results, which differs from these two categories. A complementary study by Kalia, Kaminsky, and Andersen~\cite{rdma} provides a
 different analysis of host interaction with Mellanox Infiniband network adapters,
 and they extract rules of thumb to help developers get the best performance from the hardware.
 The low-level nature of their analysis is especially suited for
 optimizing dispatch-heavy workloads with a high-volume of small
-request-response operations. Our focus is on operations that require heavy
-responses where the precise size or the content of the response cannot be anticipated or is
-under heavy mutation.
+request-response operations. Squall~\cite{squall} employs reactive pulls and pre partitioning
+of data for fast migrations but operates on platforms with throughput and latencies orders of 
+magnitude less than what is possible with today's hardware.
+
+Our work is built on the premises of these research ideas and it's unique take on
+heavy transfers in the presence of tight SLAs (latencies of the order of 10s of microseconds)
+make it stand out among the related work. Until now, mixing workloads such as range scans 
+and data migration, especially in the presence of modern networks has not been well
+ understood from the server side.
