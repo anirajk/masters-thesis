@@ -14,7 +14,7 @@
 
 source('common.R')
 
-load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/cx3_noperf/before-tlocal-20161111093502-15-clients-r320-out.log') {
+load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/cx3_noperf/cx3_after_15clients_tlocal_extended_data_20161118.log') {
   d <- read.table(filename
                   , header=T)
   d$bytesPerMessage <- d$chunkSize * d$chunksPerMessage
@@ -25,7 +25,7 @@ load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/c
 
 plot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
   d <- aggregateClients(d)
-  print(head(d))
+  print(d)
   d$chunkSize <- factor(d$chunkSize)
   p <- ggplot(d, aes(x=bytesPerMessage, y=aggMBs,
                      linetype=chunkSize, color=chunkSize,
@@ -190,7 +190,7 @@ plotCyclesPerRecord <- function(d) {
     scale_x_continuous(name='Bytes per Send',
                        trans=log2_trans()) +
     scale_y_log10(name='CPU Cycles Per Transmitted Byte',
-                  breaks=c(.1, 1, 10)) +
+                  breaks=c(.01, 0.1, 1, 10)) +
     scale_color_manual(values=brewer.pal(6, 'Set1'),
                        labels=chunkSize_labels,
                        name='Record Size') +
@@ -247,6 +247,7 @@ aggregateClients <- function (d) {
 
 makeZeroCopyTputFigure <- function () {
   d <- load()
+  print(head(d))
   d <- d[d$chunkSize %in% c(128, 1024),]
   p <- plot(d) +
     coord_cartesian(ylim=c(0, 6000), xlim=c(128, 16 * 1024))
@@ -257,28 +258,31 @@ makeZeroCopyTputFigure <- function () {
 
 makeOverheadsFigure <- function () {
   d <- load()
-  d <- d[(d$chunkSize == 128 & d$chunksPerMessage <= 64 )|
-         (d$chunkSize == 1024 & d$chunksPerMessage <= 64),]
+  d <- d[(d$chunkSize == 128 & d$chunksPerMessage <= 64 ),]#|
+         #(d$chunkSize == 1024 & d$chunksPerMessage <= 64),]
   p <- plotBreakdown(d) +
-    coord_cartesian(ylim=c(0, 0.15))
-  ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-overheads.pdf',
-         width=5, height=3, units='in')
+    coord_cartesian(ylim=c(0, 0.45))
+  p
+  #  ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-overheads.pdf',
+  #       width=5, height=3, units='in')
 }
 
 makeCyclesFigure <- function () {
   d <- load()
   d <- d[d$chunkSize %in% c(128, 1024),]
   p <- plotCyclesPerRecord(d)
-  ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-cycles.pdf',
-         width=5, height=2, units='in')
+  p
+#  ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-cycles.pdf',
+#         width=5, height=2, units='in')
 }
 
 makeDeltasFigure <- function () {
   d <- load()
   d <- d[d$chunkSize == 16384,]
   p <- plotDeltas(d)
-  ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-deltas.pdf',
-         width=5, height=1.5, units='in')
+ p
+  # ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-deltas.pdf',
+#         width=5, height=1.5, units='in')
 }
 
 makeAllFigures <- function () {
