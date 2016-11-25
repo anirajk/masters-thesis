@@ -29,7 +29,7 @@ myTheme <- theme_bw() +
                                         linetype = 'dashed'),
         panel.grid.minor = element_line(color = 'lightgrey',
                                         linetype ='dotted'),
-        panel.border = element_blank(),
+        #panel.border = element_blank(),
         #axis.ticks.length = unit(-0.2, 'cm'),
         text = element_text(size = rel(3.1)),
         legend.text = element_text(size=rel(2.4)),
@@ -42,11 +42,11 @@ myTheme <- theme_bw() +
         legend.key = element_blank(), 
         legend.margin = unit(0, 'cm'),
         #legend.title = element_text(face="plain"),
-        panel.background = element_blank(), 
-        panel.border = element_blank(),
-        panel.grid = element_blank(),
-        plot.background = element_blank(),
-        strip.background = element_blank()
+        #panel.background = element_blank(), 
+        #panel.border = element_blank(),
+        panel.grid = element_blank()
+        #plot.background = element_blank(),
+        #strip.background = element_blank()
   )
 
 is.extrafont.installed <- function(){
@@ -82,12 +82,12 @@ theme_tufte_revised <- function(base_size = 11, base_family = base_font_family_t
       axis.title.y = element_text(vjust = 0.8),
       legend.background = element_blank(), 
       legend.key = element_blank(), 
-      legend.title = element_text(face="plain"),
-      panel.background = element_blank(), 
-      panel.border = element_blank(),
-      panel.grid = element_blank(),
-      plot.background = element_blank(),
-      strip.background = element_blank()
+      legend.title = element_text(face="plain")
+      #panel.background = element_blank(), 
+      #panel.border = element_blank(),
+      #panel.grid = element_blank(),
+      #plot.background = element_blank(),
+      #strip.background = element_blank()
     )
   
   if (!ticks) {

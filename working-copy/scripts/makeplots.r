@@ -41,12 +41,13 @@ plot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
     scale_linetype_discrete(name='Record Size (B)') +
     scale_shape_manual(name='Transmit Mode',
                          labels=c('Zero-Copy', 'Copy-Out'),
-                         values=c(3, 4)) +
+                         values=c(19,3)) +
     scale_color_manual(name='Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 6000)) +
     myTheme
+    #bigFonts
   p
 }
 
@@ -188,9 +189,10 @@ plotCyclesPerRecord <- function(d) {
     geom_point() +
     geom_line() +
     scale_x_continuous(name='Bytes per Send',
-                       trans=log2_trans()) +
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
     scale_y_log10(name='CPU Cycles Per Transmitted Byte',
-                  breaks=c(.01, 0.1, 1, 10)) +
+                  breaks=c(0.01, 0.1, 1, 10)) +
     scale_color_manual(values=brewer.pal(6, 'Set1'),
                        labels=chunkSize_labels,
                        name='Record Size') +
@@ -199,7 +201,7 @@ plotCyclesPerRecord <- function(d) {
     scale_shape_manual(name='Transmit Mode',
                          labels=copied_labels,
                          values=c(3, 4)) +
-    coord_cartesian(ylim=c(.08, 20), expand=T) +
+    coord_cartesian(ylim=c(.01, 20), expand=T) +
     annotation_logticks(sides='l') +
     myTheme
   p
@@ -248,7 +250,7 @@ aggregateClients <- function (d) {
 makeZeroCopyTputFigure <- function () {
   d <- load()
   print(head(d))
-  d <- d[d$chunkSize %in% c(128, 1024),]
+  d <- d[d$chunkSize %in% c(128,1024),]
   p <- plot(d) +
     coord_cartesian(ylim=c(0, 6000), xlim=c(128, 16 * 1024))
  p
@@ -269,7 +271,7 @@ makeOverheadsFigure <- function () {
 
 makeCyclesFigure <- function () {
   d <- load()
-  d <- d[d$chunkSize %in% c(128, 1024),]
+  d <- d[d$chunkSize %in% c(128,1024),]
   p <- plotCyclesPerRecord(d)
   p
 #  ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-cycles.pdf',
