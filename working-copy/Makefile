@@ -133,14 +133,14 @@ TEXFILES        = abstract.tex			\
 		  acknowledge.tex		\
 		  timeline-preface.tex          \
 		  tbl-timeline-preface.tex      \
-		  proposal-introduction.tex	\
-		  proposal-bwtree.tex           \
-		  proposal-evaluation.tex       \
-		  proposal-introduction.tex     \
-		  proposal-modernnics.tex       \
-		  proposal-proposedwork.tex     \
-		  proposal-relatedwork.tex      \
-		  proposal-timeline.tex         \
+		  introduction.tex	        \
+		  bwtree.tex                    \
+		  evaluation.tex                \
+		  introduction.tex              \
+		  modernnics.tex                \
+		  proposedwork.tex              \
+		  relatedwork.tex               \
+		  timeline.tex                  \
 		  fig-100B-manymodes.tex        \
 		  fig-1000B-manymodes.tex       \
 		  fig-bw-tree.tex               \
@@ -157,7 +157,7 @@ TEXFILES        = abstract.tex			\
 		  appc.tex			\
 		  notation.tex
 
-THESIS		= proposal
+THESIS		= final-thesis
 
 TOPFILE		= $(THESIS).ltx
 
