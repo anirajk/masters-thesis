@@ -1,0 +1,193 @@
+--help false
+--hugePages true
+--maxChunkSize "128"
+--maxChunksPerMessage "24"
+--minChunkSize "128"
+--minChunksPerMessage "24"
+--seconds "30"
+--warmup "5"
+<hostname> ["apt181.apt.emulab.net", "apt137.apt.emulab.net", "apt178.apt.emulab.net", "apt192.apt.emulab.net", "apt190.apt.emulab.net", "apt159.apt.emulab.net", "apt185.apt.emulab.net", "apt164.apt.emulab.net", "apt154.apt.emulab.net", "apt141.apt.emulab.net", "apt168.apt.emulab.net", "apt189.apt.emulab.net", "apt172.apt.emulab.net", "apt160.apt.emulab.net", "apt187.apt.emulab.net"]
+client true
+server false
+Running as client
+ > apt181.apt.emulab.net
+ > apt137.apt.emulab.net
+ > apt178.apt.emulab.net
+ > apt192.apt.emulab.net
+ > apt190.apt.emulab.net
+ > apt159.apt.emulab.net
+ > apt185.apt.emulab.net
+ > apt164.apt.emulab.net
+ > apt154.apt.emulab.net
+ > apt141.apt.emulab.net
+ > apt168.apt.emulab.net
+ > apt189.apt.emulab.net
+ > apt172.apt.emulab.net
+ > apt160.apt.emulab.net
+ > apt187.apt.emulab.net
+Number of client server connections: 15
+Registering log memory
+Populating pages; progress 0 of 4096 MB
+Populating pages; progress 1024 of 4096 MB
+Populating pages; progress 2048 of 4096 MB
+Populating pages; progress 3072 of 4096 MB
+Mmapped 4294967296-byte region from [/dev/hugetlbfs/ibv-bench-log] at 0x40000000
+
+Registered 4294967296 bytes at 0x40000000
+Running client benchmarks
+Running Zero Copy on #chunks: 24 size: 128
+Clients establishing qpairs
+starting to connect to 128.110.96.181 via local port 42578, nonce 0x327b23c6
+connected to 128.110.96.181 via local port 42578
+New queue pair nonce 0x327b23c6, remote log VA 0x40000000, remote log rkey 0xd0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.137 via local port 42578, nonce 0x66334873
+connected to 128.110.96.137 via local port 42578
+New queue pair nonce 0x66334873, remote log VA 0x40000000, remote log rkey 0xd0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.178 via local port 42578, nonce 0x19495cff
+connected to 128.110.96.178 via local port 42578
+New queue pair nonce 0x19495cff, remote log VA 0x40000000, remote log rkey 0xd0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.192 via local port 42578, nonce 0x625558ec
+connected to 128.110.96.192 via local port 42578
+New queue pair nonce 0x625558ec, remote log VA 0x40000000, remote log rkey 0xd0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.190 via local port 42578, nonce 0x46e87ccd
+connected to 128.110.96.190 via local port 42578
+New queue pair nonce 0x46e87ccd, remote log VA 0x40000000, remote log rkey 0xb8010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.159 via local port 42578, nonce 0x507ed7ab
+connected to 128.110.96.159 via local port 42578
+New queue pair nonce 0x507ed7ab, remote log VA 0x40000000, remote log rkey 0xb8010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.185 via local port 42578, nonce 0x41b71efb
+connected to 128.110.96.185 via local port 42578
+New queue pair nonce 0x41b71efb, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.164 via local port 42578, nonce 0x7545e146
+connected to 128.110.96.164 via local port 42578
+New queue pair nonce 0x7545e146, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.154 via local port 42578, nonce 0x5bd062c2
+connected to 128.110.96.154 via local port 42578
+New queue pair nonce 0x5bd062c2, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.141 via local port 42578, nonce 0x4db127f8
+connected to 128.110.96.141 via local port 42578
+New queue pair nonce 0x4db127f8, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.168 via local port 42578, nonce 0x1f16e9e8
+connected to 128.110.96.168 via local port 42578
+New queue pair nonce 0x1f16e9e8, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.189 via local port 42578, nonce 0x66ef438d
+connected to 128.110.96.189 via local port 42578
+New queue pair nonce 0x66ef438d, remote log VA 0x40000000, remote log rkey 0x88010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.172 via local port 42578, nonce 0x3352255a
+connected to 128.110.96.172 via local port 42578
+New queue pair nonce 0x3352255a, remote log VA 0x40000000, remote log rkey 0x88010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.160 via local port 42578, nonce 0xded7263
+connected to 128.110.96.160 via local port 42578
+New queue pair nonce 0xded7263, remote log VA 0x40000000, remote log rkey 0x88010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.187 via local port 42578, nonce 0x1befd79f
+connected to 128.110.96.187 via local port 42578
+New queue pair nonce 0x1befd79f, remote log VA 0x40000000, remote log rkey 0x88010e05
+All Clients established qpairs
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+Chunks tx zero-copy[apt192.apt.emulab.net]: 54080904 / 54080904
+Chunks tx zero-copy[apt178.apt.emulab.net]: 53847528 / 53847528
+Chunks tx zero-copy[apt172.apt.emulab.net]: 53361984 / 53361984
+Chunks tx zero-copy[apt159.apt.emulab.net]: 50909952 / 50909952
+Chunks tx zero-copy[apt189.apt.emulab.net]: 54094536 / 54094536
+Chunks tx zero-copy[apt185.apt.emulab.net]: 52988712 / 52988712
+Chunks tx zero-copy[apt141.apt.emulab.net]: 52273128 / 52273128
+Chunks tx zero-copy[apt160.apt.emulab.net]: 50662584 / 50662584
+Chunks tx zero-copy[apt164.apt.emulab.net]: 53811360 / 53811360
+Chunks tx zero-copy[apt190.apt.emulab.net]: 53491656 / 53491656
+Chunks tx zero-copy[apt181.apt.emulab.net]: 53597424 / 53597424
+Chunks tx zero-copy[apt187.apt.emulab.net]: 52888368 / 52888368
+Chunks tx zero-copy[apt168.apt.emulab.net]: 53787600 / 53787600
+Chunks tx zero-copy[apt154.apt.emulab.net]: 52777008 / 52777008
+Chunks tx zero-copy[apt137.apt.emulab.net]: 52258176 / 52258176
+Running Copy-All on #chunks: 24 size: 128
+Clients establishing qpairs
+starting to connect to 128.110.96.181 via local port 42578, nonce 0x6b68079a
+connected to 128.110.96.181 via local port 42578
+New queue pair nonce 0x6b68079a, remote log VA 0x40000000, remote log rkey 0xd0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.137 via local port 42578, nonce 0x25e45d32
+connected to 128.110.96.137 via local port 42578
+New queue pair nonce 0x25e45d32, remote log VA 0x40000000, remote log rkey 0xd0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.178 via local port 42578, nonce 0x431bd7b7
+connected to 128.110.96.178 via local port 42578
+New queue pair nonce 0x431bd7b7, remote log VA 0x40000000, remote log rkey 0xd0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.192 via local port 42578, nonce 0x7c83e458
+connected to 128.110.96.192 via local port 42578
+New queue pair nonce 0x7c83e458, remote log VA 0x40000000, remote log rkey 0xd0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.190 via local port 42578, nonce 0x62bbd95a
+connected to 128.110.96.190 via local port 42578
+New queue pair nonce 0x62bbd95a, remote log VA 0x40000000, remote log rkey 0xb8010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.159 via local port 42578, nonce 0x628c895d
+connected to 128.110.96.159 via local port 42578
+New queue pair nonce 0x628c895d, remote log VA 0x40000000, remote log rkey 0xb8010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.185 via local port 42578, nonce 0x721da317
+connected to 128.110.96.185 via local port 42578
+New queue pair nonce 0x721da317, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.164 via local port 42578, nonce 0x2d1d5ae9
+connected to 128.110.96.164 via local port 42578
+New queue pair nonce 0x2d1d5ae9, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.154 via local port 42578, nonce 0x75a2a8d4
+connected to 128.110.96.154 via local port 42578
+New queue pair nonce 0x75a2a8d4, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.141 via local port 42578, nonce 0x79838cb2
+connected to 128.110.96.141 via local port 42578
+New queue pair nonce 0x79838cb2, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.168 via local port 42578, nonce 0xb03e0c6
+connected to 128.110.96.168 via local port 42578
+New queue pair nonce 0xb03e0c6, remote log VA 0x40000000, remote log rkey 0xa0010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.189 via local port 42578, nonce 0x54e49eb4
+connected to 128.110.96.189 via local port 42578
+New queue pair nonce 0x54e49eb4, remote log VA 0x40000000, remote log rkey 0x88010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.172 via local port 42578, nonce 0x2ca88611
+connected to 128.110.96.172 via local port 42578
+New queue pair nonce 0x2ca88611, remote log VA 0x40000000, remote log rkey 0x88010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.160 via local port 42578, nonce 0x2901d82
+connected to 128.110.96.160 via local port 42578
+New queue pair nonce 0x2901d82, remote log VA 0x40000000, remote log rkey 0x88010e05
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+starting to connect to 128.110.96.187 via local port 42578, nonce 0x8138641
+connected to 128.110.96.187 via local port 42578
+New queue pair nonce 0x8138641, remote log VA 0x40000000, remote log rkey 0x88010e05
+All Clients established qpairs
+Running benchmark with 15 clients 24 chunksPerMessage 128 chunkSize 0 deltas 0 deltaSize
+Chunks tx zero-copy[apt192.apt.emulab.net]: 0 / 62094744
+Chunks tx zero-copy[apt187.apt.emulab.net]: 0 / 61042272
+Chunks tx zero-copy[apt160.apt.emulab.net]: 0 / 57528528
+Chunks tx zero-copy[apt159.apt.emulab.net]: 0 / 58233864
+Chunks tx zero-copy[apt189.apt.emulab.net]: 0 / 61939248
+Chunks tx zero-copy[apt141.apt.emulab.net]: 0 / 59074200
+Chunks tx zero-copy[apt154.apt.emulab.net]: 0 / 59393136
+Chunks tx zero-copy[apt164.apt.emulab.net]: 0 / 61091544
+Chunks tx zero-copy[apt172.apt.emulab.net]: 0 / 62346120
+Chunks tx zero-copy[apt185.apt.emulab.net]: 0 / 61450656
+Chunks tx zero-copy[apt178.apt.emulab.net]: 0 / 61946280
+Chunks tx zero-copy[apt190.apt.emulab.net]: 0 / 62922336
+Chunks tx zero-copy[apt168.apt.emulab.net]: 0 / 61752192
+Chunks tx zero-copy[apt181.apt.emulab.net]: 0 / 61181256
+Chunks tx zero-copy[apt137.apt.emulab.net]: 0 / 59236848
