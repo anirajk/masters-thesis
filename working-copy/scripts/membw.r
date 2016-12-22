@@ -1,7 +1,7 @@
 source('common.R')
 
-membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/pcieddioimc/*.csv")
-tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/pcieddioimc/*out.log")
+membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_30s_warmup5s/*.csv")
+tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_30s_warmup5s/*out.log")
 
 mergealltputfiles <- function(){
   fileNumbers <- seq(tputfilenames)
@@ -21,12 +21,12 @@ mergealltputfiles <- function(){
   }
 }
 
-makeZeroCopyTputFigure <- function (filename='') {
+makeZeroCopyTputFigure <- function (filename='',extratitle='') {
   d <- tputload(filename)
   d <- d[d$chunkSize %in% c(128,1024),]
   p <- myplot(d) +
     coord_cartesian(ylim=c(0, 8000), xlim=c(128, 16 * 1024))+
-  ggtitle(substr(file_path_sans_ext(basename(filename)),14,45))
+  ggtitle(paste(substr(file_path_sans_ext(basename(filename)),14,45),extratitle,sep="\n"))
   p
   #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
   #       width=5, height=2, units='in')
@@ -56,9 +56,11 @@ myplot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
 }
 
 
+
+
 aggregateClients <- function (d) {
   ddply(d, .(copied, chunksPerMessage, bytesPerMessage,
-             chunkSize, deltasPerMessage, deltaSize), summarise,
+             chunkSize, deltasPerMessage, deltaSize, membw,ddiobw,pciebw), summarise,
         #aggMBs=sum(transmissions *
         #(deltasPerMessage * deltaSize + chunksPerMessage * chunkSize))
         #/ 2^20 / max(seconds),
@@ -79,20 +81,26 @@ tputload <- function (filename='/Users/aniraj/development/thesis/working-copy/da
   d
 }
 
-membwload <- function (filename='/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/pcieddioimc/201612172047-15-clients-128B-32chunks-r320-membw.csv') {
-  d <- read.csv(filename,header=T)
-  d <- d[complete.cases(d),]
+membwload <- function (filename='/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_30s_warmup5s/201612201942-CopyOutOnly-1024B-32chunks-r320-membw.csv') {
+  #Omit not counted values
+  d <- read.csv(filename,header=T,
+                 na.strings = c("#NC","#NC#NC","#NC#NC#NC","#NC#NC#NC#NC",
+                                "#NC#NC#NC#NC#NC","#NC#NC#NC#NC#NC#NC",
+                                "#NC#NC#NC#NC#NC#NC#NC","#NC#NC#NC#NC#NC#NC#NC#NC"))
+  d=d[-nrow(d),]
+  d[is.na(d)] <- 0
+  #print(paste(substr(file_path_sans_ext(basename(filename)),14,46)))
+  d
 }
 makeMemoryBWFigure <- function(filename='',extratitle=''){
 if(is.null(filename)){
   return()
 }
-print(filename)
 a <- membwload(filename)
-print(head(a,1))
 a["membw"]<-(a$iMC0.MEM_BW_TOTAL+a$iMC1.MEM_BW_TOTAL+a$iMC2.MEM_BW_TOTAL)*10
 a["pciebw"]<-a$CBO.LLC_PCIE_MEM_TOTAL_BYTES*10
 a["ddiobw"]<-a$CBO.LLC_DDIO_MEM_TOTAL_BYTES*10
+a<-data.frame(data.matrix(a))
 titlestring<-paste(substr(file_path_sans_ext(basename(filename)),14,44),extratitle, sep="\n")
 
 p<- ggplot(a,aes(x=timestamp,y=membw,color="membw"))+
@@ -112,17 +120,166 @@ makeallmembwfigures<-function(){
 for (membwfile in membwfilenames){
   tryCatch({
   print(paste("doing - ", substr(file_path_sans_ext(basename(membwfile)),14,45)))
-  p<-makeMemoryBWFigure(membwfile)
+  p<-makeMemoryBWFigure(membwfile,"warmup5s-run30s")
   print(paste("done - ", substr(file_path_sans_ext(basename(membwfile)),14,45)))
-  outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/",basename(file_path_sans_ext(membwfile)),".pdf",sep="")
+  outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/randomised_30s_warmup5s/",basename(file_path_sans_ext(membwfile)),".pdf",sep="")
   ggsave(outputfilename,width=4,height=4,units='in')
   },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
 }
 }
+
 makealltputfigures<-function(){
   for (tputfile in tputfilenames){
     p<-makeZeroCopyTputFigure(tputfile)
-    outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/",basename(file_path_sans_ext(tputfile)),"-tput.pdf",sep="")
+    outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/randomised_30s_warmup5s/",basename(file_path_sans_ext(tputfile)),"-tput.pdf",sep="")
     ggsave(outputfilename,width=4,height=4,units='in')
   }
 }
+
+makeMergedFigure <- function (i=1,extratitle='') {
+  for (i in seq(tputfilenames)){
+  t <- tputload(filename=tputfilenames[i])
+  t <- t[t$chunkSize %in% c(128,1024),]
+  m <- membwload(filename=membwfilenames[i])
+  m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)*10
+  m["pciebw"]<-m$CBO.LLC_PCIE_MEM_TOTAL_BYTES*10
+  m["ddiobw"]<-m$CBO.LLC_DDIO_MEM_TOTAL_BYTES*10
+  m<-data.frame(data.matrix(m))
+  membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
+  pciebw<-rep(unname(quantile(m$pciebw,0.5,na.rm=TRUE)),nrow(t))
+  ddiobw<-rep(unname(quantile(m$ddiobw,0.5,na.rm=TRUE)),nrow(t))
+  curr<-data.frame(membw=membw,pciebw=pciebw,ddiobw=ddiobw,t)
+  if(i==1){
+    merged<-curr
+  }else{
+    merged<-rbind(merged,curr)
+  }
+  }
+  tp <- mergeplot(merged)
+  #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
+  #       width=5, height=2, units='in')
+}
+
+ploty<-function(d,y){
+  p <- ggplot(d, aes(x=bytesPerMessage, y=eval(parse(text=paste(y,sep=""))),
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='Transfer Rate (MB/s)') +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 8000))
+    p
+  
+}
+
+mergeplot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
+  d <- aggregateClients(d)
+  d$chunkSize <- factor(d$chunkSize)
+  print(head(d,2))
+  # NIC Tx tput plot
+    p1 <- ggplot(d, aes(x=bytesPerMessage, y=aggMBs,
+                     linetype=chunkSize, color=chunkSize,
+                     shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='NIC Transfer Rate (MB/s)'
+                       #,trans=log2_trans()
+                       ,breaks=c(1000,2000,4000,8000,16000,32000)
+                       ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 32000))
+  #Plot Memory B/W
+  p2 <- ggplot(d, aes(x=bytesPerMessage, y=membw,
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='Memory B/w (MB/s)'
+                       #,trans=log2_trans(),
+                       #breaks=c(1000,2000,4000,8000,16000,32000)
+                       ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 32000))
+  
+  #Plot DDIO B/W
+  p3 <- ggplot(d, aes(x=bytesPerMessage, y=ddiobw,
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='DDIO B/w (MB/s)'
+                       #,trans=log2_trans(),
+                       #breaks=c(1000,2000,4000,8000,16000,32000)
+                       ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 32000))
+  
+  #Plot PCIe B/W
+  p4 <- ggplot(d, aes(x=bytesPerMessage, y=ddiobw,
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='DDIO B/w (MB/s)'
+                       #,trans=log2_trans(),
+                       #breaks=c(51000,2000,4000,8000,16000,32000)
+                       ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 32000))
+  
+  
+  p<-multiplot(p1,p2,p3,p4,cols=2)
+  p
+}
+
+
