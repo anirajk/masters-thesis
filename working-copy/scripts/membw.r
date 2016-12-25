@@ -1,9 +1,9 @@
 source('common.R')
 
-tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_warmup_5s_run_60s/*membw-out.log")
-membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_warmup_5s_run_60s/*membw.csv")
-ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_warmup_5s_run_60s/*ddiobw.csv")
-pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_warmup_5s_run_60s/*pciebw.csv")
+tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw-out.log")
+membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw.csv")
+ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*ddiobw.csv")
+pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*pciebw.csv")
 
 
 mergealltputfiles <- function(){
@@ -127,7 +127,7 @@ a["membw"]<-(a$iMC0.MEM_BW_TOTAL+a$iMC1.MEM_BW_TOTAL+a$iMC2.MEM_BW_TOTAL)
 #a["ddiobw"]<-a$CBO.LLC_DDIO_MEM_TOTAL_BYTES*10
 print(median(a$membw))
 a<-data.frame(data.matrix(a))
-titlestring<-paste(substr(file_path_sans_ext(basename(filename)),14,44),extratitle, sep="\n")
+titlestring<-paste(substr(file_path_sans_ext(basename(filename)),14,45),extratitle,paste("median",median(a$membw)), sep="\n")
 
 p<- ggplot(a,aes(x=timestamp,y=membw,color="membw"))+
      geom_point()+
@@ -135,7 +135,7 @@ p<- ggplot(a,aes(x=timestamp,y=membw,color="membw"))+
      #geom_line(aes(y=pciebw,color="pciebw"))+
      #geom_line(aes(y=ddiobw,color="ddiobw"))+
      #geom_line(aes(y=ddiobw,color="ddiobw"))+
-     coord_cartesian(ylim=c(0, 8000))+
+     coord_cartesian(ylim=c(0, 30000))+
      #ggtitle("0 copy - no load - copyout\niMC.MEM_BW_TOTAL=membw\nCBO.LLC_DDIO_MEM_TOTAL_BYTES=ddiobw\nCBO.LLC_PCIE_MEM_TOTAL_BYTES=pciebw")+
      ggtitle(titlestring)
 p
@@ -146,8 +146,8 @@ for (membwfile in membwfilenames){
   print(paste("doing - ", substr(file_path_sans_ext(basename(membwfile)),14,45)))
   p<-makeMemoryBWFigure(membwfile,"warmup5s-run30s")
   print(paste("done - ", substr(file_path_sans_ext(basename(membwfile)),14,45)))
-  outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/randomised_30s_warmup5s/",basename(file_path_sans_ext(membwfile)),".pdf",sep="")
-  ggsave(outputfilename,width=4,height=4,units='in')
+  outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/randomised_run_60s/",basename(file_path_sans_ext(membwfile)),".pdf",sep="")
+  ggsave(outputfilename,width=12,height=8,units='in')
   },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
 }
 }
