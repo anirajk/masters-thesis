@@ -139,7 +139,10 @@ TEXFILES        = abstract.tex			\
 		  introduction.tex              \
 		  modernnics.tex                \
 		  proposedwork.tex              \
+		  impact.tex                    \
+		  proposedwork.tex              \
 		  relatedwork.tex               \
+		  migration.tex                 \
 		  timeline.tex                  \
 		  fig-100B-manymodes.tex        \
 		  fig-1000B-manymodes.tex       \
