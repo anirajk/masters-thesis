@@ -12,22 +12,24 @@
 
 %K most systems optimise for small responses, others require hardware software balance
 
+
 Efficient movement of massive amounts of data over high-speed networks at high 
 throughput is essential for a modern day In-memory storage system.
 
-In response to the growing needs of throughput and latency demands at scale, a new class of database systems was developed in recent years. The development of these systems was guided by increased access to high throughput, low latency network fabrics and declining cost of DRAM.
+In response to the growing needs of throughput and latency demands at scale, a new class of database systems was developed in recent years.
+The development of these systems was guided by increased access to high throughput, low latency network fabrics and declining cost of DRAM.
 
 These systems were designed with OLTP workloads in mind and, as a result, are optimized for fast dispatch and performs well under small
-request-response scenarios. However, heavy responses such as range queries and data migration for load balancing poses challenges for this design.  
+request-response scenarios. However, massive server responses such as those for range queries and data migration for load balancing poses challenges for this design.  
 
-This thesis analyzes the effects of large transfers on scale-out systems
-through the lens of a modern NICs. The present-day NIC offers exciting opportunities and challenges for large transfers, and we can make them efficient by leveraging smart data layout and concurrency control.
+This thesis analyzes the effects of large transfers on scale-out systems through the lens of a modern NIC.
+The present-day NIC offers new and exciting opportunities and challenges for large transfers.
+We can make them efficient by leveraging smart data layout and concurrency control.
 
-We evaluated the impact of modern NICs on data layout by measuring transmit performance while tuning the effects of DMA, RDMA and caching advancements.
-We proposed guidelines leveraging a smart co-design of data layout, concurrency control, and recent improvements to the NICs that result in increased overall efficiency and throughput. We also set up experiments that underlined the bottlenecks in current approaches to data migration in RAMCloud.
-We propose guidelines for a fast and efficient migration protocol with minimal disruption to the normal case operation.
+We evaluated the impact of modern NICs on data layout by measuring transmit performance and full system impact by observing the effects of DMA, RDMA and advanced caching. 
+We proposed guidelines for an indexing structure which leverages a smart co-design of data layout, concurrency control, and recent improvements to the NICs that result in increased overall efficiency and throughput. 
+We also set up experiments that underlined the bottlenecks in the current approach to data migration in RAMCloud.
+In the light of these lessons learned, we propose guidelines for a fast and efficient migration protocol for In-Memory Databases with minimal disruption to their primary intent.
 
-We have found evidence to prove that performing large data transfers in a live cluster of systems optimized for smaller responses has a detrimental effect to their primary intent. 
-We have analyzed the new possibilities that open up as a result of an enhanced migration protocol.
-We propose the guidelines for a new migration protocol which will will supplement the
-mainstream acceptance of these systems.
+We have found evidence to prove that performing large data transfers in a live cluster of systems optimized for smaller responses has detrimental effects on system performance. 
+We believe that a new migration protocol based on provided guidelines will supplement the mainstream acceptance of these systems.
