@@ -22,9 +22,11 @@ transfers of data, we profiled a modern NIC with a focus on heavy data transfers
  We made several discoveries that informed our design for RAMCloud,
  but they also generalize to other transfer-heavy database operations. 
 
-This thesis is structured into three key pieces. The first microbenchmarks a modern NIC 
-with kernel bypass and RDMA and uses the findings to inform an efficient   migration design for RAMCloud.
-The second piece is a breakdown of RAMCloud’s existing migration mechanism to understand its bottlenecks
+This thesis is structured into four key pieces. The first microbenchmarks a modern NIC 
+with kernel bypass and RDMA and uses the findings to inform an efficient migration design for RAMCloud.
+The second piece is a detailed study of impact on the available system resources while we achieve 
+near line rate network transmission. 
+The next piece is a breakdown of RAMCloud’s existing migration mechanism to understand its bottlenecks
 and to assess why it is incapable of fully exploiting modern server hardware. 
 Finally, our forward-looking objective is a new design for migration that we believe will advance state of the art
 in terms of time taken to migrate large amounts of data within a cluster of in-memory storage systems
@@ -41,7 +43,7 @@ of them even harder. Database designers encounter many trade-offs when trying to
 
 Our mission was to come up with a migration protocol that advances state of the art for in-memory storage systems.
 We realized the importance of the making data transfer NIC friendly and set out to measure what variables impact the 
-transmission performance. We wanted to enumerate and underline the challenges in designing keeping NIC as a first class citizen.
+transmission performance and system stability. We wanted to enumerate and underline the challenges in designing keeping NIC as a first class citizen.
 We specifically looked at three factors that make it especially challenging to design NIC-friendly
 database engines:
 \begin{itemize}
@@ -63,7 +65,6 @@ database engines:
   \item {\em Direct Cache Access}, now rephrased as Intel\textregistered Data Direct I/O~\cite{ddio},
       provide direct access to last level cache from an I/O device. This effect
       impacts the memory pressure significantly.
-
 \end{itemize}
 
 
@@ -76,20 +77,22 @@ influence data layout and concurrency control in a modern in-memory
 database~\cite{KesavanRicciStutsman:IMDM16}. 
 
 Our primary results gave us ideas about how the Zero Copy paradigm will perform against
-the traditional approach of transmitting via larger buffers. These also pointed 
-to how the use of thread local storage and effective network aware caching such as DDIO~\cite{ddio}
-somehow refutes the argument for paging records together.
+the traditional approach of transmitting via larger buffers. These also led is to 
+explore further use of thread local storage and effective network aware caching such as DDIO~\cite{ddio}
 
 Another burden of using these newer storage systems are how they would provide effective 
-reconfiguration. Our results from the benchmark led us to believe in the importance of 
-hardware considerations in data migration. State of the art systems like RAMCloud has around 1000x
+reconfiguration. Our results from the benchmark highlighted in the importance of 
+hardware considerations in data migration. State of the art systems like RAMCloud has around 1000 X
 lower latency than traditional storage systems, and these tight SLAs make it harder to do migrations
 without interfering with regular requests. This is also one of the key hurdles 
 to overcome before mainstream acceptance of these systems.
+
 Our findings about modern NICS inform a new design for cluster reconfiguration
-in the RAMCloud storage system. Low-cost load balancing improves RAMCloud’s
-efficiency since indexes~\cite{slik} and transactions~\cite{ramcloudtx} benefit from collocation, but, at the same time, RAMCloud’s exceedingly tight SLAs (5 $\mu$s median
-access times and 99.9th of reads within 10$\mu$s) mean any disruption to performance
+in the RAMCloud storage system. RAMCloud doesn't have a notion of intra server locality 
+in order to provide high memory utilisation. However, low-cost load balancing improves RAMCloud’s
+efficiency since indexes~\cite{slik} and transactions~\cite{ramcloudtx} benefit from collocation between servers.
+The more interesting engineering detail is RAMCloud’s exceedingly tight SLAs (5 $\mu$s median
+access times and 99.9th of reads within 10$\mu$s). This means any disruption to performance
 has a serious impact. For an in-memory database, we would ideally like to saturate the
 available NIC bandwidth which is 8-12GB/s~\cite{cx3,cx4} while state of the art 
 transfer mechanisms offer many orders of magnitudes lower than that at ~10MB/s 
@@ -99,10 +102,13 @@ the latency and throughput available for the system. Our design for fast and eff
 for RAMCloud is guided by the following key principles:
 \begin{itemize}
 \item{\textbf{High Throughput}}: State of the art systems do migrations at $<$100 Mb/s. Our plan
-should result in 100-1000x faster data migrations
-\item{\textbf{Low Impact}}: RAMCloud has 99.9 percentile read latency at $<$10$\mu$s and write latency
+should result in 100-1000x faster data migrations. We aspire to have rapid reconfiguration that will 
+help with enable frequent reconfiguration on live clusters.
+\item{\textbf{Low Impact on latency}}: RAMCloud has 99.9 percentile read latency at $<$10$\mu$s and write latency
 at $<$100$\mu$s. Our proposed protocol will be of minimal impact to the normal case operation, still keeping
-up with SLAs that are 10-100x tighter than other systems~\cite{squall}.
+up with SLAs that are 100x tighter than other systems~\cite{squall}.
+\item{\textbf{Judicious use of system resources}}: In an In-Memory store, significance of resources such as DRAM capacity and
+memory bandwidth are of paramount. Our protocol will make the most efficient use of these resources
 \item{\textbf{Late-partitioning}}: RAMCloud promises uniform access latency regardless of the level of data locality.
 Most other systems diverge from this approach to make data movement faster. We would like to stick with
 deferring partitioning decisions as much as possible and this adds a challenge in preparing data for migration.
@@ -121,18 +127,15 @@ stores in utilizing them as a complete database.
 \item Exploring effects of {\em locality of data}; RAMCloud's unique take on locality makes its distributed 
 recovery~\cite{ongaro2011fast,ryan-thesis} interesting because of its effect of distributing recovered data.
 We will explore the impact of recovery on locality and how reconfiguration can repair to restore locality.
-\item {\em Scaling clusters up and down} will show the effects of data movement in many-to-one and one-to-many
-data redistributions.
+\item {\em Piece wise analysis of migration bottlenecks}; RAMCloud's current migration protocol, while orders 
+of magnitude faster than existing state of the art protocols, leaves more to be desired of in terms of achievable perforamnce.
+We analyse the various bottlenecks in the current protocol and the performance benefit we gain by enumerating savings on avoiding 
+each one
 \end{itemize} 
- These will explore the themes of data locality,
-source impact and the effect of numerous workloads which include scaling up and down the cluster, splitting
-and migrating hot index tables, the impact on locality by the distributed recovery which sprays data across the 
-cluster and responding to changes in access patterns taking into account the multi-dimensional resource contentions
-that could occur in a practical system.
 
 We will also propose the outline for an effective migration protocol that leverages
 the log structured memory of RAMCloud as well as the distributed crash recovery mechanism
-to provide fast and jitter-free data movement in a cluster for reconfiguration and improved 
+to provide fast log replay and jitter-free data movement in a cluster for reconfiguration and improved 
 performance for range queries and distributed transactions. We will try to do so while
 deferring partitioning decisions as much as possible.
 
@@ -160,7 +163,7 @@ evidence for the thesis statement.
 
 \begin{itemize}
 
-\item{\textbf{Evaluation of Impact of Modern NICs on data layout}}: This is the first published research exploring the scatter gather DMA engine of the NIC in contrast with the traditional copy out approach in the context of bulk transfers. 
+\item{\textbf{Evaluation of Influence of Modern NICs on data layout}}: This is the first published research exploring the scatter gather DMA engine of the NIC in contrast with the traditional copy out approach in the context of bulk transfers. 
  We profiled the transmit performance of a modern NIC in depth to show the influence of NICs on data layout. 
  We have found a few arguments against the blind use of the new kernel bypass approach considering
  the overhead of concurrency management and difficulty of implementation.
@@ -176,10 +179,13 @@ transmitting data from an RDMA capable modern NIC.
 
 \end{itemize} 
 
+\item{\textbf{Evaluation of server impact during transmission}}: We measure uncore events that reveal impact on memory bandwidth,
+ DDIO traffic and PCIe traffic in a system that's churning out heavy responses. We believe this is the first study that does an 
+ in-depth analysis of server impact using uncore events for data transmissions near line rate.
 
 \item{\textbf{Experiments to motivate fast and efficient data transfer}}: This is the first assessment of the impact of data migration on SLAs for a high performance,
   in-memory store that leverages high throughput, kernel-bypass networking fabrics. 
-We laid out experiments that show how even the state of the art systems for cluster reconfiguration becomes suboptimal with its locality constraints and overall slowness. 
+ We laid out experiments that show how even the state of the art systems for cluster reconfiguration becomes suboptimal with its locality constraints and overall slowness. 
  RAMCloud assumes relatively uniform access cost to all nodes.
  We quantify the gains from explicitly colocating records and indexes.
  Our experiments call for fast and efficient migration protocol especially suited for an In-memory database system with a decentralized log structured data model such as RAMCloud.
@@ -189,10 +195,10 @@ We laid out experiments that show how even the state of the art systems for clus
  Chapter~\ref{chap:bw-tree} explores ways in which a modern B-tree indices can exploit NIC hardware.
  Through the benchmark, we show 70\% improvement in throughput using such a design.
 
-
 \item{\textbf{Preliminary design for a migration protocol}}: After careful analysis of the current migration protocol
  we discovered the most important bottlenecks in the current design that makes it infeasible for fast and efficient migration.
  We propose the basics of a migration protocol that will effectively eliminate these bottlenecks and pave the way
  forward for fast and efficient transfer of huge chunks of data.
+
 \end{itemize}
 
