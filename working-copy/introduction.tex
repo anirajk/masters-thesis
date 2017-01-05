@@ -1,7 +1,7 @@
 %%% -*-LaTeX-*-
 
 \chapter{Introduction}
-
+\label{chap:intro}
 For decades, the performance characteristics of storage devices have dominated
  thinking in database design and implementation. From data layout to
 concurrency control, to recovery, to threading model, disks touch every aspect
@@ -25,7 +25,7 @@ transfers of data, we profiled a modern NIC with a focus on heavy data transfers
 This thesis is structured into four key pieces. The first microbenchmarks a modern NIC 
 with kernel bypass and RDMA and uses the findings to inform an efficient migration design for RAMCloud.
 The second piece is a detailed study of impact on the available system resources while we achieve 
-near line rate network transmission. 
+near line rate network transmission performance. 
 The next piece is a breakdown of RAMCloud’s existing migration mechanism to understand its bottlenecks
 and to assess why it is incapable of fully exploiting modern server hardware. 
 Finally, our forward-looking objective is a new design for migration that we believe will advance state of the art
@@ -108,7 +108,7 @@ help with enable frequent reconfiguration on live clusters.
 at $<$100$\mu$s. Our proposed protocol will be of minimal impact to the normal case operation, still keeping
 up with SLAs that are 100x tighter than other systems~\cite{squall}.
 \item{\textbf{Judicious use of system resources}}: In an In-Memory store, significance of resources such as DRAM capacity and
-memory bandwidth are of paramount. Our protocol will make the most efficient use of these resources
+memory bandwidth are paramount. Our protocol will make the most efficient use of these resources.
 \item{\textbf{Late-partitioning}}: RAMCloud promises uniform access latency regardless of the level of data locality.
 Most other systems diverge from this approach to make data movement faster. We would like to stick with
 deferring partitioning decisions as much as possible and this adds a challenge in preparing data for migration.
@@ -122,11 +122,6 @@ the following experiments:
 \begin{itemize}
 \item Measuring impacts of throughput at {\em source of migration}; Load balancing is a key problem that 
 could be addressed with migration and measuring the overhead introduced by migration is helpful here.
-\item Analyzing the effect of splitting and migrating {\em hot indexes}; Indexed reads add value to in-memory
-stores in utilizing them as a complete database. 
-\item Exploring effects of {\em locality of data}; RAMCloud's unique take on locality makes its distributed 
-recovery~\cite{ongaro2011fast,ryan-thesis} interesting because of its effect of distributing recovered data.
-We will explore the impact of recovery on locality and how reconfiguration can repair to restore locality.
 \item {\em Piece wise analysis of migration bottlenecks}; RAMCloud's current migration protocol, while orders 
 of magnitude faster than existing state of the art protocols, leaves more to be desired of in terms of achievable perforamnce.
 We analyse the various bottlenecks in the current protocol and the performance benefit we gain by enumerating savings on avoiding 
@@ -155,8 +150,7 @@ in RAMCloud and in conjunction with the benchmarks. Though there were efforts to
 dismantle cost of a database in the network layer before, the server-side impact
 on mixed workloads including range scans and migrations have not been well understood
 until now. In the light of our discoveries, we make concrete suggestions on how
- to design an fast and efficient migration 
-protocol which causes minimal disruption.
+ to design an fast and efficient migration protocol which causes minimal disruption.
 
 The following are the main contributions from this work which supports and provides
 evidence for the thesis statement.
@@ -180,8 +174,8 @@ transmitting data from an RDMA capable modern NIC.
 \end{itemize} 
 
 \item{\textbf{Evaluation of server impact during transmission}}: We measure uncore events that reveal impact on memory bandwidth,
- DDIO traffic and PCIe traffic in a system that's churning out heavy responses. We believe this is the first study that does an 
- in-depth analysis of server impact using uncore events for data transmissions near line rate.
+ DDIO traffic and PCIe traffic in a system that's churning out heavy responses. This is the first study to our knowledge that does an 
+ in-depth analysis of server impact using uncore events for data transmissions near line rate in a modern NIC.
 
 \item{\textbf{Experiments to motivate fast and efficient data transfer}}: This is the first assessment of the impact of data migration on SLAs for a high performance,
   in-memory store that leverages high throughput, kernel-bypass networking fabrics. 

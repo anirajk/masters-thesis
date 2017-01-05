@@ -151,6 +151,8 @@ TEXFILES        = abstract.tex			\
 		  fig-cycles.tex                \
 		  fig-overheads.tex             \
 		  fig-zero-copy-tput.tex        \
+		  fig-mem-regions.tex           \
+		  fig-impact.tex                \
                   config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\

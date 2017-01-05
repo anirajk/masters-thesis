@@ -1,7 +1,8 @@
 %%% -*-LaTeX-*-
 
 \chapter{Modern NICs}
-Network Interface Cards have grown complex over time and present opportunities and 
+\label{chap:modernnics}
+Network Interface Cards have grown complex over time and present peculiar opportunities and 
 challenges as part of a modern distributed system. It is imperative that today's
 database system designer treats network transmission as a first class citizen in every design decision.
 Previous research for optimising databases were focussed more on processing time spent on a 
@@ -17,23 +18,24 @@ RDMA~\cite{rdmapatent,rdmacase,rdma} was proving to be a much better alternative
 transport offloading was just one among varios benefits involved. Development of advanced switching 
 interconnects such as PCI express~\cite{pcie} made it possible to develop highly performant 
 network devices offering throughputs and latencies a couple of orders of magnitudes better
-than what was possble with prior transports such as TCP.
+than what was possble with prior transports such as TCP. This chapter introduces the various design 
+trade-offs we have to make and walks through the evaluation of those choices with the help of a microbenchmark.
 
 
 \section{Zero Copy and Copy Out}
 Kernel bypass is a ubiquitous feature in the modern NIC and key to accessing remote memory directly 
-from across the network. While the literal definition just defines any data movement that doesn't 
+from across the network. While the literature defines kernel-bypass any data movement that doesn't 
 involve copying between user space and kernel space, even packet capturing libraries~\cite{pcap} could fall
 under those definitions. Newer network controllers make use of vectored I/O, otherwise known as scatter/gather I/O
 where a single procedure reads data from multiple buffers and writes it to single buffer. The Mellanox Infiniband ConnectX\textregistered-3
-NIC that we profiled provides a scatter/gather list which powers it's on NIC DMA engine. This specific kernel bypass
-mechanism what we are going to colloqially refer in the thesis as Zero Copy.
+NIC that we profiled provides a scatter/gather list which powers it's on NIC DMA engine. In this material, this specific kernel bypass
+mechanism is what we are going to colloqially refer as Zero Copy.
 
 Zero Copy should be christened in the context of traditional copy. Before kernel bypass became 
 commonplace, the steps for copying data over the network using socket programming was as follows. 
-The application calls something similar to a socket send and the data for sending is assembled 
+The application calls a send function in a socket library and the data for sending is assembled 
 in a transmit buffer, this transmit buffer is copied on to the on-NIC buffers and the data is 
-send out of the door. We could employ the same technique in the kernel bypass capable NIC as well.
+send over the wire. We could employ the same technique in the kernel bypass capable NIC as well.
 Instead of employing a multi entry scatter/gather list, the records could be assembled on 
 to a temporary buffer and this buffer could be treated as a single entry scatter/gather list
 and then transmitted over the network. We will be calling this technique \enquote{Copy Out} from now on.
@@ -56,7 +58,7 @@ copy just adds a modest 5\% increase in absolute CPU utilisation, making use of 
 near line rate takes up one third of the total available memory bandwidth in a modern server. We should read this in the context that 
 network transmission is not the primary responsibility of a server in a distributed system. Most of the memory bandwidth wasted in 
 just aggregating the data before transmission could be used as part of actual computation or other useful rearrangement of data in 
-the query response.
+the query response. Chapter \ref{chap:impact} will fully discuss the impact on memory bandwidth and other parameters.
 
 
 \section{NIC structures in detail}
@@ -121,13 +123,12 @@ performance-oriented enhancements to the DMA mechanism have been introduced in
 Intel\textregistered Xeon E5 processors with their Data Direct I/O (DDIO)~\cite{ddio} feature,
 allowing the DMA ``windows" to reside within CPU caches instead of system RAM. As a result,
 CPU caches are used as the primary source and destination for I/O, 
-allowing network interface controllers (NICs) to talk directly to the caches of local CPUs
+allowing network interface controllers (NICs) to talk directly to the last level caches of local CPUs
 and avoid costly fetching of the I/O data from system RAM. As a result,
 DDIO reduces the overall I/O processing latency, allows processing of the I/O 
-to be performed entirely in-cache, prevents the  available memory bandwidth from becoming a performance bottleneck.
-
-We need to fully investigate the effects of DDIO in reducing memory bandwidth 
-in order to conclusively comment on the impact of traditional copy mechanisms.
+to be performed entirely in-cache and prevents the available memory bandwidth from becoming a performance bottleneck.
+We fully investigate the effects of DDIO in Chapter~\ref{chapter:impact} in order to conclude the impact of 
+traditional copy mechanisms.
 
 
 \section{Inlining}
