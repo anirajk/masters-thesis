@@ -54,11 +54,12 @@ We evaluate how Zero Copy performs in contrast with the more traditional network
 \section{Memory Bandwidth}
 Interestingly, the additional copy involved in the traditional approach hurts memory bandwidth of the system more than contributing 
 to additional CPU load purely from the perspective of network transmission. Our evaluation show us that while the traditional
-copy just adds a modest 5\% increase in absolute CPU utilisation, making use of the high throughput available in NICs by transmitting
-near line rate takes up one third of the total available memory bandwidth in a modern server. We should read this in the context that 
+copy adds upto 25\% increase in absolute CPU utilisation, making use of the high throughput available in NICs by transmitting
+near line rate takes up one fourth of the total available memory bandwidth in a modern server. We should read this in the context that 
 network transmission is not the primary responsibility of a server in a distributed system. Most of the memory bandwidth wasted in 
 just aggregating the data before transmission could be used as part of actual computation or other useful rearrangement of data in 
-the query response. Chapter \ref{chap:impact} will fully discuss the impact on memory bandwidth and other parameters.
+the query response. Chapter \ref{chap:impact} will fully discuss the impact on memory bandwidth and other parameters while the system 
+is transmitting large amounts of data.
 
 
 \section{NIC structures in detail}
@@ -291,20 +292,19 @@ results. In this case, the DMA engine could provide a throughput boost
 of up to 29\% over copy-out, but the benefit is specific to
 that scenario. If range scans return even just 16 records per query, the
 throughput benefits of zero-copy are almost eliminated.
-
-% > computePctTputImprovementForZeroCopy(d)
+% computePctTputImprovementForZeroCopy(loadMerged())
 % [1] "128 B item pct improvement in tput for zero-copy"
-%  [1] 0.2885523 0.6737804 0.7556923 1.0578913 0.8368473 0.4902850 0.4175114 1.0497317 1.1253015
-% [10] 1.3644198 1.5404678 1.8245272 1.9373502 2.1325012 2.3802205 2.0281382 2.1098626 2.4204983
-% [19] 2.7852797 3.0194681 3.2164592 3.6277455 4.0564271 4.4175073 5.0087870 5.9296169 6.6387935
-% [28] 7.0509243 6.9693410 6.0570942 4.8689572 3.6496472
-% [1] "Max 7.05092431454015"
+%  [1]   8.105552  10.928705  14.097586  18.910805  28.721654  43.346138  51.993156  44.439383  55.446378
+% [10]  43.414034  35.736397  26.654478  23.842016  20.787579  18.376618  -5.310453  -2.382863  -4.469114
+% [19]  -5.565349  -6.927329  -6.270677  -7.919818  -8.681226  -9.356702 -11.269678 -11.943183 -12.265026
+% [28] -13.209408 -13.396745 -13.930867 -14.057826 -12.286999
+% [1] "Max 55.4463782269341"
 % [1] "1024 B item pct improvement in tput for zero-copy"
-%  [1]  0.5701993  2.8384221  5.8680513 10.6753031 13.6589851 29.0683755 25.2356193 19.4198239
-%  [9] 16.4500840 13.4597108 12.0303832  9.8764406  9.3891568  8.6854489  7.5337426  5.3175060
-% [17]  5.1075058  4.4539948  3.7917091  2.7403365  3.6782391  3.3542165  2.6673768  2.6509770
-% [25]  2.5055659  1.6448940  1.5512472  1.7176160  0.7314995  0.6425915  2.4780659  2.4728174
-% [1] "Max 29.0683755136904"
+%  [1] 53.841302 86.064417 55.299614 40.553317 37.989062 33.750689 30.841420 23.594658 21.917508 19.037890
+% [11] 18.186771 15.621109 14.475694 12.246097 11.008283  7.318041  7.586871  7.262891  7.572221  7.396499
+% [21]  7.427524  7.109614  7.039692  6.980079  6.610857  5.824279  5.979297  5.631181  5.694890  5.299445
+% [31]  5.746029  5.610679
+% [1] "Max 86.0644167799178"
 
 Next, we consider 128~B records. The decreased access latency of
 in-memory databases makes them well-suited to smaller, finer-grained records
@@ -320,7 +320,12 @@ record size. Transmission peaks at 3.5~GB/s.
 Copying 128~B records on-the-fly can significantly outperform
 zero-copy transmission when there are enough results to group per transmission.
 In fact, copy-out can saturate the network with small records, and it
-performs identically to copy-out with larger 1024~B records.
+performs identically to copy-out with larger 1024~B records. We later discovered 
+that the use of thread local storage in the benchmarks and more fine-grained locking 
+in our own implementation produces a slightly different result showing a more 
+conspicous improvement of zerocopy. We will discuss this
+in detail in Chapter~\ref{chap:impact}. The rest of this material discusses the 
+updated numbers when using thread local storage and more fine grained locking.
 
 \subsubsection{Zero-copy Savings}
 \label{sec:overhead}
@@ -328,13 +333,12 @@ performs identically to copy-out with larger 1024~B records.
 \input{fig-overheads}
 In addition to improved performance, a goal of zero-copy DMA is to mitigate
 server-side CPU and memory load. Figure~\ref{fig:overheads} breaks down
-CPU time for each of the scenarios in Figure~\ref{fig:zero-copy-tput}: small
-and large records both with and without zero-copy. Most of the server
-CPU time is spent idle waiting for the NIC to complete transmissions.  The
-results show that zero-copy always reduces the CPU load of the server, and,
-as expected, the effect is larger for larger records. With 1024~B records,
-the \memcpy/  step of copy-out uses 6.8\% of the total CPU cycles of the
-socket at peak transmission speed.
+CPU time for all the scenarios; small and large records using Zero Copy and Copy-Out. We can observer that in the case 
+of zero copy, most of the server CPU time is spent idling waiting for the NIC 
+to complete transmissions. It is also obvious that that zero-copy always reduces 
+the CPU load of the server, and, as expected, the effect is larger for larger records. 
+With 1024~B records, the \memcpy  step of copy-out uses a maximum of 18\% CPU cycles 
+of which 
 
 Zero-copy eliminates copy overhead, but it adds overhead to create
 larger transmit descriptors.  Each gather entry adds
@@ -350,7 +354,7 @@ saves about 3~to~6\% of CPU time over copy-out.
 The memory bandwidth savings for zero-copy are more substantial.
 Figure~\ref{fig:zero-copy-tput} shows that copy-out transmit performance nearly
 matches zero-copy (5.6~GB/s versus 5.8~GB/s). Copy-out introduces exactly one
-extra copy of the data, and \memcpy/  reads each cache line once and writes it
+extra copy of the data, and \memcpy  reads each cache line once and writes it
 once. So, copy-out increases memory bandwidth consumption
 by 2$\times$ the transmit rate of the NIC or 11.2~GB/s in the worst case.  This
 accounts for about 32\% of the available memory bandwidth for the machine that we used. Whether

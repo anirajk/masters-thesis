@@ -14,6 +14,40 @@
 
 source('common.R')
 
+tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw-out.log")
+membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw.csv")
+ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*ddiobw.csv")
+pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*pciebw.csv")
+
+
+
+loadMerged <- function (i=1,extratitle='') {
+  for (i in seq(tputfilenames)){
+    t <- tputload(filename=tputfilenames[i])
+    t <- t[t$chunkSize %in% c(128,1024),]
+    m <- perfload(filename=membwfilenames[i])
+    d <- perfload(filename=ddiobwfilenames[i])
+    p <- perfload(filename=pciebwfilenames[i])
+    m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)
+    p["pciebw"]<-p$CBO.LLC_PCIE_MEM_TOTAL_BYTES
+    d["ddiobw"]<-d$CBO.LLC_DDIO_MEM_TOTAL_BYTES
+    print(str(p))
+    print(summary(p))
+    print(pciebwfilenames[i])
+    membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
+    pciebw<-rep(unname(quantile(p$pciebw,0.5,na.rm=TRUE)),nrow(t))
+    ddiobw<-rep(unname(quantile(d$ddiobw,0.5,na.rm=TRUE)),nrow(t))
+    curr<-data.frame(membw=membw,pciebw=pciebw,ddiobw=ddiobw,t)
+    if(i==1){
+      merged<-curr
+    }else{
+      merged<-rbind(merged,curr)
+    }
+  }
+  merged
+}
+
+
 load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/cx3_noperf/cx3_after_15clients_tlocal_extended_data_20161118.log') {
   d <- read.table(filename
                   , header=T)
@@ -79,6 +113,7 @@ plotBreakdown <- function (d) {
              appendGE=sum(addingGESecs) / sum(seconds)) #
              #getTxBuffer=sum(getTxSecs) / sum(seconds)) #,
              #misc=sum(miscSecs) / sum(seconds))
+  #print(summary(d))
   
   m <- melt(d, .(copied, chunkSize, chunksPerMessage, bytesPerMessage))
 
@@ -98,7 +133,6 @@ plotBreakdown <- function (d) {
                        #'setupWR'='Create Basic Descriptor',
     )
                        #'getTxBuffer'='Waiting for NIC Buffers')
-
   p <- ggplot(m, aes(x=bytesPerMessage, y=value,
                      color=variable, fill=variable)) +
     facet_wrap(chunkSize~copied,
@@ -190,7 +224,7 @@ plotCyclesPerRecord <- function(d) {
     geom_line() +
     scale_x_continuous(name='Bytes per Send',
                        trans=log2_trans(),
-                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384, 32768)) +
     scale_y_log10(name='CPU Cycles Per Transmitted Byte',
                   breaks=c(0.01, 0.1, 1, 10)) +
     scale_color_manual(values=brewer.pal(6, 'Set1'),
@@ -248,34 +282,33 @@ aggregateClients <- function (d) {
 }
 
 makeZeroCopyTputFigure <- function () {
-  d <- load()
+  d <- loadMerged()
   print(head(d))
   d <- d[d$chunkSize %in% c(128,1024),]
   p <- plot(d) +
     coord_cartesian(ylim=c(0, 6000), xlim=c(128, 16 * 1024))
  p
-   #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
-  #       width=5, height=2, units='in')
+   ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
+         width=5, height=2, units='in')
 }
 
 makeOverheadsFigure <- function () {
-  d <- load()
-  d <- d[(d$chunkSize == 128 & d$chunksPerMessage <= 64 ),]#|
-         #(d$chunkSize == 1024 & d$chunksPerMessage <= 64),]
+  d <- loadMerged()
+  d <- d[(d$chunkSize %in% c(128, 1024) & d$chunksPerMessage <= 64 ),]
   p <- plotBreakdown(d) +
-    coord_cartesian(ylim=c(0, 0.45))
+    coord_cartesian(ylim=c(0, 0.3))
   p
-  #  ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-overheads.pdf',
-  #       width=5, height=3, units='in')
+    #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-overheads.pdf',
+    #     width=5, height=3, units='in')
 }
 
 makeCyclesFigure <- function () {
-  d <- load()
+  d <- loadMerged()
   d <- d[d$chunkSize %in% c(128,1024),]
   p <- plotCyclesPerRecord(d)
   p
-#  ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-cycles.pdf',
-#         width=5, height=2, units='in')
+  ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-cycles.pdf',
+         width=5, height=2, units='in')
 }
 
 makeDeltasFigure <- function () {

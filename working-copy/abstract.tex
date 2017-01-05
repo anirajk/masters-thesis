@@ -32,5 +32,5 @@ We also set up experiments that underlined the bottlenecks in the current approa
 In the light of these lessons learned, we propose guidelines for a fast and efficient migration protocol for In-Memory Databases with minimal disruption to their primary intent.
 
 We have found evidence to prove that performing large data transfers in a live cluster of systems optimized for smaller responses has detrimental effects on system performance. 
-We have also discovered that use of techniques such as Zero Copy may not always yield better performance and we draw conclusions on when a particular approach to copying data might benefit performance the most. 
+We have also discovered that use of techniques such as Zero Copy yield around 25\% savings in CPU cycles and a 25\% reduction in the memory pressure on the system. 
 We believe that a new migration protocol based on provided guidelines will supplement the mainstream acceptance of these systems.

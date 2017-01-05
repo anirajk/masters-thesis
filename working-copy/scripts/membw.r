@@ -306,10 +306,10 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 12000))
   
-  ggsave("tput.pdf",p1,width=12,height=8,units='in')
-  ggsave("membw.pdf",p2,width=12,height=8,units='in')  
-  ggsave("ddiobw.pdf",p3,width=12,height=8,units='in')  
-  ggsave("pciebw.pdf",p4,width=12,height=8,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=12,height=8,units='in')
+  ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=12,height=8,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=12,height=8,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=12,height=8,units='in')  
 }
 
 
