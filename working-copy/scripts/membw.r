@@ -4,6 +4,8 @@ tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/si
 membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw.csv")
 ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*ddiobw.csv")
 pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*pciebw.csv")
+deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/deltaprofiles/run_60s/*membw-out.log")
+deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/deltaprofiles/run_60s/*membw.csv")
 
 
 mergealltputfiles <- function(){
@@ -145,9 +147,10 @@ for (membwfile in membwfilenames){
   tryCatch({
   print(paste("doing - ", substr(file_path_sans_ext(basename(membwfile)),14,45)))
   p<-makeMemoryBWFigure(membwfile,"warmup5s-run30s")
+  p
   print(paste("done - ", substr(file_path_sans_ext(basename(membwfile)),14,45)))
   outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/randomised_run_60s/",basename(file_path_sans_ext(membwfile)),".pdf",sep="")
-  ggsave(outputfilename,width=12,height=8,units='in')
+  #ggsave(outputfilename,width=12,height=8,units='in')
   },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
 }
 }
@@ -161,10 +164,10 @@ makealltputfigures<-function(){
 }
 
 makeMergedFigure <- function (i=1,extratitle='') {
-  for (i in seq(tputfilenames)){
-  t <- tputload(filename=tputfilenames[i])
+  for (i in seq(deltatputfilenames)){
+  t <- tputload(filename=deltatputfilenames[i])
   t <- t[t$chunkSize %in% c(128,1024),]
-  m <- perfload(filename=membwfilenames[i])
+  m <- perfload(filename=deltamembwfilenames[i])
   d <- perfload(filename=ddiobwfilenames[i])
   p <- perfload(filename=pciebwfilenames[i])
   m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)
@@ -306,10 +309,10 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 12000))
   
-  ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=12,height=8,units='in')
-  ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=12,height=8,units='in')  
-  ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=12,height=8,units='in')  
-  ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=12,height=8,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=12,height=8,units='in')
+  #ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=12,height=8,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=12,height=8,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=12,height=8,units='in')  
 }
 
 

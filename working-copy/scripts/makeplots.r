@@ -18,6 +18,8 @@ tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/si
 membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw.csv")
 ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*ddiobw.csv")
 pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*pciebw.csv")
+deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/deltaprofiles/run_60s/*membw-out.log")
+deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/deltaprofiles/run_60s/*membw.csv")
 
 
 
@@ -46,6 +48,24 @@ loadMerged <- function (i=1,extratitle='') {
   }
   merged
 }
+
+loadMergedDeltas <- function (i=1,extratitle='') {
+  for (i in seq(deltatputfilenames)){
+    t <- tputload(filename=deltatputfilenames[i])
+    #t <- t[t$chunkSize %in% c(128,1024),]
+    m <- perfload(filename=deltamembwfilenames[i])
+    m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)
+    membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
+    curr<-data.frame(membw=membw,t)
+    if(i==1){
+      merged<-curr
+    }else{
+      merged<-rbind(merged,curr)
+    }
+  }
+  merged
+}
+
 
 
 load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/cx3_noperf/cx3_after_15clients_tlocal_extended_data_20161118.log') {
@@ -86,6 +106,7 @@ plot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
 }
 
 plotBreakdown <- function (d) {
+  
   d$chunkSize <- factor(d$chunkSize)
   d$sendSecs <- d$sendNSecs / 1e9
   d$memcpySecs <- d$memcpyNSecs / 1e9
@@ -113,10 +134,9 @@ plotBreakdown <- function (d) {
              appendGE=sum(addingGESecs) / sum(seconds)) #
              #getTxBuffer=sum(getTxSecs) / sum(seconds)) #,
              #misc=sum(miscSecs) / sum(seconds))
-  #print(summary(d))
+  print(summary(d))
   
   m <- melt(d, .(copied, chunkSize, chunksPerMessage, bytesPerMessage))
-
   copied_labels <- c('0'='Zero-Copy',
                      '1'='Copy-Out')
   chunkSize_labels <- c('1'='1 B Records',
@@ -263,6 +283,26 @@ plotDeltas <- function (d) {
   p
 }
 
+plotDeltasMemBW <- function (d) {
+  d <- aggregateClientsmembw(d)
+  d$chunkSize <- factor(d$chunkSize)
+  d$deltaSize <- factor(d$deltaSize)
+  p <- ggplot(d, aes(x=deltasPerMessage,
+                     y=membw,
+                     linetype=deltaSize,
+                     color=deltaSize)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Delta Records per 16 KB Base Page') +
+    scale_y_continuous(name='Memory Bandwidth (MB/s)') +
+    scale_linetype_discrete(name='Delta Record Size (B)') +
+    scale_color_manual(name='Delta Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    coord_cartesian(xlim=c(0, 32),
+                    ylim=c(0, 6000)) +
+    myTheme
+  p
+}
 
 save <- function (p) {
   ggsave('plot.pdf', width=6, height=4, units='in')
@@ -280,6 +320,20 @@ aggregateClients <- function (d) {
         aggMBs=sum(transmittedBytes) / 2^20 / max(seconds),
         clients=length(server))
 }
+aggregateClientsmembw <- function (d) {
+  ddply(d, .(copied, chunksPerMessage, bytesPerMessage,
+             chunkSize, deltasPerMessage, deltaSize,membw), summarise,
+        #aggMBs=sum(transmissions *
+        #(deltasPerMessage * deltaSize + chunksPerMessage * chunkSize))
+        #/ 2^20 / max(seconds),
+        #aggMBs=sum(transmissions * (as.double(deltasPerMessage * deltaSize) +
+        #                            as.double(chunksPerMessage * chunkSize)))
+        #           / 2^20 / max(seconds),
+        aggMBs=sum(transmittedBytes) / 2^20 / max(seconds),
+        clients=length(server))
+}
+
+
 
 makeZeroCopyTputFigure <- function () {
   d <- loadMerged()
@@ -294,6 +348,9 @@ makeZeroCopyTputFigure <- function () {
 
 makeOverheadsFigure <- function () {
   d <- loadMerged()
+  #d <- d[d$copied == 0,]
+  #d <- d[d$chunkSize == 128,]
+  
   d <- d[(d$chunkSize %in% c(128, 1024) & d$chunksPerMessage <= 64 ),]
   p <- plotBreakdown(d) +
     coord_cartesian(ylim=c(0, 0.3))
@@ -312,9 +369,11 @@ makeCyclesFigure <- function () {
 }
 
 makeDeltasFigure <- function () {
-  d <- load()
+  d <- loadMergedDeltas()
   d <- d[d$chunkSize == 16384,]
-  p <- plotDeltas(d)
+  p1 <- plotDeltas(d)
+  p2 <- plotDeltasMemBW(d)
+  p <- multiplot(p1,p2)
  p
   # ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-deltas.pdf',
 #         width=5, height=1.5, units='in')
