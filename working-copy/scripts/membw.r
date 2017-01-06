@@ -164,21 +164,20 @@ makealltputfigures<-function(){
 }
 
 makeMergedFigure <- function (i=1,extratitle='') {
-  for (i in seq(deltatputfilenames)){
-  t <- tputload(filename=deltatputfilenames[i])
+  for (i in seq(tputfilenames)){
+  t <- tputload(filename=tputfilenames[i])
   t <- t[t$chunkSize %in% c(128,1024),]
-  m <- perfload(filename=deltamembwfilenames[i])
+  m <- perfload(filename=membwfilenames[i])
   d <- perfload(filename=ddiobwfilenames[i])
   p <- perfload(filename=pciebwfilenames[i])
   m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)
   p["pciebw"]<-p$CBO.LLC_PCIE_MEM_TOTAL_BYTES
   d["ddiobw"]<-d$CBO.LLC_DDIO_MEM_TOTAL_BYTES
-  print(str(p))
-  print(summary(p))
-  print(pciebwfilenames[i])
   membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
   pciebw<-rep(unname(quantile(p$pciebw,0.5,na.rm=TRUE)),nrow(t))
   ddiobw<-rep(unname(quantile(d$ddiobw,0.5,na.rm=TRUE)),nrow(t))
+  print('profiles')
+  print(paste(membw[1],pciebw[1],ddiobw[1]))
   curr<-data.frame(membw=membw,pciebw=pciebw,ddiobw=ddiobw,t)
   if(i==1){
     merged<-curr
@@ -186,6 +185,8 @@ makeMergedFigure <- function (i=1,extratitle='') {
     merged<-rbind(merged,curr)
   }
   }
+  print("merged")
+  print(head(merged,2))
   tp <- mergeplot(merged)
   tp
   #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
@@ -216,7 +217,9 @@ ploty<-function(d,y){
 }
 
 mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
+  print("here")
   d <- aggregateClients(d)
+  print("after aggclients")
   d$chunkSize <- factor(d$chunkSize)
   print(head(d,2))
   # NIC Tx tput plot
@@ -238,6 +241,7 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
                        values=c(19,3)) +
     scale_color_manual(name='Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
+    myTheme+
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 12000))
   #Plot Memory B/W
@@ -260,6 +264,8 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     scale_color_manual(name='Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
     #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    myTheme+
+    
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 12000))
   
@@ -283,6 +289,8 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     scale_color_manual(name='Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
     #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    myTheme+
+    
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 12000))
   
@@ -306,13 +314,20 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     scale_color_manual(name='Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
     #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    myTheme+
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 12000))
   
-  #ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=12,height=8,units='in')
-  #ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=12,height=8,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=12,height=8,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=12,height=8,units='in')  
+  ggsave("tput.pdf",p1,width=5,height=2,units='in')
+  ggsave("membw.pdf",p2,width=5,height=2,units='in')  
+  ggsave("ddiobw.pdf",p3,width=5,height=2,units='in')  
+  ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
+  
+  
+  ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=5,height=2,units='in')
+  ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=2,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
 }
 
 
