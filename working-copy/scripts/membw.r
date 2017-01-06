@@ -92,8 +92,8 @@ perfload <- function (filename=pciebwfilenames[1]) {
                  na.strings = c("#NC","#NC#NC","#NC#NC#NC","#NC#NC#NC#NC",
                                 "#NC#NC#NC#NC#NC","#NC#NC#NC#NC#NC#NC",
                                 "#NC#NC#NC#NC#NC#NC#NC","#NC#NC#NC#NC#NC#NC#NC#NC"))
-  print(paste("file:",filename))
-  print(paste("before removing last row:",nrow(d)))
+  #print(paste("file:",filename))
+  #print(paste("before removing last row:",nrow(d)))
   d=d[-nrow(d),]
   print(paste("before is na check:",nrow(d)))
   d[is.na(d)] <- 0

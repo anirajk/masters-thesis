@@ -285,6 +285,8 @@ plotDeltas <- function (d) {
 
 plotDeltasMemBW <- function (d) {
   d <- aggregateClientsmembw(d)
+  print(summary(d))
+
   d$chunkSize <- factor(d$chunkSize)
   d$deltaSize <- factor(d$deltaSize)
   p <- ggplot(d, aes(x=deltasPerMessage,
@@ -373,6 +375,9 @@ makeDeltasFigure <- function () {
   d <- d[d$chunkSize == 16384,]
   p1 <- plotDeltas(d)
   p2 <- plotDeltasMemBW(d)
+  ggsave(plot=p1, filename='~/development/thesis/working-copy/figures/fig-deltas-tput.pdf',width=5, height=1.5, units='in')
+  ggsave(plot=p2, filename='~/development/thesis/working-copy/figures/fig-deltas-membw.pdf', width=5, height=1.5, units='in')
+  
   p <- multiplot(p1,p2)
  p
   # ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-deltas.pdf',
