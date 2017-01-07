@@ -79,8 +79,11 @@ load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/c
 
 plot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
   d <- aggregateClients(d)
-  print(d)
+  #d <- d[d$copied==0,]
+  #d <- d[d$chunkSize==1024,]
   d$chunkSize <- factor(d$chunkSize)
+  print(d)
+  
   p <- ggplot(d, aes(x=bytesPerMessage, y=aggMBs,
                      linetype=chunkSize, color=chunkSize,
                      shape=copied)) +
@@ -344,8 +347,8 @@ makeZeroCopyTputFigure <- function () {
   p <- plot(d) +
     coord_cartesian(ylim=c(0, 6000), xlim=c(128, 16 * 1024))
  p
-   ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
-         width=5, height=2, units='in')
+  # ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
+  #       width=5, height=2, units='in')
 }
 
 makeOverheadsFigure <- function () {
@@ -366,8 +369,8 @@ makeCyclesFigure <- function () {
   d <- d[d$chunkSize %in% c(128,1024),]
   p <- plotCyclesPerRecord(d)
   p
-  ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-cycles.pdf',
-         width=5, height=2, units='in')
+  #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-cycles.pdf',
+  #       width=5, height=2, units='in')
 }
 
 makeDeltasFigure <- function () {

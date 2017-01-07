@@ -36,6 +36,7 @@ the Bw-Tree~\cite{bw-tree}, which is a high performance ordered index employing
 
 
 \section{Lock-free Indexing}
+\label{sec:bwtree-intro}
 The Bw-Tree~\cite{bw-tree} is an atomic record store designed for extreme
 concurrency. It is an ordered index that supports basic record create, update,
 and delete (CRUD) operations in addition to search and range scans.  It is
@@ -263,7 +264,7 @@ Using zero-copy tightly couples the higher-level database engine's record
 allocation and deallocation, since records submitted must remain stable until
 transmission completes. Fortunately, existing mechanisms in systems that avoid
 update-in-place accommodate this well, like Bw-Tree's epoch mechanism described
-in Section~\ref{sec:indexing}. Normally, the Bw-Tree copies-out returned records.
+in Section~\ref{sec:bwtree-intro}. Normally, the Bw-Tree copies-out returned records.
 While an operation and its copy-out are ongoing, memory that contains records
 that have been unlinked or superseded cannot be reclaimed. Zero-copy
 effectively defers the copy until the actual time of transmission. As a result,
