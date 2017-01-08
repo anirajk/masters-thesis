@@ -34,6 +34,11 @@ the Bw-Tree~\cite{bw-tree}, which is a high performance ordered index employing
  that make it well suited for Zero Copy in the following sections. We then present
  our evaluation to show the gains in throughput by using delta records in our benchmarks. 
 
+In this chapter, we explore how a client assisted design involving a no-update-in-place 
+structure such as Bw-Trees can take advantage of Zero Copy and gain maximum throughput 
+without much system impact. We also measure the actual memory bandwidth impact and 
+make informed opinions about how these results might apply for designs such as column 
+stores.
 
 \section{Lock-free Indexing}
 \label{sec:bwtree-intro}
@@ -180,6 +185,12 @@ times hinder performance by delaying garbage collection of stale records?
 % with epoch-based GC, but what about long scans? Could hold back GC and stall
 % tree in the limit.
 
+\section{Column Stores}
+Column oriented Databases are gaining popularity among users with OLAP workloads. 
+So far our discussions have only been around row stores and how network transmission 
+is impacted by their layout. 
+
+
 \section{Evaluation}
 
 \subsection{Extending the Delta Format to Clients}
@@ -228,7 +239,10 @@ whether paging is still beneficial for in-memory structures. That is, is the
 cost of preemptively consolidating updates into pages worth the cost, or is it
 better to transmit fine-grained scattered records via zero-copy or copy-out?
 
-\input{fig-deltas}
+%\input{fig-deltas}
+\input{fig-deltas-membw}
+\input{fig-deltas-tput}
+
 
 The results of our earlier experiments help answer this question.  If copy-out
 is used to gain faster transmission of small records, then the answer is
@@ -280,3 +294,5 @@ more than compensated for by eliminating the need for explicit transmit
 buffers. With copy-out, the size of the transmit buffer pool is necessarily
 larger than the amount of data under active transmission, and internal
 fragmentation in the transmit buffers makes this worse.
+
+

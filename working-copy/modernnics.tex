@@ -374,7 +374,7 @@ gather entry) into a memory-mapped device buffer.
 The memory bandwidth savings for zero-copy are more substantial.
 Figure~\ref{fig:zero-copy-tput} shows that copy-out transmit performance nearly
 matches zero-copy (5.6~GB/s versus 5.8~GB/s) for larger records at larger transmissions. Copy-out introduces exactly one
-extra copy of the data, and \memcpy  reads each cache line once and writes it
+extra copy of the data, and \memcpy~reads each cache line once and writes it
 once. So, copy-out is expected to increase memory bandwidth consumption
 by 2$\times$ the transmit rate of the NIC or 11.2~GB/s in the worst case.  This
 accounts for about 45\% of the available memory bandwidth for the server that we used. Whether
@@ -389,19 +389,30 @@ could end up using another 6~GB/s of memory bandwidth. With these estimates in m
 % Based on Erik's work it looks like row-buffers are 8 KB! Wow, this might
 % actually impact our story in terms of energy efficiency!
 
+% computeBestCyclesPerRecordImprovement(loadMerged())
+% [1] "1773889090.13867 624551729.013333 2961703308.21867 148009809.173333"
+% [1] "Pct overhead reduction of nocp versus cp for"
+% [1] "128 B records"
+% [1] 64.79195
+% [1] "1024 B records"
+% [1] 95.00254
+% > 
+
+
 \input{fig-cycles}
 The results break down where the CPU and memory bandwidth savings come from,
 but not all configurations result in the same transmit performance. For
 example, Figure~\ref{fig:zero-copy-tput} shows that when transmitting
 128~B~records, copy-out gets up to 15\% better throughput than zero-copy while transmitting
 32~records at once. As a result, minimizing CPU overhead can come at the expense of transmit
-performance.  The real efficiency of the server in transmission is shown in
+performance.  The real CPU efficiency of the server in transmission is shown in
 Figure~\ref{fig:cycles}. The figure shows how many cycles of work the CPU needs to do
 for every byte transmitted in each of the configurations, which reveals two key things.
 First, it shows that, though the absolute savings in total CPU cycles is small
-for zero-copy, it does reduce CPU overhead due to transmission by up to 76\%.
-Second, the improvement is a modest 12\% for small records, since
-copy-out can transmit in larger, more efficient batches.
+for zero-copy, it does reduce CPU overhead due to transmission by up to 95\% for 
+larger records and around 64\% for smaller records. For smaller records, small transmission
+results in more CPU usage (till around 3~records) owing to the overhead of descriptors.
+
 
 % LMBench 3.0 Memory Results from our Machines
 % *Local* Communication bandwidths in MB/s - bigger is better
