@@ -26,9 +26,37 @@ In a modern In-Memory Database server, DRAM utilisation is the most precious res
  misses. We went for the more accurate \texttt{MEMORY\_BW\_READS} and \texttt{MEMORY\_BW\_WRITES} metrics which are derived from 
  \texttt{CAS\_COUNT.RD} and \texttt{CAS\_COUNT.WR} metrics which are the number of cache lines read and written in the sampling 
  interval. We used an interactive reporting tool written on top of perf with named mappings for these events
- to measure this metric.
-
+ to measure this metric. We sampled total memory bandwidth consumed by the system while our benchmark 
+ was running with fixed record sizes, number of records and mode of copying (Zero Copy and Copy Out).
 
 \input{fig-membw}
+
+Figure ~\ref{fig:membw} shows the memory bandwidth consumed by the system while transmitting data at various modes 
+of copying varying record sizes and transmission sizes. We can see that using zero copy on larger transmissions involving 
+larger record sizes is clearly a win. The benefits are highlighted along largest transmissions of 32 records of sizes 1~KB each. 
+ We had measured that a userspace application could achieve a peak bandwidth of 24~GB/s in our system. This would mean that Copy out 
+ might hurt the system to the tune of a third of all available bandwidth. This is even more interesting considering that the modern day 
+ In-memory stores are not tuned for large responses. When the DRAM latency and accesses go up, the performance of the whole system degrades.
+
+For smaller data sizes, it's even more interesting. Zero Copy doesn't show a huge contrast in memory bandwidth utilisation. There are times 
+when Copy out outperforms Zero Copy even in terms of memory bandwidth utilisations. Its interesting to note that these data points overlap the anomalous transmit performance 
+degradation we saw while observing transmission throughput in Figure~\ref{fig:zero-copy-tput}. Interestingly, after this region in the graph 
+where you transmit 16 or more 128~B records where Zero Copy offers better transmission throughput, the memory bandwidth consumption by Zero Copy 
+is reduced and Copy-out starts to appear more expensive in terms of memory bandwidth. 
+
+\subsection{Memory Bandwidth and Transmission throughput}
+\input{fig-membw-ratio}
+Figure~\ref{fig:membw-ratio} shows the ratio of Memory pressure exerted per bytes transmitted. We can clearly see the value proposition of 
+Zero Copy mode of transmitting here. For Zero Copy, We can see that the system is consistent and predictable and only incurs a tiny overhead of 
+copying descriptors other than DMAing the data on to the NIC. The overhead of the descriptors is evident from the fact that 128~B records show 
+a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultous across varying number of records, 
+ but still shows Zero Copy as the clear winner. If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
+ 2X memory bandwidth cost on copying out 1024~B records.
+
+\section{DDIO traffic}
 \input{fig-ddiobw}
+Newer generation of Intel Processor's have a portion of their Last Level Cache dedicated for I/O. This was initially called Direct Cache Access\textregistered 
+and more recently named DDIO\textregistered. This 
+
+\section{Anomaly in Transmission Throughput}
 \input{fig-pciebw}

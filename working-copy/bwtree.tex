@@ -37,8 +37,7 @@ the Bw-Tree~\cite{bw-tree}, which is a high performance ordered index employing
 In this chapter, we explore how a client assisted design involving a no-update-in-place 
 structure such as Bw-Trees can take advantage of Zero Copy and gain maximum throughput 
 without much system impact. We also measure the actual memory bandwidth impact and 
-make informed opinions about how these results might apply for designs such as column 
-stores.
+make informed opinions about how these results might apply for designs for other data structures.
 
 \section{Lock-free Indexing}
 \label{sec:bwtree-intro}
@@ -185,10 +184,7 @@ times hinder performance by delaying garbage collection of stale records?
 % with epoch-based GC, but what about long scans? Could hold back GC and stall
 % tree in the limit.
 
-\section{Column Stores}
-Column oriented Databases are gaining popularity among users with OLAP workloads. 
-So far our discussions have only been around row stores and how network transmission 
-is impacted by their layout. 
+
 
 
 \section{Evaluation}

@@ -303,7 +303,7 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     scale_x_continuous(name='Bytes per Send',
                        trans=log2_trans(),
                        breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
-    scale_y_continuous(name='PCIe B/w (MB/s)'
+    scale_y_continuous(name='PCIe BW (MB/s)'
                        #,trans=log2_trans(),
                        #breaks=c(51000,2000,4000,8000,16000,32000)
                        ) +
@@ -317,17 +317,50 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     myTheme+
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 12000))
+
   
+  #Plot Memory B/W to Tx tput ration
+  p5 <- ggplot(d, aes(x=bytesPerMessage, y=(membw/aggMBs),
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='Mem B/W to Transmit B/W ratio'
+                       #,trans=log2_trans(),
+                       #breaks=c(51000,2000,4000,8000,16000,32000)
+    ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    myTheme+
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 3))
+  
+  d<-d[d$chunkSize==1024,]
+  d<-d[d$copied==0,]
+  print(d)
+  print(summary(d))
+    
   ggsave("tput.pdf",p1,width=5,height=2,units='in')
   ggsave("membw.pdf",p2,width=5,height=2,units='in')  
   ggsave("ddiobw.pdf",p3,width=5,height=2,units='in')  
   ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
+  ggsave("membw-ratio.pdf",p5,width=5,height=2,units='in')  
   
   
-  ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=5,height=2,units='in')
-  ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=2,units='in')  
-  ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
-  ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
-}
+  #ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=5,height=2,units='in')
+  #ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
+  
+  }
 
 

@@ -114,9 +114,30 @@ FIGFILES	= fig1.tex			\
 		  fig2.tex 			\
 		  fig3.tex
 
-PDFFILES	= fig1.pdf			\
-		  fig2.pdf 			\
-		  fig3.pdf
+PDFFILES	= fig1.pdf			  \
+		  fig2.pdf 			  \
+		  fig3.pdf                        \
+		  figures/1000B_transrate.pdf     \
+		  figures/1000B_usecpermessage.pdf\
+		  figures/100B_transrate.pdf      \
+		  figures/100B_usecpermessage.pdf \
+		  figures/200B_transrate.pdf      \
+		  figures/200B_usecpermessage.pdf \
+		  figures/fig-bottlenecks.pdf     \
+		  figures/fig-bwtree.pdf          \
+		  figures/fig-colocation.pdf      \
+ 		  figures/fig-cycles.pdf          \
+		  figures/fig-ddiobw.pdf          \
+		  figures/fig-deltas-membw.pdf    \
+		  figures/fig-deltas-tput.pdf     \
+		  figures/fig-deltas.pdf          \
+		  figures/fig-mem-regions.pdf     \
+		  figures/fig-membw-ratio.pdf     \
+		  figures/fig-membw.pdf           \
+		  figures/fig-overheads.pdf       \
+		  figures/fig-pciebw.pdf          \
+		  figures/fig-tput.pdf            \
+		  figures/fig-zero-copy-tput.pdf  \
 
 STYFILES	= amssymb.sty			\
 		  amssymbols.sty		\
@@ -158,6 +179,7 @@ TEXFILES        = abstract.tex			\
 		  fig-deltas-membw.tex          \
 		  fig-deltas-tput.tex           \
 		  fig-membw.tex                 \
+		  fig-membw-ratio.tex           \
 		  fig-pciebw.tex                \
                   config.tex                    \
 		  chap2.tex			\
