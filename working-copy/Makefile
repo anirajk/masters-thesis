@@ -155,6 +155,7 @@ TEXFILES        = abstract.tex			\
 		  timeline-preface.tex          \
 		  tbl-timeline-preface.tex      \
 		  introduction.tex	        \
+		  conclusion.tex	        \
 		  bwtree.tex                    \
 		  evaluation.tex                \
 		  introduction.tex              \

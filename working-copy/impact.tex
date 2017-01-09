@@ -56,7 +56,33 @@ a bigger multiplier on transmission throughput than 1024~B records. For 128~B re
 \section{DDIO traffic}
 \input{fig-ddiobw}
 Newer generation of Intel Processor's have a portion of their Last Level Cache dedicated for I/O. This was initially called Direct Cache Access\textregistered 
-and more recently named DDIO\textregistered. This 
+and more recently named DDIO\textregistered. This changes our perception of memory consumption quite a bit. Network transmission occurs at this part of the LLC 
+and even the destination for a packet over the network becomes this dedicated portion of LLC. This has significant impact in the number of LLC misses the system 
+has to take while dealing with network traffic. The key limitation to DDIO is that usually it's allocated as only 10\% of LLC which is around 2~MB in a modern system. 
+But as long as a single transmission doesn't blow this size, we can expect higher efficiency in transmission. In all of our experiments, we were doing transmission of 
+at most 32 records of 1~KB each and hence we can be sure that the effect of DDIO will be visible in our benchmarks. In order to measure the 
+effect of DDIO, we measured the number of bytes read from memory by LLC due to misses from the DDIO region. 
+
+Figure~\ref{fig:ddiobw} shows the reads issued to memory controller from LLC due to misses from the  DDIO region. We can clearly see that while we employ Copy out 
+method to transmit data, we don't see much traffic in this area. When we issue a \memcpy~ to copy data into the transmit buffer, it's already loaded in the LLC. 
+Unless that data is blown from LLC, a miss from the DDIO region need not necessarily involve a read from DRAM. On the other hand, if we were employing Zero Copy technique, 
+and we were transmitting randomised chunks of data (We had to specifically turn this on to measure the effect), we can see that the DDIO misses follow the same trend 
+as transmission throughput we showed in Figure~\ref{fig:zero-copy-tput}. Since our data sets are limited in size and doesn't cause much of cache pollution, we see that the 
+memory reads due to misses in DDIO would not be as much as the total memory pressure inserted on the system. 
 
 \section{Anomaly in Transmission Throughput}
+While evaluating Zero Copy savings and performance in Chapter~\ref{chap:modernnics}, we saw that for 128~B records, the transmission throughput doesn't linearly progress 
+while we increase the transmission size. While it trends upward until we reach 1024~B(8 records), the transmission throughput remains consistent for about 8-16 records and 
+then the performance tapers off. There is a huge dip in transmission throughput going from 15 to 16 records and even though the performance gradually recovers, it doesn't quite 
+catch up with Copy Out until we get to the maximum number of records possible and even at that point Copy Out edges Zero Copy performance by a bit. This was a bit puzzling 
+for us in the beginning since Zero Copy showed promising transmit performance over almost all of the other scenarios. When we started measuring uncore event metrics, we noticed 
+that LLC bytes read from memory due to misses from PCIe traffic, we found our answer to this.
+
 \input{fig-pciebw}
+
+Figure~\ref{fig:pciebw} shows the read requests issued by LLC because of misses from PCIe traffic. For 128~B records, we can clearly see that after 8 records, this metric is 
+nearly saturated and at 16 records, the number of bytes read peaks causing the dip in transmit performance. The memory reads due to PCIe traffic is saturated at this point and 
+we can see a similar trend for 1024~B records too. Since larger records packs more data per record, the dip in transmit performance is not evident in that case. The other interesting 
+thing to realise is that for Copy Out, the amount of memory traffic induced by PCIe follows a similar trend as transmission throughput which is expected since 
+NIC itself is connected via PCIe interface.
+
