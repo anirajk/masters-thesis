@@ -124,7 +124,7 @@ allowing network interface controllers (NICs) to talk directly to the last level
 and avoid costly fetching of the I/O data from system RAM. As a result, if we have enough locality of data to exploit,
 DDIO reduces the overall I/O processing latency, allows processing of the I/O 
 to be performed entirely in-cache and prevents the available memory bandwidth from becoming a performance bottleneck.
-We fully investigate the effects of DDIO in Chapter~\ref{sec:impact} in order to conclude the impact of 
+We fully investigate the effects of DDIO in Section~\ref{sec:impact} in order to conclude the impact of 
 traditional copy mechanisms.
 
 
@@ -187,8 +187,8 @@ when congested. All of our experiments are publicly available online\footnote{\u
 
 
 
-\input{fig-100B-manymodes}
-\input{fig-1000B-manymodes}
+\input{fig-200B-manymodes}
+
 
 \subsection{Comparing RDMA modes for transmission}
 We started out by getting measurements of transmission speeds using RDMA Reads.
@@ -201,24 +201,24 @@ Another issue we uncovered was that single sided RDMA reads are not well positio
 take advantage of the Zero Copy paradigm since it only supports a remote read 
 from a given location from the source In addition to requiring a secondary notification mechanism.
  The receiver needs to be active and you can  only gather one remote location in one call to the \cpp{ibv_post_send}.
-It could work better if we were to pipeline multiple requests, but we are losing out on the 
+It could work better if we were to pipeline multiple requests, but we are losing out on efficiency per operation
 
-
-Figure~\ref{fig:100B_transrate} shows a comparison of transmission
-peformance of various verbs transmitting 100 Byte records varying the number of records
+\input{fig-1000B-manymodes}
+Figure~\ref{fig:200B_transrate} shows a comparison of transmission
+peformance of various verbs transmitting 200 Byte records varying the number of records
 that could be transmitted at a time for various operations.The green dot shows
 the performance for RDMA reads which is also unfair
 since RDMA reads can only transmit a single record at a time. The yellow dot
 shows RDMA write performance. The record sizes were 
-also an interesting measure to arrive at. Higher data sizes showed a clear promise such as shown in Figure~\ref{fig:1000B_transrate}.
+also an interesting measure to arrive at. Higher data sizes such as 1000~B recoreds showed a clearer benefit of using \cpp{SEND} in Figure~\ref{fig:1000B_transrate}.
 They almost always result in better throughput measurements. In the world of In-memory databases,
-there is an argument to be made that record sizes will be getting smaller since 
+there is an argument to be made that record sizes will get smaller since 
 database designers can aggresively normalise and this has proven increasingly to
 the liking of companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload}.
 
 \input{takeaway-verbs}
 
-\subsection{Paging}
+\subsection{Address Translation}
 All our experiments transmit from a large region of memory backed by 4~KB pages
 that contains all of the records. The region is also
 registered with the NIC, which has to do virtual-to-physical address
@@ -228,13 +228,10 @@ In some cases, using 1~GB hugepages reduces translation look aside buffer
 hugepages as well, since large page tables can result in additional
 DMA operations to host memory during address translation~\cite{farm,rdma}. For
 our experiments, the reach of the NIC's virtual-to-physical mapping is
-sufficient, and hugepages have no impact on the results.
+sufficient, and hugepages have no impact on the results. To err on the side of caution, 
+we did enable four 1~GB hugepages and registered that area with the NIC to make sure we 
+avoid as many TLB misses as possible.
 
-
-To explore how different designs trade-off database server efficiency and
-performance, we built a simple model of an in-memory database system that
-concentrates on data transfer rather than full query processing.  In all experiments, one node acts
-as a server and transmits results to 15~client nodes.
 
 % Experiments transmit from a large region of memory backed by 4~KB pages that contains all of
 % the records.  The region is also
@@ -249,7 +246,7 @@ as a server and transmits results to 15~client nodes.
 % enabled 1~GB hugepages and registered a 4~GB chunk of the memory with the NIC 
 % for all our experiments.
 
-\subsection{Zero-copy Performance}
+\subsection{Microbenchmarks}
 \label{sec:zero-copy-tput}
 
 % stutsman: some old dead text, probably totally worthless.
@@ -263,6 +260,9 @@ as a server and transmits results to 15~client nodes.
 % records stable for the NIC.  Larger transmissions can also accommodate
 % discontinuity through two different methods: copy-out or zero-copy, but
 % discontinuity results in increased transmit descriptor size and complexity.
+To explore how different designs trade-off database server efficiency and
+performance, we built a simple model of an in-memory database system that
+concentrates on data transfer rather than full query processing.
 
 The first key question is understanding how database record layout affects the
 performance of the transmission of query results.  The transmission of large
@@ -296,10 +296,10 @@ to saturate the network with zero-copy so long as it can post 2 or more
 records per transmit operation to the NIC (that is, if it sends 2~KB or larger
 messages at a time). For the Copy Out approach, you get roughly the same transmission 
 throughput as Zero Copy when your transmission sizes get bigger at around 16~KB. In 
-the impact study in Chapter ~\ref{sec:impact} we explain why this is not a good value 
+the impact study in Section ~\ref{sec:impact} we explain why this is not a good value 
 proposition as well as the dip in transmission throughput when we go from 2 to 3 records.
 We saw the DMA engine could provide a throughput boost
-of up to 55\% over copy-out. If range scans return even just 16 records per query, the
+of up to 86\% over copy-out. If range scans return even just 16 records per query, the
 benefits of zero-copy purely from the perspective of transmission throughput is almost eliminated.
 % computePctTputImprovementForZeroCopy(loadMerged())
 % [1] "128 B item pct improvement in tput for zero-copy"
@@ -329,38 +329,25 @@ are now typical~\cite{fb-memcache,fb-workload}.
 % 11-3431,12-3375,13-3437,14-3493,15-3532,16-2908, 30-3314,31-3304,32-3408
 %ZeroCopy 1024 B - 1-3841, 2-5861, 32-5816
 
-Figure~\ref{fig:zero-copy-tput} shows that for small 128~B records, the NIC DMA
-engine provides little throughput benefit if you were only returning a few records 
+Figure~\ref{fig:zero-copy-tput} shows that for small 128~B records, the S/G DMA
+provides little throughput benefit if you were only returning a few records 
 at a time. Our NIC is limited to gather lists
 of 32~entries, which is insufficient to saturate the network with such a small
 record size. Transmission peaks at 3.4~GB/s. In fact, Zero Copy performs best when
 we transmit between 8-15 records or 1 to 2~KB per transmission above which the transmit performance 
-tapers off. This comparison is evident and Zero Copy gives around 85\% improvement over Copy Out while dealing 
-with transmissions around 1~KB or 8 records. We observe a great dip when we get to 16 records and it gradually moves up as we 
-increase the transmission sizes further but never gets back to the peak transmission. This makes 
-for an interesting observation for a database designer who assumes smaller record sizes and larger 
+tapers off. Zero Copy gives around 55\% improvement over Copy Out while dealing 
+with transmissions around 1~KB or 8 records. Throughput dips with 16 records per send operation and it gradually moves up as we 
+increase the transmission sizes further but never gets back to the peak transmission. This calls 
+for careful attention to the length of S/G list in order for a database designer to get peak performance while using small record sizes and larger 
 transmissions. We dig deeper into this anomaly and find evidence as to why this happens with the 
 help of measuring traffic induced in the Memory controller due to LLC misses because of DDIO and 
-PCIe traffic in Chapter~\ref{sec:impact}. Owing to this abberation, copying 128~B records 
+PCIe traffic in Section~\ref{sec:impact}. Owing to this abberation, copying 128~B records 
 on-the-fly can significantly outperform zero-copy transmission when there are 
 enough results (more than 16 records in our NIC which is capable of transmitting 32 at once) to group per transmission.
 In fact, copy-out can saturate the network with small records, and it
-performs somewhat identically to copy-out with larger 1024~B records. We discovered this anomaly 
-with the use of thread local storage in the benchmarks and more fine-grained locking 
-in our own implementation. The measurements in this thesis only discusses the 
-measurements obtained after these optimisations.
+performs somewhat identically to copy-out with larger 1024~B records.
 
-
-\framebox[0.9\textwidth][c]{
-  \parbox{0.7\textwidth}{
-  Bigger transmissions saturate the NIC. Zero Copy is limited by S/G length. 
-  \par
-  Zero Copy is a clear winner for bigger chunks.
-  \par
-  For smaller chunks, if your records are scattered beyond a point (16 out of a 32 big list),
-  it's better to use Copy Out}
-  }
-
+\input{takeaway-tput}
 
 \subsubsection{Zero-copy Savings}
 \label{sec:overhead}
@@ -405,7 +392,7 @@ by 2$\times$ the transmit rate of the NIC or 11.2~GB/s in the worst case.  This
 accounts for about 45\% of the available memory bandwidth for the server that we used. Whether
 using zero-copy or copy-out, the NIC must copy data from main memory, across the PCIe bus, to its own buffers, which
 could end up using another 6~GB/s of memory bandwidth. With these estimates in mind, we extensively profiled
- our benchmark with Intel's PMU module and the details of that is given in Chapter~\ref{sec:impact}.
+ our benchmark with Intel's PMU module and the details of that is given in Section~\ref{sec:impact}.
 
 % Need to know how much memory bw \memcpy/  actually burns.
 % Based on pcm-memory.x and the membench tool I stuff in the ibv-bench

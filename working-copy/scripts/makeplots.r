@@ -23,6 +23,40 @@ deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/d
 
 
 
+loadRDMAModes <- function(file="/Users/aniraj/development/thesis/working-copy/data/rdmammodes/1000B_all_modes.csv"){
+  d <- read.csv(file, header=T)
+  d
+}
+
+plotRDMAModes <- function(size=""){
+  outputfilename = paste("~/development/thesis/working-copy/figures/fig-",size,"-RDMAverbs.pdf",sep="")
+  inputfilename = paste("/Users/aniraj/development/thesis/working-copy/data/rdmammodes/",size,"_all_modes.csv",sep="")
+  d <- loadRDMAModes(inputfilename)
+  d$mode <- factor(d$mode)
+  d["bytesperop"]<- d$sglength * 1000
+  p <- ggplot(d, aes(x=bytesperop, y=txrate,
+                     color=mode)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Op',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384))+
+    scale_y_continuous(name='Transfer Rate (MB/s)') +
+    
+    #scale_shape_manual(name='RDMA Verb',
+    #                   labels=c('SEND', 'WRITE', 'READ'),
+    #                   values=c(19,3,4)) +
+    scale_color_manual(name='RDMA Verbs',
+                       labels=c('SEND','WRITE','READ'),
+                       values=brewer.pal(6, 'Set1')) +
+    myTheme
+  p
+   ggsave(plot=p, filename=outputfilename,
+         width=5, height=2, units='in')
+   p
+  
+}
+
 loadMerged <- function (i=1,extratitle='') {
   for (i in seq(tputfilenames)){
     t <- tputload(filename=tputfilenames[i])

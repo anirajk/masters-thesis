@@ -1,0 +1,11 @@
+
+\framebox[0.9\textwidth][c]{
+  \parbox{0.7\textwidth}{
+  \textbf{Takeaways: Throughput}
+  \begin{enumerate}
+  \item Bigger records can saturate the NIC;Zero Copy is significantly faster for bigger chunks.
+  \item Zero Copy is limited by the length of S/G list; This limits bytes transmitted per operation for small records.
+  \item Copy out can be faster for smaller records unless S/G length is carefully tuned; We examine Copy Out's efficiency in Section ~\ref{sec:overhead}
+  \end{enumerate}
+  \textbf{Recommendation}: For large sets of small, scattered records, use Copy Out. If your record sizes are bigger, always use Zero Copy \label{takeaway:tput}
+ }}

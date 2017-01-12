@@ -117,7 +117,8 @@ FIGFILES	= fig1.tex			\
 PDFFILES	= fig1.pdf			  \
 		  fig2.pdf 			  \
 		  fig3.pdf                        \
-		  figures/1000B_transrate.pdf     \
+		  figures/fig-1000B-RDMAverbs.pdf \
+		  figures/fig-200B-RDMAverbs.pdf  \
 		  figures/1000B_usecpermessage.pdf\
 		  figures/100B_transrate.pdf      \
 		  figures/100B_usecpermessage.pdf \
@@ -166,7 +167,7 @@ TEXFILES        = abstract.tex			\
 		  relatedwork.tex               \
 		  migration.tex                 \
 		  timeline.tex                  \
-		  fig-100B-manymodes.tex        \
+		  fig-200B-manymodes.tex        \
 		  fig-1000B-manymodes.tex       \
 		  fig-bw-tree.tex               \
 		  fig-deltas.tex                \
@@ -183,6 +184,7 @@ TEXFILES        = abstract.tex			\
 		  fig-membw-ratio.tex           \
 		  fig-pciebw.tex                \
 		  takeaway-verbs.tex            \
+		  takeaway-tput.tex             \
                   config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\
