@@ -54,7 +54,7 @@ copy adds upto 25\% increase in absolute CPU utilisation, making use of the high
 near line rate takes up one fourth of the total available memory bandwidth in a modern server. We should read this in the context that 
 network transmission is not the primary responsibility of a storage server in a distributed system and costs of communication should be treated as overhead.
  Most of the memory bandwidth is wasted in just aggregating the data before transmission could be used as part of actual computation or other useful rearrangement of data in 
-the query response. Chapter \ref{chap:impact} will fully discuss the impact on memory bandwidth and other parameters while the system 
+the query response. Chapter \ref{sec:impact} will fully discuss the impact on memory bandwidth and other parameters while the system 
 is transmitting large amounts of data.
 
 
@@ -124,7 +124,7 @@ allowing network interface controllers (NICs) to talk directly to the last level
 and avoid costly fetching of the I/O data from system RAM. As a result, if we have enough locality of data to exploit,
 DDIO reduces the overall I/O processing latency, allows processing of the I/O 
 to be performed entirely in-cache and prevents the available memory bandwidth from becoming a performance bottleneck.
-We fully investigate the effects of DDIO in Chapter~\ref{chap:impact} in order to conclude the impact of 
+We fully investigate the effects of DDIO in Chapter~\ref{sec:impact} in order to conclude the impact of 
 traditional copy mechanisms.
 
 
@@ -177,14 +177,12 @@ one node acts as a server and transmits results to 15 client nodes.
 Our experiments were run on the Apt~\cite{Ricci+:OSR15} cluster of the
 CloudLab~\cite{Cloudlab:URL} testbed: this testbed provides exclusive bare-metal
 access to a large number of machines with RDMA-capable Infiniband NICs.
-The proposed work that is pending will give more conclusive evidence for the 
 Table~\ref{tbl:config} shows the Experiment Setup for the cluster where we profiled
 the Mellanox Infiniband ConnectX-3 \textregistered NIC and impact of data layout and 
 use of no update in place structures on transmission throughput. The cluster has 7
 Mellanox SX6036G FDR switches arranged in two layers. The switching fabric is
 oversubscribed and provides about 16~Gbps of bisection bandwidth per node
-when congested. All of the experiments are
-publicly available online\footnote{\url{https://github.com/utah-scs/ibv-bench}}.
+when congested. All of our experiments are publicly available online\footnote{\url{https://github.com/utah-scs/ibv-bench}}.
 
 
 
@@ -194,16 +192,16 @@ publicly available online\footnote{\url{https://github.com/utah-scs/ibv-bench}}.
 
 \subsection{Comparing RDMA modes for transmission}
 We started out by getting measurements of transmission speeds using RDMA Reads.
-We implemented rdma operations using infinibands ib verbs library. We implemented 
+We implemented operations using infinibands ibverbs library. We implemented 
 RDMA reads and write as op codes on the \cpp{ibv_send_wr} request which 
-transmit data as \cpp{ibv_post_send} and also tried to measure the transmit
-performance while using Zero Copy using \cpp{IBV_WR_SEND} as the operation.
-We found that send operations can transmit multiple transmit buffer
-It became evident quickly that one sided RDMA reads are not well positioned to 
+transmit data via \cpp{ibv_post_send} and measured the transmit 
+performance while enabling Zero Copy using \cpp{IBV_WR_SEND} as the opcode.
+\cpp{SEND} operations can transmit multiple entries in the S/G list.
+Another issue we uncovered was that single sided RDMA reads are not well positioned to 
 take advantage of the Zero Copy paradigm since it only supports a remote read 
-from a given location from the source. The receiver needs to be active and you can
- only gather one remote location in one call to the \cpp{ibv_post_send}. It could work 
- better if we were to pipeline multiple requests, but we are losing out on the 
+from a given location from the source In addition to requiring a secondary notification mechanism.
+ The receiver needs to be active and you can  only gather one remote location in one call to the \cpp{ibv_post_send}.
+It could work better if we were to pipeline multiple requests, but we are losing out on the 
 
 
 Figure~\ref{fig:100B_transrate} shows a comparison of transmission
@@ -211,25 +209,14 @@ peformance of various verbs transmitting 100 Byte records varying the number of 
 that could be transmitted at a time for various operations.The green dot shows
 the performance for RDMA reads which is also unfair
 since RDMA reads can only transmit a single record at a time. The yellow dot
-shows RDMA write performance. The modes shown was an enum of the format 
-\cpp{enum Mode \{ MODE_SEND, MODE_WRITE, MODE_READ\}} and infiniband 
-(\cpp{<infiniband/verbs.h>}) verbs library provides the  The record sizes were 
-also an interesting measure to arrive at. It was obvious even from an earlier stage
-that higher data sizes such as shown in Figure~\ref{fig:1000B_transrate} almost 
-always results in better throughput measurements. In the world of In-memory databases,
+shows RDMA write performance. The record sizes were 
+also an interesting measure to arrive at. Higher data sizes showed a clear promise such as shown in Figure~\ref{fig:1000B_transrate}.
+They almost always result in better throughput measurements. In the world of In-memory databases,
 there is an argument to be made that record sizes will be getting smaller since 
 database designers can aggresively normalise and this has proven increasingly to
 the liking of companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload}.
 
-
-\framebox[0.9\textwidth][c]{
-  \parbox{0.7\textwidth}{
-Of the various modes of transmissions, SEND is the most promising.
-\par
- WRITE would offer similar performance but requires an active receiver with a registered buffer.
- \par
- READ is also client initiated. It could do well when pipelined but a single gather entry limits it's usability for benchmarking.}
-}
+\input{takeaway-verbs}
 
 \subsection{Paging}
 All our experiments transmit from a large region of memory backed by 4~KB pages
@@ -309,7 +296,7 @@ to saturate the network with zero-copy so long as it can post 2 or more
 records per transmit operation to the NIC (that is, if it sends 2~KB or larger
 messages at a time). For the Copy Out approach, you get roughly the same transmission 
 throughput as Zero Copy when your transmission sizes get bigger at around 16~KB. In 
-the impact study in Chapter ~\ref{chap:impact} we explain why this is not a good value 
+the impact study in Chapter ~\ref{sec:impact} we explain why this is not a good value 
 proposition as well as the dip in transmission throughput when we go from 2 to 3 records.
 We saw the DMA engine could provide a throughput boost
 of up to 55\% over copy-out. If range scans return even just 16 records per query, the
@@ -354,7 +341,7 @@ increase the transmission sizes further but never gets back to the peak transmis
 for an interesting observation for a database designer who assumes smaller record sizes and larger 
 transmissions. We dig deeper into this anomaly and find evidence as to why this happens with the 
 help of measuring traffic induced in the Memory controller due to LLC misses because of DDIO and 
-PCIe traffic in Chapter~\ref{chap:impact}. Owing to this abberation, copying 128~B records 
+PCIe traffic in Chapter~\ref{sec:impact}. Owing to this abberation, copying 128~B records 
 on-the-fly can significantly outperform zero-copy transmission when there are 
 enough results (more than 16 records in our NIC which is capable of transmitting 32 at once) to group per transmission.
 In fact, copy-out can saturate the network with small records, and it
@@ -418,7 +405,7 @@ by 2$\times$ the transmit rate of the NIC or 11.2~GB/s in the worst case.  This
 accounts for about 45\% of the available memory bandwidth for the server that we used. Whether
 using zero-copy or copy-out, the NIC must copy data from main memory, across the PCIe bus, to its own buffers, which
 could end up using another 6~GB/s of memory bandwidth. With these estimates in mind, we extensively profiled
- our benchmark with Intel's PMU module and the details of that is given in Chapter~\ref{chap:impact}.
+ our benchmark with Intel's PMU module and the details of that is given in Chapter~\ref{sec:impact}.
 
 % Need to know how much memory bw \memcpy/  actually burns.
 % Based on pcm-memory.x and the membench tool I stuff in the ibv-bench
@@ -508,8 +495,8 @@ results in more CPU usage (till around 3~records) owing to the overhead of descr
 % [1] 4438.671
 
 
-\Section~\ref{sec:}{System Impact}
-\label{chap:impact}
+\section{System Impact}
+\label{sec:impact}
 
 We saw how the Zero Copy promises savings of resources and enhanced performance 
 in the previous chapters. To put things in the context of resource utilisation and

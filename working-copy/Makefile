@@ -182,6 +182,7 @@ TEXFILES        = abstract.tex			\
 		  fig-membw.tex                 \
 		  fig-membw-ratio.tex           \
 		  fig-pciebw.tex                \
+		  takeaway-verbs.tex            \
                   config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\

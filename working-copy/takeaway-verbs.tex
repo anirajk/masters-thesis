@@ -1,0 +1,10 @@
+
+\framebox[0.9\textwidth][c]{
+  \parbox{0.7\textwidth}{
+\cpp{SEND} saturates NIC; Can gather records and notify receiver when transmission completess
+\par
+ \cpp{WRITE} avoids invoking receiver; Server should induce notifications some other way.
+ \par
+ \cpp{READ} is client initiated; It's the lowest overhead on server, but can only collect one contigous chunk per posted op limiting it's usefulness for returning complex responses.}
+}
+\captionof{Takeaway}{ Use \cpp{SEND} RDMA verbs for returning scattered set of records \label{takeaway:verbs}}
