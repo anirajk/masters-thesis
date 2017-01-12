@@ -161,7 +161,7 @@ TEXFILES        = abstract.tex			\
 		  introduction.tex              \
 		  modernnics.tex                \
 		  proposedwork.tex              \
-		  impact.tex                    \
+		  pullingittogether.tex         \
 		  proposedwork.tex              \
 		  relatedwork.tex               \
 		  migration.tex                 \
