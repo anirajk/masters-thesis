@@ -142,6 +142,7 @@ PDFFILES	= fig1.pdf			  \
       figures/fig-bottlenecks.pdf     \
       figures/fig-ddiobw.pdf          \
       figures/fig-membw-ratio.pdf     \
+      figures/fig-setup.pdf     \
       figures/fig-tput.pdf
 
       
@@ -157,11 +158,11 @@ STYFILES	= amssymb.sty			\
 		  uuthesis-color-headings.sty
 
 TEXFILES        = abstract.tex			\
-		  acknowledge.tex		            \
+		  acknowledge.tex               \
 		  timeline-preface.tex          \
 		  tbl-timeline-preface.tex      \
-		  introduction.tex	            \
-		  conclusion.tex	              \
+		  introduction.tex	        \
+		  conclusion.tex	        \
 		  bwtree.tex                    \
 		  evaluation.tex                \
 		  introduction.tex              \
@@ -189,17 +190,18 @@ TEXFILES        = abstract.tex			\
 		  fig-membw-ratio.tex           \
 		  fig-pciebw.tex                \
 		  fig-ddiobw-percent.tex        \
-	    fig-pciebw-ratio.tex          \
+	          fig-pciebw-ratio.tex          \
+                  fig-setup.tex                 \
 		  takeaway-verbs.tex            \
 		  takeaway-tput.tex             \
-      takeaway-cpu-cycles.tex       \
-	    takeaway-cpu-overhead.tex     \
-    	takeaway-impact-ddiobw-savings.tex\
-	    takeaway-impact-ddiobw.tex    \
-	    takeaway-impact-membw-ratio.tex\
-	    takeaway-impact-membw.tex     \
-	    takeaway-impact-pciebw.tex    \
-      config.tex                    \
+                  takeaway-cpu-cycles.tex       \
+	          takeaway-cpu-overhead.tex     \
+    	          takeaway-impact-ddiobw-savings.tex\
+	          takeaway-impact-ddiobw.tex    \
+	          takeaway-impact-membw-ratio.tex\
+	          takeaway-impact-membw.tex     \
+	          takeaway-impact-pciebw.tex    \
+                  config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\
 		  chap4.tex			\

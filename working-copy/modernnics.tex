@@ -144,7 +144,7 @@ works for transmissions of ~912 B or less.
 
 \section{Eliminating Contention}
 We used thread local buffers to avoid contention on the buffer pool and this optimisation shows considerably less 
-overhead due to busy waiting than the published results~\cite{imdmpaper}. The measurements in this thesis only include the
+overhead due to busy waiting than the published results~\cite{imdmpaper}. The measurements in this thesis only include
 data after the optimisation.
 
 \section{Evaluation}
@@ -169,7 +169,7 @@ evidence that will aid in codesigning databases for new hardware.
 \input{config}
 
 \subsection{Experiment Setup}
-
+\input{fig-setup}
 We explored hows the different designs trade-off database server efficiency and
 performance, by building a simple model of an in-memory database system that
 concentrates on data transfer rather than full query processing. In all experiments,
@@ -183,6 +183,8 @@ use of no update in place structures on transmission throughput. The cluster has
 Mellanox SX6036G FDR switches arranged in two layers. The switching fabric is
 oversubscribed and provides about 16~Gbps of bisection bandwidth per node
 when congested. All of our experiments are publicly available online\footnote{\url{https://github.com/utah-scs/ibv-bench}}.
+Figure~\ref{fig:setup} shows the experiment setup. Each of the 15 clients are pinned to a thread in our server with 16-cores. 
+Thread affinity gives better performance and accurate score boarding of performance.
 
 
 
@@ -545,6 +547,7 @@ The previous sections showed how Copy Out can be costly and degrade system perfo
 in modern CPU architecture in limiting I/O costs. We are going to examine the interesting side effect of the additional \memcpy~ . Figure ~\ref{fig:ddiobw-percent} shows what percentage of consumed 
 memory bandwidth results from misses from the DDIO region. It tells us that While we pay the price of \memcpy to bring data to the LLC, it actually helps in limiting further DRAM access while transmitting 
 from the region reserved for DDIO\textregistered. If not for this effect, both Copy Out and Zero Copy might have added Memory Bandwidth consumption in bringing data from DRAM for transmission. 
+\input{takeaway-impact-ddiobw-savings}
 
 \section{Anomaly in Transmission Throughput}
 \input{fig-pciebw}
