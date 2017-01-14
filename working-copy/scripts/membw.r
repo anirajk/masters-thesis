@@ -253,9 +253,10 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     scale_x_continuous(name='Bytes per Send',
                        trans=log2_trans(),
                        breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
-    scale_y_continuous(name='Memory B/w (MB/s)'
-                       #,trans=log2_trans(),
-                       #breaks=c(1000,2000,4000,8000,16000,32000)
+    scale_y_continuous(name='Memory B/w (MB/s)',
+                       #trans=log2_trans(),
+                       #breaks=c(2000,4000,6000,8000,10000,12000,14000,16000,18000,20000,22000,24000)
+                       breaks=c(4000,8000,12000,16000,20000,24000)
                        ) +
     scale_linetype_discrete(name='Record Size (B)') +
     scale_shape_manual(name='Transmit Mode',
@@ -267,7 +268,11 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     myTheme+
     
     coord_cartesian(xlim=xlim,
-                    ylim=c(0, 12000))
+                    ylim=c(0, 24000))+
+    geom_hline(yintercept=c(23950, 39321),color="black",linetype="longdash")+
+    annotate("text", x=2000, y=39321, label="38.4 GB/s (Intel ARK spec Xeon E5-2450) ", size=2.5, color = "black",vjust=-1)+
+    annotate("text", x=2000, y=23950, label="23.3 GB/s (Measured Peak Memory B/W) ", size=2.5, color = "black",vjust=-1)
+  
   
   #Plot DDIO B/W
   p3 <- ggplot(d, aes(x=bytesPerMessage, y=ddiobw,
@@ -343,23 +348,78 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 3))
   
-  d<-d[d$chunkSize==1024,]
-  d<-d[d$copied==0,]
-  print(d)
-  print(summary(d))
+  
+  #Plot DDIO misses as % of Memory consumed
+  p6 <- ggplot(d, aes(x=bytesPerMessage, y=(ddiobw*100/membw),
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='DDIO contribution to Mem B/W (%)  ',
+                       #,trans=log2_trans(),
+                       breaks=c(20,40,60,80,100)
+    ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    myTheme+
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 100))
+  
+  
+  #Plot PCIeB/W to Agg MB/s
+  p7 <- ggplot(d, aes(x=bytesPerMessage, y=(pciebw/aggMBs),
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='PCIe misses to Transmit Throughput' ,
+                       #,trans=log2_trans(),
+                       breaks=c(0,1,2,3)
+    ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    myTheme+
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 3))+
+    geom_vline(xintercept=2048,color="black",linetype="longdash")+
+    annotate("text", x=2048, y=2.5, label="Throughput tipping point", size=2.5, color = "black",vjust=-1)+
     
-  ggsave("tput.pdf",p1,width=5,height=2,units='in')
-  ggsave("membw.pdf",p2,width=5,height=2,units='in')  
-  ggsave("ddiobw.pdf",p3,width=5,height=2,units='in')  
-  ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
-  ggsave("membw-ratio.pdf",p5,width=5,height=2,units='in')  
   
   
+  #d<-d[d$chunkSize==1024,]
+  #d<-d[d$copied==1,]
+  #print(summary(d))
+   
+  #ggsave("tput.pdf",p1,width=5,height=2,units='in')
+  #ggsave("membw.pdf",p2,width=5,height=2,units='in')  
+  #ggsave("ddiobw.pdf",p3,width=5,height=2,units='in')  
+  #ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
+  #ggsave("membw-ratio.pdf",p5,width=5,height=2,units='in')  
   #ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=5,height=2,units='in')
-  #ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=6,units='in')  
   #ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
   #ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
   #ggsave("~/development/thesis/working-copy/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
+  
+  p7
   
   }
 

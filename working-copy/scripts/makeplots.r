@@ -40,8 +40,9 @@ plotRDMAModes <- function(size=""){
     geom_point(size=1) +
     scale_x_continuous(name='Bytes per Op',
                        trans=log2_trans(),
-                       breaks=c(128, 1024, 2048, 4096, 8192, 16384))+
-    scale_y_continuous(name='Transfer Rate (MB/s)') +
+                       breaks=c(1000, 2000, 4000, 8000, 16000, 32000))+
+    scale_y_continuous(name='Transfer Rate (MB/s)',
+                       breaks=c(2000,4000,6000,8000)) +
     
     #scale_shape_manual(name='RDMA Verb',
     #                   labels=c('SEND', 'WRITE', 'READ'),
@@ -49,7 +50,13 @@ plotRDMAModes <- function(size=""){
     scale_color_manual(name='RDMA Verbs',
                        labels=c('SEND','WRITE','READ'),
                        values=brewer.pal(6, 'Set1')) +
-    myTheme
+    
+    myTheme+
+    coord_cartesian(xlim=c(1000,32000),ylim=c(0,8000))+
+    geom_hline(yintercept=c(5987, 7*1024),color="black",linetype="longdash")+
+    annotate("text", x=4000, y=7168, label="7168 MB/s (Theoretical line rate) ", size=2.5, color = "black",vjust=-1)+
+    annotate("text", x=4000, y=5987, label="5987 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
+  
   p
    ggsave(plot=p, filename=outputfilename,
          width=5, height=2, units='in')
@@ -137,6 +144,7 @@ plot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
                        values=brewer.pal(6, 'Set1')) +
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 6000)) +
+    
     myTheme
     #bigFonts
   p
@@ -379,10 +387,15 @@ makeZeroCopyTputFigure <- function () {
   print(head(d))
   d <- d[d$chunkSize %in% c(128,1024),]
   p <- plot(d) +
-    coord_cartesian(ylim=c(0, 6000), xlim=c(128, 16 * 1024))
- p
-  # ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
-  #       width=5, height=2, units='in')
+    coord_cartesian(ylim=c(0, 8000), xlim=c(128, 16 * 1024))+
+    geom_hline(yintercept=c(5987, 7*1024),color="black",linetype="longdash")+
+    annotate("text", x=1024, y=7168, label="7168 MB/s (Theoretical line rate) ", size=2.5, color = "black",vjust=-1)+
+    annotate("text", x=1024, y=5987, label="5987 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
+  
+    p 
+  ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
+          width=5, height=2, units='in')
+  p
 }
 
 makeOverheadsFigure <- function () {
@@ -507,7 +520,16 @@ computeOverheads <- function (d) {
   print(ddply(d, .(copied, chunkSize), summarise,
               minAppendGE=min(appendGE),
               maxAppendGE=max(appendGE)))
-}
+  print("Improvement over Copy Out")
+  nocopybusysmall <- d[d$chunkSize == 128 & d$copied == 0,]$busyFrac
+  copybusysmall <- d[d$chunkSize == 128 & d$copied == 1,]$busyFrac
+  print(paste("128B records", max(copybusysmall/nocopybusysmall)))
+  nocopybusylarge <- d[d$chunkSize == 1024 & d$copied == 0,]$busyFrac
+  copybusylarge <- d[d$chunkSize == 1024 & d$copied == 1,]$busyFrac
+  print(paste("1024 B records", max(copybusylarge/nocopybusylarge)))
+  
+  
+  }
 
 computeSmallTputImprovementForCopyOut <- function (d) {
   d <- d[d$chunkSize %in% c(128, 1024),]

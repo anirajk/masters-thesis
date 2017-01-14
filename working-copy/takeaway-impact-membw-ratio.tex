@@ -1,0 +1,10 @@
+
+\framebox[0.9\textwidth][c]{
+  \parbox{0.7\textwidth}{
+  \textbf{Takeaways: Efficiency of Memory Bandwidth Utilisation}
+  \begin{enumerate}
+  \item Any use of Copy Out is pure overhead; Smaller records doing Zero Copy have larger memory footprint owing to the descriptor overhead
+  \item There is a particular case (384 B) where Zero Copy and Copy Out show similar memory bandwidth usage; Copy Out of smaller records have bigger footprint though inconsistent across transmission sizes.
+  \end{enumerate}
+  \textbf{Recommendation}: Copy out consumes 2X memory bandwidth than Zero Copy for larger records. For smaller records, the difference isn't as significant. \label{takeaway:impact-membw-ratio}
+ }}

@@ -1,0 +1,10 @@
+
+\framebox[0.9\textwidth][c]{
+  \parbox{0.7\textwidth}{
+  \textbf{Takeaways: Impact of Memory Bandwidth}
+  \begin{enumerate}
+  \item Copy Out might occupy significant portion of available Memory Bandwidth; Transmissions of 32 records of 1~KB size consumed \textbf{half of all available bandwidth}.
+  \item Smaller records have a smaller memory footprint and may not affect available bandwidth; The trend follows transmission throughput and there are areas where Zero Copy is costlier
+  \end{enumerate}
+  \textbf{Recommendation}: Zero Copying larger records saves the most memory bandwidth while giving stellar throughput. \label{takeaway:impact-membw}
+ }}

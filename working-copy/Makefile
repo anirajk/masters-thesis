@@ -117,29 +117,34 @@ FIGFILES	= fig1.tex			\
 PDFFILES	= fig1.pdf			  \
 		  fig2.pdf 			  \
 		  fig3.pdf                        \
-		  figures/fig-1000B-RDMAverbs.pdf \
-		  figures/fig-200B-RDMAverbs.pdf  \
-		  figures/1000B_usecpermessage.pdf\
-		  figures/100B_transrate.pdf      \
-		  figures/100B_usecpermessage.pdf \
+		  figures/1000B_transrate.pdf     \
 		  figures/200B_transrate.pdf      \
-		  figures/200B_usecpermessage.pdf \
-		  figures/fig-bottlenecks.pdf     \
 		  figures/fig-bwtree.pdf          \
-		  figures/fig-colocation.pdf      \
- 		  figures/fig-cycles.pdf          \
-		  figures/fig-ddiobw.pdf          \
 		  figures/fig-deltas-membw.pdf    \
-		  figures/fig-deltas-tput.pdf     \
-		  figures/fig-deltas.pdf          \
-		  figures/fig-mem-regions.pdf     \
-		  figures/fig-membw-ratio.pdf     \
 		  figures/fig-membw.pdf           \
-		  figures/fig-overheads.pdf       \
-		  figures/fig-pciebw.pdf          \
-		  figures/fig-tput.pdf            \
 		  figures/fig-zero-copy-tput.pdf  \
+		  figures/1000B_usecpermessage.pdf\
+		  figures/200B_usecpermessage.pdf \
+		  figures/fig-colocation.pdf      \
+		  figures/fig-deltas-tput.pdf     \
+		  figures/fig-overheads.pdf       \
+      figures/100B_transrate.pdf      \
+      figures/fig-1000B-RDMAverbs.pdf \
+      figures/fig-cycles.pdf          \
+      figures/fig-deltas.pdf          \
+      figures/fig-pciebw-ratio.pdf    \
+      figures/100B_usecpermessage.pdf \
+      figures/fig-200B-RDMAverbs.pdf  \
+      figures/fig-ddiobw-percent.pdf  \
+      figures/fig-mem-regions.pdf     \
+      figures/fig-pciebw.pdf          \
+      figures/128B-32chunksmembw.png  \
+      figures/fig-bottlenecks.pdf     \
+      figures/fig-ddiobw.pdf          \
+      figures/fig-membw-ratio.pdf     \
+      figures/fig-tput.pdf
 
+      
 STYFILES	= amssymb.sty			\
 		  amssymbols.sty		\
 		  diagram.sty			\
@@ -152,11 +157,11 @@ STYFILES	= amssymb.sty			\
 		  uuthesis-color-headings.sty
 
 TEXFILES        = abstract.tex			\
-		  acknowledge.tex		\
+		  acknowledge.tex		            \
 		  timeline-preface.tex          \
 		  tbl-timeline-preface.tex      \
-		  introduction.tex	        \
-		  conclusion.tex	        \
+		  introduction.tex	            \
+		  conclusion.tex	              \
 		  bwtree.tex                    \
 		  evaluation.tex                \
 		  introduction.tex              \
@@ -183,9 +188,18 @@ TEXFILES        = abstract.tex			\
 		  fig-membw.tex                 \
 		  fig-membw-ratio.tex           \
 		  fig-pciebw.tex                \
+		  fig-ddiobw-percent.tex        \
+	    fig-pciebw-ratio.tex          \
 		  takeaway-verbs.tex            \
 		  takeaway-tput.tex             \
-                  config.tex                    \
+      takeaway-cpu-cycles.tex       \
+	    takeaway-cpu-overhead.tex     \
+    	takeaway-impact-ddiobw-savings.tex\
+	    takeaway-impact-ddiobw.tex    \
+	    takeaway-impact-membw-ratio.tex\
+	    takeaway-impact-membw.tex     \
+	    takeaway-impact-pciebw.tex    \
+      config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\
 		  chap4.tex			\

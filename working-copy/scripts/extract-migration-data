@@ -1,0 +1,10 @@
+#!/bin/bash
+
+(echo mode seconds mbs
+
+for log in data/rcmigration/migration-bottlenecks/*/client1.*log; do
+    mode=$(basename $(dirname $log))
+    awk -v mode=$mode \
+        '/== [0-9]+ ==/ { s = $2 } /P1 migrated bytes/ { print mode " " s " " $5 }' \
+        < "$log"
+done) > migration-bottlenecks.data
