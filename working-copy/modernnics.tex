@@ -556,8 +556,8 @@ While evaluating performance and efficiency of Zero Copy in previous sections, w
 on increasing the transmission size. While it trends upward until we reach 1024~B(8 records), the transmission throughput remains consistent for about 8-16 records and 
 then the performance tapers off. There is a huge dip in transmission throughput going from 15 to 16 records and even though the performance gradually recovers, it doesn't quite 
 catch up with Copy Out until we get to the maximum number of records possible and even at that point Copy Out edges Zero Copy performance by a bit. This was a bit puzzling 
-for us in the beginning since Zero Copy showed promising transmit performance over almost all of the other scenarios. When we started measuring uncore event metrics, we noticed 
-that LLC bytes read from memory due to misses due to PCIe, we found our answer. 
+for us in the beginning since Zero Copy showed promising transmit performance over almost all of the other scenarios. We started measuring uncore event metrics, we noticed 
+that LLC bytes read from memory due to misses due to PCIe jumps to the peak measured reads and then saturates, we might have an explanation for the anomaly. 
 
 Figure~\ref{fig:pciebw} shows the read requests issued by LLC because of misses from PCIe traffic. For 128~B records, we can clearly see that after 8 records, this metric is 
 nearly saturated and at 16 records, the number of bytes read peaks causing the dip in transmit performance. The memory reads due to PCIe traffic is saturated at this point and 
