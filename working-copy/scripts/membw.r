@@ -63,6 +63,21 @@ myplot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
 
 
 
+
+aggregatedeltaClients <- function (d) {
+  ddply(d, .(copied, chunksPerMessage, bytesPerMessage,
+             chunkSize, deltasPerMessage, deltaSize, membw), summarise,
+        #aggMBs=sum(transmissions *
+        #(deltasPerMessage * deltaSize + chunksPerMessage * chunkSize))
+        #/ 2^20 / max(seconds),
+        #aggMBs=sum(transmissions * (as.double(deltasPerMessage * deltaSize) +
+        #                            as.double(chunksPerMessage * chunkSize)))
+        #           / 2^20 / max(seconds),
+        aggMBs=sum(as.numeric(transmittedBytes)) / 2^20 / max(seconds),
+        clients=length(server))
+}
+
+
 aggregateClients <- function (d) {
   ddply(d, .(copied, chunksPerMessage, bytesPerMessage,
              chunkSize, deltasPerMessage, deltaSize, membw,ddiobw,pciebw), summarise,
@@ -192,6 +207,116 @@ makeMergedFigure <- function (i=1,extratitle='') {
   #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
   #       width=5, height=2, units='in')
 }
+
+makeMergedDeltaFigure <- function (i=1,extratitle='') {
+  for (i in seq(deltatputfilenames)){
+    t <- tputload(filename=deltatputfilenames[i])
+    t <- t[t$chunkSize %in% c(128,1024),]
+    m <- perfload(filename=deltamembwfilenames[i])
+    m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)
+    membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
+    curr<-data.frame(membw=membw,t)
+    if(i==1){
+      merged<-curr
+    }else{
+      merged<-rbind(merged,curr)
+    }
+  }
+  print("merged")
+  print(head(merged,2))
+  tp <- mergedeltaplots(merged)
+  tp
+ 
+}
+
+
+mergedeltaplots <- function (d, xlim=c(128, 16 * 1024)) {
+  print("here")
+  d <- aggregatedeltaClients(d)
+  print("after aggclients")
+  d$chunkSize <- factor(d$chunkSize)
+  print(head(d,2))
+  # NIC Tx tput plot
+  p1 <- ggplot(d, aes(x=bytesPerMessage, y=aggMBs,
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='NIC Transfer Rate (MB/s)'
+                       #,trans=log2_trans()
+                       #,breaks=c(2000,3000,4000,8000,16000,32000)
+    ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    myTheme+
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 12000))
+  
+  #Plot Memory B/W
+  p2 <- ggplot(d, aes(x=bytesPerMessage, y=membw,
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384)) +
+    scale_y_continuous(name='Memory B/w (MB/s)',
+                       #trans=log2_trans(),
+                       #breaks=c(2000,4000,6000,8000,10000,12000,14000,16000,18000,20000,22000,24000)
+                       breaks=c(4000,8000,12000,16000,20000,24000)
+    ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    myTheme+
+    
+    coord_cartesian(xlim=xlim,
+                    ylim=c(0, 24000))+
+    geom_hline(yintercept=c(23950, 39321),color="black",linetype="longdash")+
+    annotate("text", x=2000, y=39321, label="38.4 GB/s (Intel ARK spec Xeon E5-2450) ", size=2.5, color = "black",vjust=-1)+
+    annotate("text", x=2000, y=23950, label="23.3 GB/s (Measured Peak Memory B/W) ", size=2.5, color = "black",vjust=-1)
+  
+  
+    
+    
+    
+    #d<-d[d$chunkSize==1024,]
+    #d<-d[d$copied==1,]
+    #print(summary(d))
+    
+    #ggsave("tput.pdf",p1,width=5,height=2,units='in')
+    #ggsave("membw.pdf",p2,width=5,height=2,units='in')  
+    #ggsave("ddiobw.pdf",p3,width=5,height=2,units='in')  
+    #ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
+  #ggsave("membw-ratio.pdf",p5,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=5,height=2,units='in')
+  #ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=6,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
+  ggsave("~/development/thesis/working-copy/figures/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
+  
+  p7
+  
+}
+
+
+
+
+
 
 ploty<-function(d,y){
   p <- ggplot(d, aes(x=bytesPerMessage, y=eval(parse(text=paste(y,sep=""))),

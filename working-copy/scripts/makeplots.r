@@ -53,9 +53,9 @@ plotRDMAModes <- function(size=""){
     
     myTheme+
     coord_cartesian(xlim=c(1000,32000),ylim=c(0,8000))+
-    geom_hline(yintercept=c(5987, 7*1024),color="black",linetype="longdash")+
+    geom_hline(yintercept=c(6051, 7*1024),color="black",linetype="longdash")+
     annotate("text", x=4000, y=7168, label="7168 MB/s (Theoretical line rate) ", size=2.5, color = "black",vjust=-1)+
-    annotate("text", x=4000, y=5987, label="5987 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
+    annotate("text", x=4000, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
   
   p
    ggsave(plot=p, filename=outputfilename,
@@ -323,8 +323,12 @@ plotDeltas <- function (d) {
     scale_color_manual(name='Delta Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
     coord_cartesian(xlim=c(0, 32),
-                    ylim=c(0, 6000)) +
-    myTheme
+                    ylim=c(0, 8000)) +
+    myTheme+
+    geom_hline(yintercept=c(6051, 7*1024),color="black",linetype="dotted")+
+    annotate("text", x=10, y=7168, label="7168 MB/s (Theoretical line rate) ", size=2.5, color = "black",vjust=-1)+
+    annotate("text", x=10, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
+  
   p
 }
 
@@ -346,7 +350,7 @@ plotDeltasMemBW <- function (d) {
     scale_color_manual(name='Delta Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
     coord_cartesian(xlim=c(0, 32),
-                    ylim=c(0, 6000)) +
+                    ylim=c(0, 8000)) +
     myTheme
   p
 }
@@ -388,9 +392,9 @@ makeZeroCopyTputFigure <- function () {
   d <- d[d$chunkSize %in% c(128,1024),]
   p <- plot(d) +
     coord_cartesian(ylim=c(0, 8000), xlim=c(128, 16 * 1024))+
-    geom_hline(yintercept=c(5987, 7*1024),color="black",linetype="longdash")+
+    geom_hline(yintercept=c(6051, 7*1024),color="black",linetype="longdash")+
     annotate("text", x=1024, y=7168, label="7168 MB/s (Theoretical line rate) ", size=2.5, color = "black",vjust=-1)+
-    annotate("text", x=1024, y=5987, label="5987 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
+    annotate("text", x=1024, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
   
     p 
   ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
@@ -425,8 +429,8 @@ makeDeltasFigure <- function () {
   d <- d[d$chunkSize == 16384,]
   p1 <- plotDeltas(d)
   p2 <- plotDeltasMemBW(d)
-  ggsave(plot=p1, filename='~/development/thesis/working-copy/figures/fig-deltas-tput.pdf',width=5, height=1.5, units='in')
-  ggsave(plot=p2, filename='~/development/thesis/working-copy/figures/fig-deltas-membw.pdf', width=5, height=1.5, units='in')
+  ggsave(plot=p1, filename='~/development/thesis/working-copy/figures/fig-deltas-tput.pdf',width=5, height=2, units='in')
+  ggsave(plot=p2, filename='~/development/thesis/working-copy/figures/fig-deltas-membw.pdf', width=5, height=2, units='in')
   
   p <- multiplot(p1,p2)
  p
