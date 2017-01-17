@@ -201,6 +201,7 @@ TEXFILES        = abstract.tex			\
 	          takeaway-impact-membw-ratio.tex\
 	          takeaway-impact-membw.tex     \
 	          takeaway-impact-pciebw.tex    \
+	          takeaway-bwtrees.tex          \
                   config.tex                    \
 		  chap2.tex			\
 		  chap3.tex			\

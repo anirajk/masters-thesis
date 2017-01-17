@@ -1,0 +1,11 @@
+
+\framebox[0.9\textwidth][c]{
+  \parbox{0.7\textwidth}{
+  \textbf{Takeaways: Client Assisted Design with Delta Records}
+  \begin{enumerate}
+  \item Use of a large enough base page and updates as delta records helps in saturating NIC's transmission throughput.
+  \item We get a 50\% reduction in memory bandwidth consumption using this approach without compromising transmission throughput
+  \item No updates in place and latch and lock freedom makes this approach clearly favorable for the modern NIC. 
+  \end{enumerate}
+  \textbf{Recommendation}: \textbf{Novel Data Structures can significantly influence the performance of a modern NIC}; To extract maximum performance from the NIC without compromising system resources, make use of client assisted designs using lock free structures that offer no updates in place.\label{takeaway:impact-bwtrees}
+ }}

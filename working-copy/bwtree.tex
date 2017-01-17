@@ -197,15 +197,18 @@ Merging records on the client side is cheap; the server can even append them to
 the response in a sort order that matches the record order in the base page for
 efficient $O(n)$ iteration over the records that requires no copies or sorting.
 
-Figure~\ref{fig:deltas} shows the benefits of this approach. In our
+
+\subsection{Throughput and Efficiency of Delta Records}
+
+Figure~\ref{fig:deltas-tput} shows the benefits of delta records. In our
 experiment, each transmission consists of a single 16~KB base page while the
 number(1 to 31) and size(128~B and 1024~B) of the delta records attached to each transmission is varied.
 The NIC benefits from the large base page, and it manages to keep the network
-saturated. CPU overhead ranges from less than 3\% when there are a few delta
-records up to about 6\% when there are more. Compared to zero-copy of scattered
+saturated. CPU overhead ranges from less than 0.3\% when there are a few delta
+records up to about 0.6\% when there are more. Compared to zero-copy of scattered
 small records this approach also yields a 1.6$\times$ throughput advantage;
 Figure~\ref{fig:zero-copy-tput} shows that throughput peaks around 3.4~GB/s when
-records are scattered, while the delta format achieves around 5.6~GB/s. The main cost 
+records are scattered, while the delta format achieves around  5.6~GB/s. The main cost 
 to this approach is the cost of consolidating delta records into new base pages 
 when chains grow long; we consider this overhead in more detail in the next section.
 
@@ -229,6 +232,77 @@ better to transmit fine-grained scattered records via zero-copy or copy-out?
 \input{fig-deltas-tput}
 
 \input{fig-deltas-membw}
+% Regular CPU overhead
+%    copied chunkSize chunksPerMessage   busyFrac
+% 1       0       128                1 0.08386966
+% 2       0       128                2 0.11668905
+% 3       0       128                3 0.10951036
+% 4       0       128                4 0.10252412
+% 5       0       128                5 0.06622680
+% 6       0       128                6 0.06367224
+% 7       0       128                7 0.06985951
+% 8       0       128                8 0.06227349
+% 9       0       128                9 0.05706500
+% 10      0       128               10 0.04953507
+% 11      0       128               11 0.04680207
+% 12      0       128               12 0.04342779
+% 13      0       128               13 0.04162006
+% 14      0       128               14 0.04048418
+% 15      0       128               15 0.03841897
+% 16      0       128               16 0.02195241
+% 17      0       128               17 0.02131298
+% 18      0       128               18 0.02084331
+% 19      0       128               19 0.02049131
+% 20      0       128               20 0.02022781
+% 21      0       128               21 0.01989223
+% 22      0       128               22 0.01952930
+% 23      0       128               23 0.01917201
+% 24      0       128               24 0.01921045
+% 25      0       128               25 0.01872136
+% 26      0       128               26 0.01838027
+% 27      0       128               27 0.01814930
+% 28      0       128               28 0.01809671
+% 29      0       128               29 0.01792050
+% 30      0       128               30 0.01771566
+% 31      0       128               31 0.01749623
+% 32      0       128               32 0.01781422
+
+
+% Delta CPU overhead
+%    copied deltaSize deltasPerMessage    busyFrac
+% 1       0       128                0 0.004176226
+% 2       0       128                1 0.004343818
+% 3       0       128                2 0.004479262
+% 4       0       128                3 0.004715360
+% 5       0       128                4 0.004881293
+% 6       0       128                5 0.004947248
+% 7       0       128                6 0.005532234
+% 8       0       128                7 0.005632129
+% 9       0       128                8 0.005691837
+% 10      0       128                9 0.005749774
+% 11      0       128               10 0.005764381
+% 12      0       128               11 0.005905733
+% 13      0       128               12 0.006012879
+% 14      0       128               13 0.006140493
+% 15      0       128               14 0.006128670
+% 16      0       128               15 0.004983695
+% 17      0       128               16 0.005027644
+% 18      0       128               17 0.005060442
+% 19      0       128               18 0.005158658
+% 20      0       128               19 0.005279367
+% 21      0       128               20 0.005294916
+% 22      0       128               21 0.005320413
+% 23      0       128               22 0.005371369
+% 24      0       128               23 0.005409892
+% 25      0       128               24 0.005470040
+% 26      0       128               25 0.005479338
+% 27      0       128               26 0.005522727
+% 28      0       128               27 0.005549651
+% 29      0       128               28 0.005604431
+% 30      0       128               29 0.005634841
+% 31      0       128               30 0.005600399
+% 32      0       128               31 0.005787729
+
 
 
 The results of our earlier experiments help answer this question.  If copy-out
@@ -251,12 +325,27 @@ meets or exceeds on-the-fly copy-out.  The large 16~KB base pages also
 improve transmit throughput slightly, which improves efficiency.
 
 For small records, transmitting compacted base pages that have a few deltas gives
-a total CPU savings of about 8\%. For the same CPU cost, a server can perform
-about 5.2~GB/s of page compaction or about 340,000 compactions per second for
+a total CPU savings of about 10\%. For the same CPU cost, a server can perform
+about 6.5~GB/s of page compaction or about 425,000 compactions per second for
 16~KB pages. Even in the worst case scenario where all updates are focused on a
-single page, delta chains of length 4 would tolerate 1.3~million updates per
+single page, delta chains of length 4 would tolerate 1.7~million updates per
 second with CPU overhead lower than copy-out. So, delta records can give the
 efficiency of zero-copy with the performance of copy-out.
+
+
+\subsection{Impact on Memory Bandwidth}
+% Copy out max: 11596
+% Delta max: 6226
+Figure ~\ref{fig:deltas-membw} shows the total consumed memory bandwidth while 
+transmitting records. It's interesting to note that regardless of the variation in 
+delta record sizes, Memory bandwidth stays roughly the same. Comparing Copy Out 
+transmissions of similar size, we get a 46\% reduction in the consumption of 
+Memory bandwidth in the system. Another interesting factor is that if the transmission 
+involved only a few consolidated delta records which we showed in Section~\ref{sec:consolidation} is 
+beneficial, there is no added memory bandwidth pressure if we decide to transmit smaller 
+or larger records. The bigger base page gets us to peak transmission and a small number of 
+delta records is favored for aggregate CPU costs. We have arrived at the sweet spot of 
+transmitting large amounts of data in a modern NIC.
 
 
 \subsection{Impact on Garbage Collection}
@@ -275,11 +364,11 @@ hurts the effective memory utilization of the system.
 
 In practice, this effect will be small for two reasons. First, zero-copy adds a
 transmission, which completes within a few microseconds; however, it also saves a
-\memcpy/  which accounts for 1~to~2~$\mu$s for a 16~KB transmission. Second, the
+\memcpy~ which accounts for 1~to~2~$\mu$s for a 16~KB transmission. Second, the
 amount of resulting data held solely for transmission should generally be
 more than compensated for by eliminating the need for explicit transmit
 buffers. With copy-out, the size of the transmit buffer pool is necessarily
 larger than the amount of data under active transmission, and internal
 fragmentation in the transmit buffers makes this worse.
 
-
+\input{takeaway-bwtrees}
