@@ -12,9 +12,8 @@ for large data transfers such as responses to range scans. Yet another pressing
 concern for a modern In-memory database operating at scale is quick reconfiguration. 
 Since DRAM is the most expensive resource in a modern cluster, efficient rebalancing 
 involves fast reconfiguration that is frugal on resources and keeps the impact on their 
-SLAs minimal.
-Informed with our lessons about the NIC, it is reasonable to assume that protocols for reconfiguration 
-today can benefit from these optimisations and armed with these, they might come 
+SLAs minimal. Informed with our lessons about the NIC, it is reasonable to assume that protocols for reconfiguration 
+today can benefit from these optimisations and armed with the changes for proposed protocol, data migration might come 
 closer to what the hardware is capable of doing today.
 
 In this Chapter, we discuss the state of the art migration protocols and their 
@@ -26,9 +25,12 @@ new hardware.
 
 \section{State of the art}
 
+
 \section{Migration in RAMCloud}
 
-\section{Locality in RAMCloud}
+\subsection{Locality in RAMCloud}
 
+
+\section{Design Guidelines for a new protocol}
 \input{fig-bottlenecks}
 \input{fig-colocation}

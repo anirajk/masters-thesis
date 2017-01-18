@@ -61,8 +61,9 @@ for In-memory transaction processing~\cite{drtm} as well as lock free indexing~\
 \section{RDMA in Databases}
 The merits of RDMA have been widely accepted by database researchers by now. The 
 ability to offload CPU from transmission make it appealing while the necessity for 
-multiple round trips to fetch data made people hesitant. From
-the early arguments~\cite{rdmacase} calling for the need for offloading CPUs to 
+multiple round trips to fetch data made people hesitant. The ability of Infiniband NICs to 
+use scatter gather to assist remote memory access has also been discussed before~\cite{zerocopy04}.
+From the early arguments~\cite{rdmacase} calling for the need for offloading CPUs to 
 research aiming for a billion key value operations on key value servers ~\cite{rdmabillion},
 RDMA has proven to be the future of data transfer for large scale databases. Key value stores
 such as HERD~\cite{herd} and MICA~\cite{mica} and systems that provide more complex
@@ -73,6 +74,7 @@ published guidelines to maximise performance for dispatch heavy workloads~\cite{
 As pointed out by various researchers in the past, the days of slow networks are over~\cite{slow}
 and the thesis argues heavily in favor of that fact. Several efforts in the past have exploited
 user level NIC access as well as RDMA for highly performant distributed database systems~\cite{ramcloud,farm,farmtx,drtm,hyper}
+as well as block I/O for file systems~\cite{rdmagfs}.
 Our findings should also complement other efforts such as transactional key value stores~\cite{deuteronomy} 
 and shared-data databases~\cite{tell}. Small, fixed-size request/response cycles have been optimized in
 existing research~\cite{farm,herd,mica,rdma,ramcloud}, but the efficient

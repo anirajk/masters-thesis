@@ -225,8 +225,8 @@ All our experiments transmit from a large region of memory backed by 4~KB pages
 that contains all of the records. The region is also
 registered with the NIC, which has to do virtual-to-physical address
 translation to DMA records for transmission.
-In some cases, using 1~GB hugepages reduces translation look aside buffer
-(TLB) misses. We have realised that the NIC can benefit from
+Others have argued that in some cases, using 1~GB hugepages reduces translation look aside buffer
+(TLB) misses~\cite{infinibandhugepages}. We have realised that the NIC can benefit from
 hugepages as well, since large page tables can result in additional
 DMA operations to host memory during address translation~\cite{farm,rdma}. For
 our experiments, the reach of the NIC's virtual-to-physical mapping is
