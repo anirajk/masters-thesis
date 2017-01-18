@@ -27,10 +27,11 @@ The present-day NIC offers new and exciting opportunities and challenges for lar
 We can make them efficient by leveraging smart data layout and concurrency control.
 
 We evaluated the impact of modern NICs on data layout by measuring transmit performance and full system impact by observing the effects of DMA, RDMA and and caching improvements such as DDIO. 
-We proposed guidelines for an indexing structure which leverages a smart co-design of data layout, concurrency control, and recent improvements to the NICs that result in increased overall efficiency and throughput. 
+We have also discovered that use of techniques such as Zero Copy yield around 25\% savings in CPU cycles and a 50\% reduction in the memory pressure on the system. 
+We proposed guidelines for an indexing structure which leverages a smart co-design of data layout, concurrency control, and recent improvements to the NICs and showed that such an approach 
+might result in 30$\times$ reduction in CPU overhad while providing 1.6$\times$ better transmission throughput. 
 We also set up experiments that underlined the bottlenecks in the current approach to data migration in RAMCloud.
 In the light of these lessons learned, we propose guidelines for a fast and efficient migration protocol for In-Memory Databases with minimal disruption to their primary intent.
 
 We have found evidence to prove that performing large data transfers in a live cluster of systems optimized for smaller responses has detrimental effects on system performance. 
-We have also discovered that use of techniques such as Zero Copy yield around 25\% savings in CPU cycles and a 25\% reduction in the memory pressure on the system. 
 We believe that a new migration protocol based on provided guidelines will supplement the mainstream acceptance of these systems.

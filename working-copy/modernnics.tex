@@ -516,7 +516,7 @@ Zero Copy mode of transmitting here. For Zero Copy, We can see that the system i
 copying descriptors other than DMAing the data on to the NIC. The overhead of the descriptors is evident from the fact that 128~B records show 
 a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultous across varying number of records, 
  but still shows Zero Copy as the clear winner. If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
- 2X memory bandwidth cost on copying out 1024~B records. Chapter~\ref{chap:bwtree} introduces a hybrid approach using a modern indexing structure to leverage 
+ 2X memory bandwidth cost on copying out 1024~B records. Chapter~\ref{chap:bw-tree} introduces a hybrid approach using a modern indexing structure to leverage 
  high transmission throughput without consuming large amounts of available bandwidth.
 
 \input{takeaway-impact-membw-ratio}
@@ -537,7 +537,7 @@ Unless that data is blown from LLC, a miss from the DDIO region need not necessa
 and we were transmitting randomised chunks of data (We had to specifically turn this on to measure the effect), we can see that the DDIO misses follow the same trend 
 as transmission throughput we showed in Figure~\ref{fig:zero-copy-tput}. Since our data sets are limited in size and doesn't cause much of cache pollution, we see that the 
 memory reads due to misses in DDIO is only. For transmisions using Zero-Copy, the read requests to memory happens because of misses from the DDIO region and account for 
-most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:ddiobw-savings} explains this in detail
+most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:ddiobw-savings} explains this in detail.
 \input{takeaway-impact-ddiobw}
 
 
