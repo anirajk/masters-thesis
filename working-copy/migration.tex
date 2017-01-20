@@ -1,6 +1,6 @@
 %%% -*-LaTeX-*-
 
-\chapter{Migration Protocol}
+\chapter{NIC Aware Reconfiguration}
 We have seen that the current generation of NICs are capable of transferring Gigabytes of 
 data per second in latencies of the order of a few microseconds and we have reasons to believe 
 that the next generation of networking hardware will have the ability to process 
@@ -24,9 +24,37 @@ new hardware.
 
 
 \section{State of the art}
-
+Fast reconfiguration of In-memory data is something that has been overlooked largerly
+by the research community. There has been novel techniques for live migration of 
+key value stores such as Albatross~\cite{albatross} which provides unavailability windows 
+as short as 300ms, Zephyr~\cite{zephyr} which does on-demand pulls and asynchronous data 
+pushes to minimize failed transactions and unavailability for migration while operating 
+at transactional latencies of 50ms. Squall~\cite{squall} went further with fine grained 
+partitioning with optimisations such as pre-fetching. Squall also offers minimal overhead 
+to their transactional latencies which are of the order of tens of milliseconds and migrates 
+data overall at the rate of around 5MB/s. While these efforts offer reconfiguration speeds 
+better than other systems and minimal addition to their millisecond latencies, that is far 
+from what a modern NIC is capable of delivering. From our benchmark, we knew that the NIC 
+can deliver transmission throughputs of around 5GB/s while operating at microsecond latencies. 
+There are important lessons to take from these recent research efforts on migration, but without 
+devoting attention to the NIC and it's complex performance characteristics, today's cluster of
+storage servers cannot offer migration performance order of magnitudes better than the state of the art.
 
 \section{Migration in RAMCloud}
+We saw from previous section what the latest reconfiguration protocols are capable of doing and how they can only 
+offer 1000$\times$ less throughput than the latestoperating under millisecond latencies. There is a different class of systems~\cite{ramcloud,farm,rdmabillion,herd} that 
+were developed recently which optimises for end-to-end latency and has the ability to perform millions of operations 
+per second per server. RAMCloud~\cite{ramcloud} is a prime example of such a system which promises median read latencies 
+of 5$\mu$s and responds to workloads upto a million operations per second. These characteristics result from the fact that 
+these systems were designed from ground up keeping low latencies in mind and any significant disruption to their operating 
+latencies might deem them less useful. RAMCloud has a migration protocol which offers around 100MB/s data transfer speeds albeit 
+synchronous and unpipelined. While this is better by leaps and bounds than other systems, we believe that carefully leveraging the NIC, 
+we can attain better throughput without compromising on latency.
+
+\subsection{Current Protocol}
+\input{fig-migration-current}
+Figure ~\ref{fig:migration-current} shows the steps involved in the existing protocol. The key drawback to the current approach is that 
+most of the steps involved are synchronous and blocking. We analysed 
 
 \subsection{Locality in RAMCloud}
 
