@@ -1,7 +1,7 @@
 %%% -*-LaTeX-*-
 
-\chapter{Bw-Trees}
-\label{chap:bw-tree}
+\chapter{Applications}
+\label{chap:applications}
 
 We have seen the impact of Zero Copy on network transmission on Memory Bandwidth and how that 
 compares to the more traditional way of sending data over the network. The difference
@@ -55,7 +55,6 @@ only contain pointers to data records. When used as a secondary index,
 typically leaf pages would contain pointers, since otherwise each record would
 have to be materialized twice and the copies would need to be kept consistent.
 
-\input{fig-bw-tree}
 The key challenge in a lock-free structure is providing atomic reads, updates,
 inserts, and deletes without ever being able to quiesce ongoing operations (not
 even on portions of the tree). Bw-Tree solves this problem by eliminating
@@ -70,6 +69,7 @@ All references to pages are translated through a mapping table that maps page
 numbers to virtual addresses. This allows pages to be relocated in memory, and
 it allows the contents of a page to swapped with a single atomic
 compare-and-swap (CAS) operation.
+\input{fig-bw-tree}
 
 One of the key innovations of the Bw-Tree is its use of {\em delta records},
 which make updates inexpensive.
@@ -233,7 +233,6 @@ better to transmit fine-grained scattered records via zero-copy or copy-out?
 %\input{fig-deltas}
 \input{fig-deltas-tput}
 
-\input{fig-deltas-membw}
 % Regular CPU overhead
 %    copied chunkSize chunksPerMessage   busyFrac
 % 1       0       128                1 0.08386966
@@ -348,6 +347,7 @@ beneficial, there is no added memory bandwidth pressure if we decide to transmit
 or larger records. The bigger base page gets us to peak transmission and a small number of 
 delta records is favored for aggregate CPU costs. We have arrived at the sweet spot of 
 transmitting large amounts of data in a modern NIC.
+\input{fig-deltas-membw}
 
 
 \subsection{Impact on Garbage Collection}

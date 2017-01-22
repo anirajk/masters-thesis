@@ -163,7 +163,7 @@ TEXFILES        = abstract.tex			\
 		  tbl-timeline-preface.tex      \
 		  introduction.tex	        \
 		  conclusion.tex	        \
-		  bwtree.tex                    \
+		  applications.tex              \
 		  evaluation.tex                \
 		  introduction.tex              \
 		  modernnics.tex                \
