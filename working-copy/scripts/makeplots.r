@@ -514,7 +514,7 @@ computeOverheads <- function (d) {
   # 0 to 1 sum indicates ratio of 16 cores used, so multiply
   # by cycles/per * cores to get cycles.
   d$busyFrac <- (d$postSend + d$memcpy + d$appendGE)
-
+  d$totalcpu <- (d$busyFrac + d$setupWR + d$getTxBuffer)
   print(ddply(d, .(copied, chunkSize), summarise,
         minBusy=min(busyFrac),
         maxBusy=max(busyFrac)))
@@ -524,14 +524,21 @@ computeOverheads <- function (d) {
   print(ddply(d, .(copied, chunkSize), summarise,
               minAppendGE=min(appendGE),
               maxAppendGE=max(appendGE)))
-  print("Improvement over Copy Out")
+  print("Improvement over Copy Out(busy) (copyout/zerocopy)")
   nocopybusysmall <- d[d$chunkSize == 128 & d$copied == 0,]$busyFrac
   copybusysmall <- d[d$chunkSize == 128 & d$copied == 1,]$busyFrac
   print(paste("128B records", max(copybusysmall/nocopybusysmall)))
   nocopybusylarge <- d[d$chunkSize == 1024 & d$copied == 0,]$busyFrac
   copybusylarge <- d[d$chunkSize == 1024 & d$copied == 1,]$busyFrac
   print(paste("1024 B records", max(copybusylarge/nocopybusylarge)))
+  print("Difference in absolute total (copyout-zerocopy)")
   
+  #nocopytotalsmall <- d[d$chunkSize == 128 & d$copied == 0,]$totalcpu
+  #copytotalsmall <- d[d$chunkSize == 128 & d$copied == 1,]$totalcpu
+  #nocopytotallarge <- d[d$chunkSize == 1024 & d$copied == 0,]$totalcpu
+  #copytotallarge <- d[d$chunkSize == 1024 & d$copied == 1,]$totalcpu
+  print(paste("128B records", max(copybusysmall-nocopybusysmall)))
+  print(paste("1024 B records", max(copybusylarge-nocopybusylarge)))
   
   }
 

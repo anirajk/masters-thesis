@@ -4,28 +4,32 @@
 Network Interface Cards have grown complex and present opportunities and challenges as part of a modern distributed system.
  It is imperative that today’s database system designer considers the network in design decisions.
  Previous research for optimising databases were focussed more on processing time spent on a database query~\cite{dbmsproctime},
-  but today’s truth is that most of the end-to-end latency while processing a query is spent in various parts of the networking stack~\cite{ramcloudosr}.
-Since In-Memory Databases became popular and datasets started to fit in memory, the spinning disks 
+  but today, most of the end-to-end latency while processing a query is spent the networking stack~\cite{ramcloudosr}.
+Since in-memory databases became popular and datasets started to fit in memory, the spinning disks 
 which were the primary I/O bottlenecks before aren't anymore. The bulk of I/O overhead in a distributed storage system today is in network transmission.
 Adding this to the fact that the modern NIC allows us to offload CPU from the data transfer path,
-the saved memory bandwidth and CPU cycles could be utilised for doing useful work.
+the saved memory bandwidth and CPU cycles could be doing useful work.
 
-Hardware overheads have thinned a lot over time and system researchers had to minimize CPU interrupts and come up with forms of kernel by-pass networking to extract more performance.
- Network cards have had TCP offloading baked in as TCP Offload Engine for some time now, but it was getting more and more ineffective because of performance issues and complexities involve~\cite{tcpoffload}. 
- RDMA~\cite{rdmapatent,rdmacase,rdma} was proving to be a much better alternative where TCP offloading was just one among various benefits involved.
-  Development of advanced host-device interconnects such as PCI Express~\cite{pcie}  made it possible to develop highly performant network devices offering throughputs and latencies a couple of orders of magnitudes better than what was possible before.
+Hardware overheads have thinned over time and system researchers had to minimize CPU interrupts and come up with forms of kernel by-pass networking to extract more performance.
+ Network cards have had Transmission Control Protocol(TCP) offloading baked in as TCP Offload Engine for some time now. They helped reduce TCP protocol burden from main CPU by moving that processing to network adapters.
+ However the ability to bypass copies were dependent on the TCP Offload Engine(TOE) design and in may cases didn't support non-copying for incoming data streams~\cite{tcpoffload}. 
+ RDMA~\cite{rdmapatent,rdmacase,rdma} capable NICs support non-copying of incoming data streams over a wider variety of applications where TCP offloading was just one among the benefits involved.
+ Development of advanced host-device interconnects such as PCI Express~\cite{pcie}  made it possible to develop highly performant network devices offering throughputs and latencies orders of magnitude better than what was possible before.
 
  The key consideration we explore in this chapter is how a database server can make the best use of the NIC’s ability to receive and transmit data directly at the application level, especially for the
-cases when the system must move large chunks of data. We explore the various trade-offs and design dimensions and provide our evaluation of those choices with the help of a microbenchmark.
+cases when the system must move large chunks of data. We evaluated
+the use of various RDMA primitives for benchmarking large transfers and explored the various
+ trade-offs and design choices while using advanced NIC features and drew lessons from our evaluation of those choices with the help of a microbenchmark. 
 
 \section{Zero Copy and Copy Out}
 The key benefit of a modern NIC in contrast with earlier hardware is the ability to manipulate control structures of the NIC from userspace applications. 
-Kernel bypass is a ubiquitous feature in the modern NIC which avoids CPU in the data transfer path. Literature defines kernel-bypass as any data movement that doesn't 
-involve copying between user space and kernel space. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
-where a single procedure reads data from multiple buffers and writes it to single buffer. The Mellanox Infiniband ConnectX\textregistered-3
-NIC that we profiled can collect scattered chunks of data in memory via DMA.
+Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path. Literature defines kernel-bypass as communication that doesn't 
+involve kernel in the critical path~\cite{unetkernelbypass}. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
+where the NIC can receive and transmit directly from application vectors. The Mellanox Infiniband ConnectX\textregistered-3
+NIC that we profiled can collect scattered chunks of data in memory via Direct Memory Access(DMA).
 
-Before kernel bypass became commonplace, the steps for copying data over the network using socket programming was as follows. 
+Before kernel bypass became commonplace, the steps for copying data over the network using socket programming 
+required the host CPU to make additional copies of transmitted data.
 The application calls a send function in a socket library and the data for sending is assembled 
 in a transmit buffer, this transmit buffer is copied on to the on-NIC buffers and the data is 
 send over the wire. We could employ the same technique in the kernel bypass capable NIC as well.
@@ -44,17 +48,20 @@ which could be mapped to non contigous locations in memory on demand. These prov
 the added benefit that network headers don't need to exist along with data and helps bring more flexibility 
 in deciding the transport layer. One subtle thing to note here is that Zero Copy only implies the absence 
 of a copy from the records to a buffer. The data still needs to be copied to the on-NIC buffers before 
-it is sent out via the network cable. This is different from what happens when we call socket send on a traditional stack where the data for transmission is pre assembled in a huge buffer and then copied across the network.
-We evaluate how Zero Copy performs in contrast with the more traditional Copy Out from now on.
+it is sent out via the network cable. This is different from what happens when we call socket send on 
+a traditional stack where the data for transmission is pre assembled in a large buffer in main memory 
+and then copied across the network. We evaluate how Zero Copy performs in contrast 
+with the more traditional Copy Out from now on.
 
 \section{Memory Bandwidth}
-Interestingly, the additional copy involved in the traditional approach hurts memory bandwidth of the system more than contributing 
-to additional CPU load purely from the perspective of network transmission. Our evaluation show us that while the traditional
-copy adds upto 25\% increase in absolute CPU utilisation, making use of the high throughput available in NICs by transmitting
-near line rate takes up one fourth of the total available memory bandwidth in a modern server. We should read this in the context that 
+Interestingly, the additional copy involved in Copy Out hurts memory bandwidth of the system more than contributing 
+to additional CPU load purely from the perspective of network transmission. Our evaluation in Section~\ref{sec:overhead} show us that while the traditional
+copy adds only up to 18\% increase in overhead of absolute CPU utilisation, making use of the 
+high throughput available in NICs by transmitting near line rate takes up 2$\times$ more memory bandwidth 
+which accounts for half of the total available memory bandwidth in a modern server. We should read this in the context that 
 network transmission is not the primary responsibility of a storage server in a distributed system and costs of communication should be treated as overhead.
  Most of the memory bandwidth is wasted in just aggregating the data before transmission could be used as part of actual computation or other useful rearrangement of data in 
-the query response. Chapter \ref{sec:impact} will fully discuss the impact on memory bandwidth and other parameters while the system 
+the query response. Section~\ref{sec:impact} will fully discuss the impact on memory bandwidth and other parameters while the system 
 is transmitting large amounts of data.
 
 
@@ -72,7 +79,7 @@ where the records live must first be registered with the NIC. Registration
 informs the NIC of the virtual-to-physical mapping of the heap pages. This is
 required because the NIC must perform virtual-to-physical address translation
 since the OS is not involved during transmission and the application has no
-access to its own page tables.  Registration is done at startup and is often
+access to its own page tables.  Registration is done when the beginning of the benchmark and is often
 done with physical memory backed by 1~GB hugepages to minimize on-NIC address
 translation costs.
 \input{fig-mem-regions}
@@ -108,25 +115,27 @@ transmit buffer in host memory. Then, a simple, single-entry descriptor is
 posted to the NIC that DMAs the transmit buffer to an on-device buffer for transmission
 As a result, copy-out requires an extra and explicit copy of the data, which is made
 by the host CPU.  Making the copy uses host CPU cycles, consumes memory
-bandwidth, and is pure overhead. Surprisingly, though, copy-out has
-advantages including better performance when
-records are small and scattered.  In those cases, complex gather descriptors
-bottleneck the NIC, and using the host CPU to pre-assemble the responses can
-improve performance.
+bandwidth, and is pure overhead. 
+% Rob was of the opinion to cut this here since lessons should either be in chapter
+% beginning or after evaluations
+% Surprisingly, though, copy-out has
+% advantages including better performance when
+% records are small and scattered.  In those cases, complex gather descriptors
+% bottleneck the NIC, and using the host CPU to pre-assemble the responses can
+% improve performance.
 
 
 
 \section{DDIO}
-One conflating factor in understanding the benefits of Zero Copy is Data Direct I/O (DDIO)~\cite{ddio}, which is a performance-oriented enhancement 
-to the DMA mechanism have been introduced in Intel\textregistered Xeon E5 processors with DDIO feature,
-allowing the DMA ``windows" to reside within CPU caches instead of system RAM. As a result,
-CPU caches are used as the primary source and destination for I/O, 
+One conflating factor in understanding the benefits of Zero Copy is Data Direct I/O (DDIO)~\cite{ddio}.
+ DDIO is a performance-oriented enhancement to the DMA mechanism which was introduced in Intel\textregistered Xeon E5 processors with Sandy Bridge-EP micro-architecture.
+ With DDIO\textregistered, CPU caches are used as the primary source and destination for I/O, 
 allowing network interface controllers (NICs) to talk directly to the last level caches of local CPUs
 and avoid costly fetching of the I/O data from system RAM. As a result, if we have enough locality of data to exploit,
 DDIO reduces the overall I/O processing latency, allows processing of the I/O 
 to be performed entirely in-cache and prevents the available memory bandwidth from becoming a performance bottleneck.
 We fully investigate the effects of DDIO in Section~\ref{sec:impact} in order to conclude the impact of 
-traditional copy mechanisms.
+Copy Out mechanism.
 
 
 \section{Inlining}
@@ -144,9 +153,9 @@ All of our experiments have inlining disabled. Enabling inlining gives almost id
 works for transmissions of ~912 B or less.
 
 \section{Eliminating Contention}
-We used thread local buffers to avoid contention on the buffer pool and this optimisation shows considerably less 
-overhead due to busy waiting than the published results~\cite{imdmpaper}. The measurements in this thesis only include
-data after the optimisation.
+We used thread local transmit buffers to avoid contention on the buffer pool during Copy Out transmission and this optimisation shows considerably less 
+overhead due to busy waiting to get free transmit buffers than that in the published results~\cite{imdmpaper}. 
+The measurements in this thesis only include data collected after the optimisation.
 
 \section{Evaluation}
 % TODO
@@ -154,15 +163,16 @@ data after the optimisation.
 % Knowing measured peak mem bw of our machines would be good, but it looks like
 %   not all channels are populated?
 We wanted to show the impact of NIC features on large databases which often have to 
-transmit huge chunks of data while responding to range scans or reconfiguring clusters. 
+transmit large amounts of data while responding to range scans or reconfiguring clusters. 
 We evaluated various choices in the design space that a database designer encouters while developing 
 a database that is NIC friendly. We set up the following experiments and found interesting 
-evidence that will aid in codesigning databases for new hardware.
+evidence that will aid in co-designing databases for new hardware.
 \begin{itemize}
-\item Comparison of various RDMA primitives over ibverbs library; \cpp{SEND} is best suited for returning scattered records.
-\item Comparison of different arrangements of small 128~B records to evaluate how to best exploit S/G DMA; Zero Copy, when carefully tuned offers better throughput and efficency.
+\item Comparison of various RDMA primitives over Mellanox Infiniband verbs library; We find that \cpp{SEND} is best suited for returning scattered records.
+\item Comparison of different arrangements of small 128~B records to evaluate how to best exploit S/G DMA; Zero Copy, {\em when carefully tuned} offers better throughput and efficency. We outline precisely when Copy Out can be faster 
+and more efficient than Zero Copy which could be exploited for small gains.
 \item Similar comparison on larger 1024~B records; Zero Copy is a clear winner in terms of throughput and efficiency across the board.
-\item Comparison of CPU cycles spent per transmitted byte; Overheads at transmissions $<$384~B makes Copy Out more efficient while Zero Copy is a clear winner for larger transmissions and larger records.
+\item Comparison of CPU cycles spent per transmitted byte; overheads at transmissions $<$384~B makes Copy Out more efficient while Zero Copy is a clear winner for larger transmissions and larger records.
 \item A breakdown of CPU overhead in transmission; \memcpy ~dominates CPU overheads to the tune of 95~\%, transmission overhead for smaller transmissions are conspicous.
 \end{itemize}
 
