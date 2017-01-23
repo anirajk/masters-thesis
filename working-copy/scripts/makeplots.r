@@ -349,9 +349,12 @@ plotDeltasMemBW <- function (d) {
     scale_linetype_discrete(name='Delta Record Size (B)') +
     scale_color_manual(name='Delta Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
-    coord_cartesian(xlim=c(0, 32),
-                    ylim=c(0, 8000)) +
+    coord_cartesian(xlim=c(0,32),
+                    ylim=c(0, 24000))+
+    geom_hline(yintercept=c(23950, 39321),color="black",linetype="longdash")+
+    annotate("text", x=10, y=20000, label="23.3 GB/s (Measured Peak Memory B/W) ", size=2.5, color = "black",vjust=-1)+
     myTheme
+  
   p
 }
 

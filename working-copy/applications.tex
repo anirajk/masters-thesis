@@ -4,20 +4,21 @@
 \label{chap:applications}
 
 We have seen the impact of Zero Copy on network transmission on Memory Bandwidth and how that 
-compares to the more traditional way of sending data over the network. The difference
+compares to using Copy Out to transmit data over the network. The difference
 in throughput is explicitly seen for smaller 128~B records, where owing to the descriptor overhead and anomalies discussed 
 in Chapter~\ref{chap:modernnics}, Copy Out gives better throughput performance especially when the transmissions get lareger.
-Since databases have started to store all data in memory at all times, database designers have started to normalize 
+Since more databases have started to store all data in memory at all times, database designers have started to normalize 
 aggressively and as a result, record sizes are trending smaller and 128~B records show
-a more realistic depiction of record sizes in the future. 
+a more realistic depiction of record sizes in the future~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
 
 At first, the throughput results from comparing Zero Copy and Copy Out for 128~B 
-records might tempt us to think that it's always better to use a traditional copy to get maximum throughput with smaller records.
+records might tempt us to think that it's always better to use a Copy Out get maximum throughput with smaller records.
 The complications of implementation and the cost of overheads are also rampant when using small records with Zero Copy.
 
 The bigger problem with Copy Out might get overlooked in the face of all these issues sorrounding Copy Out.
 While transmitting at around ~5.9GB/s(near line rate for the Connect-X3\textregistered),
-we saw that the memory pressure on the system is close to 12GB/s which is roughly half of what we evaluated our server is capable of.
+we saw that the memory pressure on the system is close to 12GB/s which is roughly half of what we evaluated our server is capable of. This implies 
+that network transmission will bottlenecks available memory bandwidth for doing useful work such as processing data in a hybrid or analytical workload.
 
 Zero Copy promises memory bandwidth savings in addition to eliminating CPU overhead, 
 while Copy Out can saturate the NIC throughput. We wanted to extract the best of both worlds 
@@ -134,13 +135,12 @@ Overall, we seek to answer these key questions:
 \begin{itemize}
 \item
 When should records be transmitted directly from a Bw-Tree? Are there cases
-where explicitly copying records into a transmit buffer is preferable to gather
-DMA operations?
+where explicitly copying records into a transmit buffer is preferable to Zero Copy?
 \item
 How aggressive should a Bw-Tree be in consolidating records to benefit individual
 clients and to minimize database server load?
 \item
-How does zero-copy impact state reclamation in the Bw-Tree? Might long transmit
+How does Zero Copy impact state reclamation in the Bw-Tree? Might long transmit
 times hinder performance by delaying garbage collection of stale records?
 \end{itemize}
 
@@ -184,9 +184,9 @@ times hinder performance by delaying garbage collection of stale records?
 \subsection{Extending the Delta Format to Clients}
 
 
-The experiments in the previous chapters consider delivering a clean, ordered set of records to the
+The experiments in Chapter~\cite{chap:modernnics} consider delivering a clean, ordered set of records to the
 client. That is, the server collects and transmits the precise set of records
-in the correct order, either via copy-out or zero-copy. Another option is to
+in the correct order, either via Copy Out or Zero Copy. Another option is to
 transmit base pages along with their deltas and have clients merge the results.
 This approach is attractive because it organically fits with the design of the
 Bw-Tree and it suits the DMA engine of the NIC well.  The NIC can transmit the
@@ -207,7 +207,7 @@ The NIC benefits from the large base page, and it manages to keep the network
 saturated. CPU overhead ranges from less than 0.3\% when there are a few delta
 records up to about 0.6\% when there are more. This offers a 30$\times$ reduction 
 in CPU overhead in comparison with our evaluation of the Copy Out approach in 
-Section ~\ref{sec:overhead}. Compared to zero-copy of scattered
+Section ~\ref{sec:overhead}. Compared to Zero Copy of scattered
 small records this approach also yields a 1.6$\times$ throughput advantage;
 Figure~\ref{fig:zero-copy-tput} shows that throughput peaks around 3.4~GB/s when
 records are scattered, while the delta format achieves around  5.6~GB/s. The main cost 

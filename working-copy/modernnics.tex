@@ -222,8 +222,11 @@ performance while enabling Zero Copy using \cpp{IBV_WR_SEND} as the opcode.
 Another issue we uncovered was that one-sided RDMA reads are not well positioned to 
 take advantage of the Zero Copy paradigm since it only supports a remote read 
 from a registered location from the other side in addition to requiring a secondary notification mechanism.
- The receiver needs to be active and you can  only gather one remote location in one call to the \cpp{ibv_post_send}.
-It could work better if we were to pipeline multiple requests, but we are losing out on efficiency per operation
+Others have argued for the use of one-sided RDMA for key-value stores~\cite{pilaf} and even for accelerating 
+range queries~\cite{zerocopyrangequery}. We estimate that these would be plausible only when there is a strong 
+correlation of queries with resulting values that are contigous in memory. In the general case, the receiver 
+needs to be active and you can  only gather one remote location in one call to the \cpp{ibv_post_send}.
+It could work better if we were to pipeline multiple requests, but we are losing out on efficiency per operation.
 
 Figure~\ref{fig:200B_transrate} shows a comparison of transmission
 peformance of various verbs transmitting 200 Byte records varying the number of records
