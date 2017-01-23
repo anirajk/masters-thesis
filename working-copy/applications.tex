@@ -3,7 +3,7 @@
 \chapter{Applications}
 \label{chap:applications}
 
-We have seen the impact of Zero Copy on network transmission on Memory Bandwidth and how that 
+We have seen the impact of Zero Copy on network transmission and Memory Bandwidth and how that 
 compares to using Copy Out to transmit data over the network. The difference
 in throughput is explicitly seen for smaller 128~B records, where owing to the descriptor overhead and anomalies discussed 
 in Chapter~\ref{chap:modernnics}, Copy Out gives better throughput performance especially when the transmissions get lareger.
@@ -14,21 +14,34 @@ a more realistic depiction of record sizes in the future~\cite{fb-memcache,fb-wo
 At first, the throughput results from comparing Zero Copy and Copy Out for 128~B 
 records might tempt us to think that it's always better to use a Copy Out get maximum throughput with smaller records.
 The complications of implementation and the cost of overheads are also rampant when using small records with Zero Copy.
+The bigger problem with Copy Out might get overlooked in the face of all these issues sorrounding Zero Copy.
+While transmitting at around ~5.9GB/s(near line rate for the Connect-X3\textregistered NIC),
+we saw that the memory pressure on the system is close to 12GB/s which is half of what we evaluated our server's total available memory bandwidth.
+ This implies  that network transmission will bottlenecks available memory bandwidth for doing useful work such as processing data in a hybrid or analytical workload.
 
-The bigger problem with Copy Out might get overlooked in the face of all these issues sorrounding Copy Out.
-While transmitting at around ~5.9GB/s(near line rate for the Connect-X3\textregistered),
-we saw that the memory pressure on the system is close to 12GB/s which is roughly half of what we evaluated our server is capable of. This implies 
-that network transmission will bottlenecks available memory bandwidth for doing useful work such as processing data in a hybrid or analytical workload.
+On-Line Analytical Processing (OLAP) and hybrid workloads hasvealso fuelled a renewed interest in column stores~\cite{cstore,cstorevsrowstore} in recent years. The impact of 
+modern NIC while designing column stores should also be discussed for completeness. This chapter introduces a hybrid approach between Zero Copy and 
+Copy Out using a client assisted design and evaluates the improvement in throughput and efficiency to provide evidence to back the approach.
+ We also make informed opinions on how Zero Copy might perform on column store designs for in-memory databases.
 
+
+\section{Bw-Trees}
+
+Chapter~\ref{chap:modernnics} showed us Copy Out might offer better transmission throughput for a large set 
+of scattered small records. It also showed the perils of using Copy Out where it consumes a lot of memory bandwidth, 
+starving the server of memory bandwidth which could be utilised for doing useful work.
 Zero Copy promises memory bandwidth savings in addition to eliminating CPU overhead, 
 while Copy Out can saturate the NIC throughput. We wanted to extract the best of both worlds 
 and we wanted to analyse structures that can uniquely take advantage of the 
-Zero Copy paradigm. 
+Zero Copy paradigm. This would impy an arrangement of small records where the total transmission size 
+goes up helping the transmission throughput while being able to do Zero Copy to help reduce memory footprint. In order for this 
+to work, we would also need a way of efficient update and synchronisation so that data being fetched for transmission remains 
+stable throughout the transmission.
 
 Microsoft\textregistered Research came up with a modern B-tree structure called 
-the Bw-Tree~\cite{bw-tree} which is their primary indexing structure for SQL Server, Hekaton~\cite{hekaton}.
-Bw-Tree is a high performance, ordered index employing lock and latch free concurrency and effective utilisation of caches in 
-modern multi core processors. In this chapter, we explore how a client assisted design involving a no-update-in-place 
+the Bw-Tree~\cite{bw-tree} which is their primary indexing structure for SQL Server Hekaton~\cite{hekaton}.
+Bw-Tree is a highly performant, ordered index employing lock and latch free concurrency and effective utilisation of caches in 
+modern multi core processors. In the following sections, we explore how a client assisted design involving a no-update-in-place 
 structure such as Bw-Trees can take advantage of Zero Copy and gain maximum throughput 
 without much system impact. We discuss how it's lock freedom and delta records makes it 
 particulary suitable to exploit Zero Copy in the following sections. We then present
@@ -72,6 +85,9 @@ it allows the contents of a page to swapped with a single atomic
 compare-and-swap (CAS) operation.
 \input{fig-bw-tree}
 
+
+\section{Delta Records}
+\label{sec:deltarecords}
 One of the key innovations of the Bw-Tree is its use of {\em delta records},
 which make updates inexpensive.
 Delta records allow the Bw-Tree to logically modify the
@@ -184,7 +200,7 @@ times hinder performance by delaying garbage collection of stale records?
 \subsection{Extending the Delta Format to Clients}
 
 
-The experiments in Chapter~\cite{chap:modernnics} consider delivering a clean, ordered set of records to the
+The experiments in Chapter~\ref{chap:modernnics} consider delivering a clean, ordered set of records to the
 client. That is, the server collects and transmits the precise set of records
 in the correct order, either via Copy Out or Zero Copy. Another option is to
 transmit base pages along with their deltas and have clients merge the results.
@@ -372,5 +388,24 @@ more than compensated for by eliminating the need for explicit transmit
 buffers. With copy-out, the size of the transmit buffer pool is necessarily
 larger than the amount of data under active transmission, and internal
 fragmentation in the transmit buffers makes this worse.
+
+
+\section{Zero Copy for Column Stores}
+
+Column oriented in-memory databases poses unique challenges in interacting with a modern NIC. 
+Column stores use contigous memory locations to store adjacent columns. Like we saw for the 
+Bw-Trees, it should be easy to construct a large base page with all the stable entries and 
+using Zero Copy to transmit the results while responding to a range query. 
+This would help transmission throughput and efficient use of memory bandwidth. 
+However, the key problem lies in the fact that end-users expect query processing and analytics on data 
+to materialise results in row-order. It has been argued before that early materialisation of data
+helps performance in column oriented databases~\cite{cstore-material}. If we were to discard these 
+considerations, Zero Copy might appear to be of great benefit. Since the response is larger, they 
+could be treated as one huge base page and any updates could be treated as delta records like we 
+saw in Section~\ref{sec:deltarecords} which would allow us to saturate the NIC's throughput without 
+compromising on memory bandwidth consumption.
+
+
+
 
 \input{takeaway-bwtrees}
