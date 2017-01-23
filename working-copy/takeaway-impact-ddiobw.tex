@@ -6,5 +6,5 @@
   \item While doing Zero Copy, almost all of the misses from DDIO region results in reads issued to memory controller.
   \item While doing Copy Out, since the data is already in memory, A miss from the DDIO region may not always result in a memory read
   \end{enumerate}
-  \textbf{Recommendation}:Keeping your transmission sizes under the size of a modern LLC (~20MB) can have considerable impact on your consumed memory bandwidth. \label{takeaway:impact-membw}
+  \textbf{Recommendation}:Keeping your transmission sizes under the size of a modern LLC (~20MB) can lower your memory bandwidth consumption considerably. \label{takeaway:impact-membw}
  }}
