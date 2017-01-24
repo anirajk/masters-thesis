@@ -89,6 +89,14 @@ As a result, the log cleaner is designed in such a way that after cleaning, the 
 segment gets garbage collected together freeing up more space than otherwise. To keep this property intact, we cannot force a deterministic order of data in RAMCloud and this might turn out to be a problem if 
 we want to pre-aggregate data to get higher transmission throughput.
 
-
+We set up an experiment to demonstrate the effect of collocating data in RAMCloud. RAMCloud's slated to provide a throughput of one million operations per second. We set up a cluster of 10 RAMCloud servers 
+and had 10 client issue ``multiget'' requests to the servers which returns values for multiple keys in one operation. The operations were done on a table of 10 keys which were placed in various servers in different 
+configuration. Figure~\ref{fig:colocation} shows the results from this experiment. When we had all 10 keys in one server, the whole cluster is expected to produce a throughput of 100 million objects read per second.
+Owing to the overhead of multiget, we observe around 45 million combined operations on the server. The dotted line shows the throughput of the server if we were to use a regular ``get'' request to extract keys one by one.
+We see a great benefit in the total throughput when all keys are collocated in a single server for all tables. The x-axis indicates the server spread. When we move along the x-axis, the second point indicates a configuration where for every table, 9 keys belong in one server and 
+another belongs in a different server. The right most point is the configuration where each server hosts one key of all the 10 tables across the server. The bottom half explains what fraction of total CPU burned was spent 
+doing useful work (worker) and what fraction went into handling the communication between servers(dispatch). We can cleary see that the amount of useful work done takes a great hit while the communication overhead dominates 
+even if each server in the cluster had to do one cross-machine extraction of data. Adding this to the fact that if all the keys were evenly spread across the cluster, the ``multiget'' request does more harm than good and getting the 
+keys one by one would've resulted in better aggregate throughput of the cluster, we can conclude that the effect of locality of data is paramount, especially for transfers involving a large amount of data.
 \input{fig-colocation}
 \section{Design Guidelines for a new protocol}
