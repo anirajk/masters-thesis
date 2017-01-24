@@ -78,6 +78,9 @@ only went up from 600MB/s to 700MB/s.
 
 The final step is the most interesting with respect to the lessons we have learned by analysing the NIC. Skipping the copying step before transmission took us from 700MB/s to 
 1150MB/s. This underlines our earlier observation that any extra copy involved in a transmission is pure overhead and significantly affects performance. 
+
+The analysis tells us that there is clearly room for improvement in migration performance in RAMCloud. While sequential replay of migrated segments of data seems to give the most benefits, 
+it is safe to assume that use of Zero Copy while transmitting dat from source will definitely enhance network transmission throughput without hurting the available memory bandwidth.
 \input{fig-bottlenecks}
 
 \subsection{Locality in RAMCloud}
@@ -97,6 +100,31 @@ We see a great benefit in the total throughput when all keys are collocated in a
 another belongs in a different server. The right most point is the configuration where each server hosts one key of all the 10 tables across the server. The bottom half explains what fraction of total CPU burned was spent 
 doing useful work (worker) and what fraction went into handling the communication between servers(dispatch). We can cleary see that the amount of useful work done takes a great hit while the communication overhead dominates 
 even if each server in the cluster had to do one cross-machine extraction of data. Adding this to the fact that if all the keys were evenly spread across the cluster, the ``multiget'' request does more harm than good and getting the 
-keys one by one would've resulted in better aggregate throughput of the cluster, we can conclude that the effect of locality of data is paramount, especially for transfers involving a large amount of data.
+keys one by one would've resulted in better aggregate throughput of the cluster, we can conclude that the effect of locality of data is paramount, and any movement of data to achieve better locality of data between servers will yield 
+great performance later.
+
 \input{fig-colocation}
 \section{Design Guidelines for a new protocol}
+Based on the analysis of the bottlenecks in the current protocol and the motivation that comes from having data localised to servers, some guidelines for developing a protocol for migration in RAMCloud
+is given below which has ties to the lessons we learned from benchmarking a modern NIC.
+
+\begin{itemize}
+\item Make use of {\em Zero Copy}; RAMCloud supports a slew of network transport protocols including TCP and Infiniband. Since kernel by-pass is essential in the design philosophy which calls for minimal 
+interrupts, more popular packet processing oriented transports like DPDK~\cite{dpdk} is also supported. No matter what protocol is used, We have seen from our previous chapters that 
+using Zero Copy yields superior performance and efficient utilisation of resources. The new protocol should minimise the number of copies involved before transmission.
+
+\item Layout your data such that there is {\em at least one large enough chunk} before transmission; Assuming we are doing a live migration while servicing data, it makes sense to reuse the principles of Bw-Trees here. Data 
+could be pre-aggregated into a buffer and updates and some set of scattered records (limited by the network card) maybe transmitted giving near line rate throughput and minimal overhead to 
+consumed memory bandwidth. Refer Section~\ref{sec:delta-tput-efficiency} for how a 16KB basepage can enhance transmission throughput by 1.6 times.
+
+\item {\em Defer re-replication} to the end; Our analysis of experiments only showed minor increase of performance when we avoided re-replication. Larger migrations would need higher {\em disk I/O bandwidth} which gets bottlenecked at around 
+300MB/s for regular spinning disks. It would be ideal to defer re-replication to the end provided there is some way to ensure safety of data in the face of failures during migration.
+
+\item {\em Defer partitioning} decisions before migration; We mentioned that ordering data within a RAMCloud server is not feasible because of utilisation. Any new migration scheme should continue to adhere to the principle of assuming no locality 
+of data within the server before migration unless significant changes are made to the log cleaning mechanism.
+
+\item {\em Parallelise or pipeline} steps in migration; We saw from our analysis that the sequential nature of the migration is detrimental to it's performance. A new protocol should be 
+able to parallelise the transfer of data as well as replaying at the receiver in order to attain maximum performance. 
+
+\end{itemize}
+
