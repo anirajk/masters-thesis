@@ -53,13 +53,42 @@ synchronous and unpipelined. While this is better by leaps and bounds than other
 we can attain better throughput without compromising on latency.
 
 \subsection{Current Protocol}
-\input{fig-migration-current}
 Figure ~\ref{fig:migration-current} shows the steps involved in the existing protocol. The key drawback to the current approach is that 
-most of the steps involved are synchronous and blocking. We analysed 
+most of the steps involved are synchronous and blocking. The current protocol could make use of Zero Copy since migration usually involves 
+large amount of data and sets of large data and the presence of \cpp{safeVersion}~\cite{ramcloudtx} makes Zero Copy an interesting proposition 
+for migration in RAMCloud. While doing migrations, we found that the migration throughput that RAMCloud's existing protocol provides to 
+be around 150MegaBytes per second (MB/s). While this is at least ten times better than the state of the art, there is definitely room for improvement in the protocol.
+We profiled the time spent in migration doing each of the steps mentioned in Figure~\ref{fig:migration-current}.
+
+\input{fig-migration-current}
+
+Figure~\ref{fig:bottlenecks} shows an analysis of how each of the bottlenecks affect RAMCloud's migration performance. We made versions of migration 
+protocol bypassing each of the bottlenecks and measured RAMCloud's migration performance in each of those scenarios. We migrated a table of one million 
+records with record sizes of 100~Bytes which comes close to ~150MB including the key and metadata.
+
+The first bottleneck we bypassed was the re-replication of data to the backups. This is a configurable parameter and removing this we observed a speedup from around 150MB/s to around 
+200MB/s. This explains that while disk bandwidth was indeed a bottleneck, avoiding it does not give significant performance boost while migrating a small data set.
+
+The second bottleneck we tried to avoid was to skip replaying the migrated segments on the receiver. From here on, the safety of the protocol is heavily compromised even under 
+ non failures. Since the point of the experiment was to show how much each step contributes to overall performance, we discard safety. Skipping replaying segments took us from 
+ 200MB/s to 600MB/s. 
+
+Since we exhausted all steps involved in the receiver during migration, we skipped the actual transmission of data from source to destination and not surprisingly, the throughput 
+only went up from 600MB/s to 700MB/s. 
+
+The final step is the most interesting with respect to the lessons we have learned by analysing the NIC. Skipping the copying step before transmission took us from 700MB/s to 
+1150MB/s. This underlines our earlier observation that any extra copy involved in a transmission is pure overhead and significantly affects performance. 
+\input{fig-bottlenecks}
 
 \subsection{Locality in RAMCloud}
+RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5$\mu$s~\cite{ramcloud}. RAMCloud doesn't have a strong notion of collocating data across servers. 
+It is known that transactions~\cite{ramcloudtx} and secondary indices~\cite{SLIK} can benefit with collocation of data. RAMCloud data is hash partitioned and within a server, the in-memory log is organised 
+in a temporal order. We might be tempted to think that storing data in contigous memory location in some order based on primary or secondary keys or even some other pre-determined order will give better NIC performance. 
+The key obstruction to doing this is RAMCloud's log cleaning mechanism~\cite{ramcloudfast}. RAMCloud's design philosophy rightly highlights the importance of DRAM utilisation when all data is in memory. 
+As a result, the log cleaner is designed in such a way that after cleaning, the log is reorganised so that records that are accessed in the same frequency are placed together, this makes sure that the records in the same 
+segment gets garbage collected together freeing up more space than otherwise. To keep this property intact, we cannot force a deterministic order of data in RAMCloud and this might turn out to be a problem if 
+we want to pre-aggregate data to get higher transmission throughput.
 
 
-\section{Design Guidelines for a new protocol}
-\input{fig-bottlenecks}
 \input{fig-colocation}
+\section{Design Guidelines for a new protocol}

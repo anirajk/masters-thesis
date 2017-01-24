@@ -41,8 +41,6 @@ On the other hand, if we exploit the scatter/gather list to
 transmit data directly from where they live in memory, we could reduce the number of times data is copied within the host before transmission. This style of transmitting data which minimises 
 the number of copies is what we'll refer as \enquote{\textbf{Zero Copy}} from now on.
 
-
-
 Zero copy DMA facilitates a scatter gather list of buffer descriptors
 which could be mapped to non contigous locations in memory on demand. These provide
 the added benefit that network headers don't need to exist along with data and helps bring more flexibility 
@@ -219,11 +217,11 @@ RDMA reads and write as op codes on the \cpp{ibv_send_wr} request which
 transmit data via \cpp{ibv_post_send} and measured the transmit 
 performance while enabling Zero Copy using \cpp{IBV_WR_SEND} as the opcode.
 \cpp{SEND} operations can transmit multiple entries in the S/G list.
-Another issue we uncovered was that one-sided RDMA reads are not well positioned to 
+Another issue we uncovered was that one-sided RDMA verbs are not well positioned to 
 take advantage of the Zero Copy paradigm since it only supports a remote read 
 from a registered location from the other side in addition to requiring a secondary notification mechanism.
 Others have argued for the use of one-sided RDMA for key-value stores~\cite{pilaf} and even for accelerating 
-range queries~\cite{zerocopyrangequery}. We estimate that these would be plausible only when there is a strong 
+range queries~\cite{zerocopyrangequery}. We estimate that these would be suitable for large transmissions only when there is a strong 
 correlation of queries with resulting values that are contigous in memory. In the general case, the receiver 
 needs to be active and you can  only gather one remote location in one call to the \cpp{ibv_post_send}.
 It could work better if we were to pipeline multiple requests, but we are losing out on efficiency per operation.

@@ -407,5 +407,18 @@ compromising on memory bandwidth consumption.
 
 
 
+\section{Conclusion}
+
+Zero Copy and Copy Out provides different optimisations for scattered, small records. A hybrid approach 
+which leverages the high throughput that we obtain as a result of pre-assembling scattered records and 
+using Zero Copy to transmit will yield good transmission throughput without consuming a lot of memory bandwidth.
+\begin{itemize}
+\item With the assumption of {\em co-operative clients}, we can continue to use Zero Copy and get better results 
+while dealing with small, scattered records which are common in in-memory databases.
+\item Advanced structures such as the Bw-Tree which allows no update in place and complete lock and latch freedom 
+can be exploited for it's suitability with the NICs.
+\item Column stores could also benefit from the hybrid approach; materialising results in row-order makes Zero Copy 
+more complicated in modern NICs.
+\end{itemize}
 
 \input{takeaway-bwtrees}
