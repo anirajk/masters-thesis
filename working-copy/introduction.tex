@@ -23,21 +23,22 @@ transfers of data, we profiled a modern NIC with a focus on heavy data transfers
  but they also generalize to other operations involving large transfer of data in a distributed in-memory database. 
 
 This thesis is structured into four key pieces. 
-Chapter~\cite{chap:intro} gives an introduction of the problem space and the motivation for this work. 
-It also outlines an overview of all the experiments and key contributions. Chapter~\cite{chap:modernnics} introduces 
-our notion of enquote{\textbf{Zero Copy}} and enquote{\textbf{Copy Out}} and explains 
+Chapter~\ref{chap:intro} gives an introduction of the problem space and the motivation for this work. 
+It also outlines an overview of all the experiments and key contributions. Chapter~\ref{chap:modernnics} introduces 
+our notion of \enquote{\textbf{Zero Copy}} and \enquote{\textbf{Copy Out}} and explains 
 the lessons we learned when we developed a microbenchmark to profile a modern NIC with kernel bypass and RDMA doing bulk transfer 
 of data. The chapter also provides a detailed study of impact on the available system resources while we achieve 
 near line rate network transmission performance. Recommendations for a database designer are provided and takeaways 
-from our experiments are explicitly listed. Chapter~\cite{chap:applications} enumerates a few scenarios where we can 
+from our experiments are explicitly listed. Chapter~\ref{chap:applications} enumerates a few scenarios where we can 
 leverage our observations to improve server efficiency and transmission throughput using an advanced NIC. We evaluate a 
 client assisted design and discuss future directions on how column stores can benefit from the NIC.
-Chapter~\cite{chap:migration} discusses how the nuanced performance characteristics for the NIC can influence 
+Chapter~\ref{chap:migration} discusses how the nuanced performance characteristics for the NIC can influence 
 design for rapid reconfiguration in RAMCloud~\cite{ramcloud}. It discusses a breakdown of RAMCloud’s existing migration mechanism to understand its bottlenecks
 and propose the basics of a new design for migration that we believe will advance state of the art
 in terms of time taken to migrate large amounts of data within a cluster of in-memory storage systems
-with minimal disruption to the normal case operation. Chapter~\cite{chap:relatedwork} discuss prior work that laid the 
-foundation for this work and the state-of-the-art research in in-memory databases and data transfer in fast networks.
+with minimal disruption to the normal case operation. Chapter~\ref{chap:relatedwork} discuss prior work that laid the 
+foundation for this work and the state-of-the-art research in in-memory databases and data transfer in fast networks and 
+Chapter~\ref{chap:conclusion} concludes and discusses future directions.
 
 While developing the microbenchmark to analyze a NIC, one thing was becoming increasingly clearer to us.
 Modern network cards have grown incredibly complex, partly in response to

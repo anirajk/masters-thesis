@@ -72,11 +72,27 @@ such as HERD~\cite{herd} and MICA~\cite{mica} and systems that provide more comp
 data models such as RAMCloud~\cite{ramcloud} use RDMA effectively and there have been 
 published guidelines to maximise performance for dispatch heavy workloads~\cite{rdma}
 
+
+\subsection{Data Migration}
+Research efforts focussing on reconfiguration for in-memory databases has seen a lot of 
+renewed interest. Albatross~\cite{albatross} offered live reconfiguration with unavailability windows as low as 
+300ms. Zephyr~\cite{zephyr} focuses on mitigating violations to Service Level Agreements (SLAs) and limits 
+change in average latency to 10-20\% but like albatross, operates on latencies of the order of tens of milliseconds 
+Squall~\cite{squall} employs reactive pulls and pre partitioning
+of data for fast migrations and is the state of the art for low impact migrations which specifically works well for 
+heavily skewed workloads. Like others, Squall also operates on platforms with throughput and latencies orders of 
+magnitude less than what is possible with today's hardware. The key challenge in implementing migration in a system 
+like RAMCloud is to maintain the latencies which are 1000$\times$ tighter than these systems.
+
+
 \section{Data Transfer in Fast Networks}
 As pointed out by various researchers in the past, the days of slow networks are over~\cite{slow}
 and the thesis argues heavily in favor of that fact. Several efforts in the past have exploited
 user level NIC access as well as RDMA for highly performant distributed database systems~\cite{ramcloud,farm,farmtx,drtm,hyper}
-as well as block I/O for file systems~\cite{rdmagfs}.
+as well as block I/O for file systems~\cite{rdmagfs}. The closest analysis that we have found on 
+range queries and in-memory databases~\cite{zerocopyrangequery} argues for use of RDMA reads and 
+multi socket parallelistaion of copying of datra. Our analysis is more detailed and quantifies the 
+results with memory bandwidth and effects of DDIO.
 Our findings should also complement other efforts such as transactional key value stores~\cite{deuteronomy} 
 and shared-data databases~\cite{tell}. Small, fixed-size request/response cycles have been optimized in
 existing research~\cite{farm,herd,mica,rdma,ramcloud}, but the efficient
@@ -89,12 +105,13 @@ different analysis of host interaction with Mellanox Infiniband network adapters
 and they extract rules of thumb to help developers get the best performance from the hardware.
 The low-level nature of their analysis is especially suited for
 optimizing dispatch-heavy workloads with a high-volume of small
-request-response operations. Squall~\cite{squall} employs reactive pulls and pre partitioning
-of data for fast migrations but operates on platforms with throughput and latencies orders of 
-magnitude less than what is possible with today's hardware.
+request-response operations.
 
+\section{Summary}
 Our work is built on the premises of these research ideas and it's unique take on
 heavy transfers in the presence of tight SLAs (latencies of the order of 10s of microseconds)
 make it stand out among the related work. Until now, mixing workloads such as range scans 
-and data migration, especially in the presence of modern networks has not been well
- understood from the server side.
+and data migration, especially in the context of modern networks has not been well
+ understood from the server side. We present an in-depth analysis of resource utilisation, 
+ the impact of DDIO and how data layout affects performance and efficiency in a modern 
+ in-memory database.

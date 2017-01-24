@@ -2,14 +2,47 @@
 
 \chapter{Conclusion}
 \label{chap:conclusion}
-TODO: Pull all recommendations and takeaways into sentences.
+We started out with the following theis statement.
+
+\textbf{\enquote{Scale-out in-memory stores are optimized for small requests
+under tight SLAs, and bulk data movement, for rebalancing and range queries, interfere;
+We hypothesize that carefully leveraging data layout and advancements in modern NICs
+will yield to gains in performance and efficiency for large transfers in these systems
+without disrupting their primary obligations.}}
+
+We have found conclusive evidence for this statement by evaluating the transmit performance 
+of a NIC and the resource utilisation of a server while transfering large amounts of data. We 
+made numerous recommendations and observations from benchmarking the NIC. We presented a client-assisted 
+approach which will get better throughput without compromising resources. We analysed the effect of collocating
+data in RAMCloud and benchmarked the key bottlenecks in the current migration protocol. We also proposed a set of design 
+guidelines for a new migration protocol for RAMCloud drawing lessons from observing the NIC closely while it was 
+transferring gigabytes of data. 
+\input{takeaway-verbs}
+\input{takeaway-tput}
+\input{takeaway-cpu-overhead}
+\input{takeaway-cpu-cycles}
+\input{takeaway-impact-membw}
+\input{takeaway-impact-ddiobw}
+\input{takeaway-impact-ddiobw-savings}
+\input{takeaway-impact-pciebw}
+\input{takeaway-bwtrees}
 
 \section{Future Directions}
-\label{sec:futuredirections}
 
 \begin{enumerate}
-\item TODO:  investigate and build more hybrid data structures for Zero Copy
-\item TODO: Evaluate impact on column stores
-\item TODO: PCIe errors give reasonable explanation. find exactly why anomaly happens
-\item TODO: Build migration for RAMCloud
+\item Investigate and build more hybrid data structures for Zero Copy; we saw how a lock and latch free data structure that can support no update-in-place 
+fits well with the NIC's Zero Copy structure. While we employed a similar structure in our benchmark to show the benefits, there is a lot of complexity associated 
+with a full implementation of such a structure. It should also be mentioned that there may be other structures that are uniquely capable of exploiting the modern NIC's 
+performance characteristics
+\item Evaluate impact on column stores;we discuss the possible impact of column stores and how the row-oriented result format might cause problems doing Zero Copy. We need 
+to actually measure the transmit performance and resource impact for a complete implementation of a column oriented, in-memory database.
+\item Analyse throughput anomaly for small records in depth;while DRAM traffic resulting from PCIe errors correlates with the performance dip observed in Zero Copy, 
+they don't explain why this happens for exactly when we transmit 2048~B (16 records). There needs to be a more detailed analysis around this
+\item Build an actual migration protocol for RAMCloud;the set of guidelines provided in the thesis only serves as a reference point, there would be significant challenges 
+in actual implementation of a migration protocol for a complex system such as RAMCloud where we may also need to generalise the protocol for older network hardware for backward 
+compatibility.
+\item Evaluation of a wider variety of NICs; we based all of our experiments on Mellanox Infiniband ConnectX-3\textregistered NICs, At the time of writing, Mellanox has already 
+released plans of releasing NICs that offer 4$\times$ maximum throughput and latencies of a few hundred nanoseconds. The scatter gather length of 32 was an important constant in 
+all our observations, it would be interesting to note how the behaviour of the system will change with a scatter-gather list of a different length. We also need to draw parallel 
+conclusions for other advanced NICs which may not explicitly support S/G DMA like the mellanox hardware
 \end{enumerate}
