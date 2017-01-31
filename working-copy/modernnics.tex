@@ -152,6 +152,7 @@ All of our experiments have inlining disabled. Enabling inlining gives almost id
 works for transmissions of ~912 B or less.
 
 \section{Eliminating Contention}
+\label{sec:code-optimisation}
 We used thread local transmit buffers to avoid contention on the buffer pool during Copy Out transmission and this optimisation shows considerably less 
 overhead due to busy waiting to get free transmit buffers than that in the published results~\cite{imdmpaper}. 
 The measurements in this thesis only include data collected after the optimisation.
