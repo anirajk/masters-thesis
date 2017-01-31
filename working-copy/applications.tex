@@ -1,6 +1,6 @@
 %%% -*-LaTeX-*-
 
-\chapter{Applications}
+\chapter{Applications for a Client Assisted Design}
 \label{chap:applications}
 
 We have seen the impact of Zero Copy on network transmission and Memory Bandwidth and how that 
@@ -10,7 +10,6 @@ in Chapter~\ref{chap:modernnics}, Copy Out gives better throughput performance e
 Since more databases have started to store all data in memory at all times, database designers have started to normalize 
 aggressively and as a result, record sizes are trending smaller and 128~B records show
 a more realistic depiction of record sizes in the future~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
-
 At first, the throughput results from comparing Zero Copy and Copy Out for 128~B 
 records might tempt us to think that it's always better to use a Copy Out get maximum throughput with smaller records.
 The complications of implementation and the cost of overheads are also rampant when using small records with Zero Copy.
@@ -19,14 +18,16 @@ While transmitting at around ~5.9GB/s(near line rate for the Connect-X3\textregi
 we saw that the memory pressure on the system is close to 12GB/s which is half of what we evaluated our server's total available memory bandwidth.
  This implies  that network transmission will bottlenecks available memory bandwidth for doing useful work such as processing data in a hybrid or analytical workload.
 
-On-Line Analytical Processing (OLAP) and hybrid workloads hasvealso fuelled a renewed interest in column stores~\cite{cstore,cstorevsrowstore} in recent years. The impact of 
-modern NIC while designing column stores should also be discussed for completeness. This chapter introduces a hybrid approach between Zero Copy and 
-Copy Out using a client assisted design and evaluates the improvement in throughput and efficiency to provide evidence to back the approach.
- We also make informed opinions on how Zero Copy might perform on column store designs for in-memory databases.
+On-Line Analytical Processing (OLAP) and hybrid workloads composed of transactional and analytical queries have fuelled a renewed interest in column stores~\cite{cstore,cstorevsrowstore} in recent years. 
+Column stores are uniquely positioned to take advantage of the NIC because of their layout and compression benefits.
+ The impact of modern NIC while designing column stores should also be discussed for completeness. 
+
+This chapter introduces a client assisted design with bounded disorder for using Zero Copy with no-update-in-place row stores as well as column stores. 
+We evaluate the improvement in throughput and efficiency to provide evidence to back the approach of bounded disorder.
+We also make informed opinions on how Zero Copy might perform on column store designs for in-memory databases with co-operation from clients for materialising data.
 
 
 \section{Bw-Trees}
-
 Chapter~\ref{chap:modernnics} showed us Copy Out might offer better transmission throughput for a large set 
 of scattered small records. It also showed the perils of using Copy Out where it consumes a lot of memory bandwidth, 
 starving the server of memory bandwidth which could be utilised for doing useful work.
@@ -393,19 +394,38 @@ fragmentation in the transmit buffers makes this worse.
 \section{Zero Copy for Column Stores}
 
 Column oriented in-memory databases poses unique challenges in interacting with a modern NIC. 
-Column stores use contigous memory locations to store adjacent columns. Like we saw for the 
-Bw-Trees, it should be easy to construct a large base page with all the stable entries and 
-using Zero Copy to transmit the results while responding to a range query. 
-This would help transmission throughput and efficient use of memory bandwidth. 
+Column stores use contigous memory locations to store adjacent columns. They have also been known 
+to use Run-Length Encoding, Dictionary Encoding, Bit-Vector Encoding and more heavier schemes 
+like Lempel-Ziv Encoding for yielding better compression which is one of the many value 
+propositions of using a column oriented layout. We observed in the previous 
+sections, Zero Copy offers promising performance if we had stable entries and used Zero Copy
+ to transmit the results while responding to a range query. 
 However, the key problem lies in the fact that end-users expect query processing and analytics on data 
 to materialise results in row-order. It has been argued before that early materialisation of data
-helps performance in column oriented databases~\cite{cstore-material}. If we were to discard these 
-considerations, Zero Copy might appear to be of great benefit. Since the response is larger, they 
-could be treated as one huge base page and any updates could be treated as delta records like we 
-saw in Section~\ref{sec:deltarecords} which would allow us to saturate the NIC's throughput without 
-compromising on memory bandwidth consumption.
+helps performance in column oriented databases~\cite{cstore-material}. This makes the application 
+of a scatter gather list difficult and we might have already used a \memcpy ~or an alternative 
+to materialise the data. 
 
-
+We argue for the possibility of a different materialisation strategy with more engagement from the 
+clients. If the database server were to sent filtered columns and required metadata such as the 
+dictionary encoding as scatter gather entries, we could leverage Zero Copy's performance. We believe 
+this approach would work even for hybrid layouts~\cite{hyrise-hybridstores} which use row oriented or 
+column oriented formats varying width of columns according to the type of workload. Figure ~\ref{fig:rowstore-colstore}
+shows how row stores and column stores could transmit data using Zero Copy using a client assisted design.
+In practice, there are numerous challenges associated with this design:
+\begin{enumerate}
+\item Client co-operation; this scheme of transmitting results would need smart clients which are 
+capable of materialising data given the encoding scheme and the columns. We assume that the client 
+has enough resources to spend in finessing the results.
+\item Low selectivity in queries; we have seen packing more data yields more savings and performance 
+from Zero Copy. We also know that the compression schemes in column stores can limit transfer sizes. 
+As a result, queries with low selectivity are a natural fit for Zero Copy.
+\item Well compressed metadata; the client assisted design would need the encoding to be transmitted 
+along with the results, this would need efficient compression and lean data structures for metadata
+\end{enumerate}
+\input{fig-rowstore-colstore}
+There needs to be further evaluation of how we can extract maximum performance and efficiency from 
+a server equipped with a modern NIC.
 
 \section{Conclusion}
 
@@ -413,12 +433,13 @@ Zero Copy and Copy Out provides different optimisations for scattered, small rec
 which leverages the high throughput that we obtain as a result of pre-assembling scattered records and 
 using Zero Copy to transmit will yield good transmission throughput without consuming a lot of memory bandwidth.
 \begin{itemize}
-\item With the assumption of {\em co-operative clients}, we can continue to use Zero Copy and get better results 
-while dealing with small, scattered records which are common in in-memory databases.
+\item With the assumption of {\em co-operative clients} and queries with low selectivity, we can continue 
+to use Zero Copy and get better results while dealing with small, scattered records which are common in in-memory databases.
 \item Advanced structures such as the Bw-Tree which allows no update in place and complete lock and latch freedom 
-can be exploited for it's suitability with the NICs.
+can be exploited for it's suitability with the NICs. Further evaluation is required for these to work in practice.
 \item Column stores could also benefit from the hybrid approach; materialising results in row-order makes Zero Copy 
-more complicated in modern NICs.
+more complicated in modern NICs and one possibility is to send the encoding metadata along with the results with client assisted 
+materialisation.
 \end{itemize}
 
 \input{takeaway-bwtrees}

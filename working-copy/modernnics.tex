@@ -128,7 +128,7 @@ bandwidth, and is pure overhead.
 \section{DDIO}
 One conflating factor in understanding the benefits of Zero Copy is Data Direct I/O (DDIO)~\cite{ddio}.
  DDIO is a performance-oriented enhancement to the DMA mechanism which was introduced in Intel\textregistered Xeon E5 processors with Sandy Bridge-EP micro-architecture.
- With DDIO\textregistered, CPU caches are used as the primary source and destination for I/O, 
+ With DDIO, CPU caches are used as the primary source and destination for I/O, 
 allowing network interface controllers (NICs) to talk directly to the last level caches of local CPUs
 and avoid costly fetching of the I/O data from system RAM. As a result, if we have enough locality of data to exploit,
 DDIO reduces the overall I/O processing latency, allows processing of the I/O 
@@ -365,7 +365,7 @@ We wanted to make sure our profiling code shouldn't interfere with the timing of
  An interesting thing about measuring performance 
  of a modern CPU is that almost all of the metrics of significance exist outside of the cores. These measurements 
  are classified as uncore or offcore measurements in the Performance Monitoring Unit(PMU) moniker.
- The newer generation CPUs that we used had the Sandy Bridge\textregistered microarchitecture which provide uncore performance 
+ The newer generation CPUs that we used had the Sandy Bridge microarchitecture which provide uncore performance 
  monitoring unit and we measured their performance counters to accurately gauge impact.
 
 
@@ -527,8 +527,8 @@ a bigger multiplier on transmission throughput than 1024~B records. For 128~B re
 \input{takeaway-impact-membw-ratio}
 
 \subsection{DDIO traffic}
-Newer generation of Intel Processor's have a portion of their Last Level Cache dedicated for I/O. This was initially called Direct Cache Access\textregistered 
-and more recently named DDIO\textregistered. This changes our perception of memory consumption quite a bit. Network transmission occurs at this part of the Last Level Cache 
+Newer generation of Intel Processor's have a portion of their Last Level Cache dedicated for I/O. This was initially called Direct Cache Access 
+and more recently named DDIO. This changes our perception of memory consumption quite a bit. Network transmission occurs at this part of the Last Level Cache 
 and even the destination for a packet over the network becomes this dedicated portion of LLC. This has significant impact in the number of LLC misses the system 
 has to take while dealing with network traffic. The key limitation to DDIO is that usually it's allocated as only 10\% of LLC which is around 2~MB in a modern system. 
 But as long as a single transmission doesn't surpass this size, we can expect higher efficiency in transmission due to DDIO. In all of our experiments, we were doing transmission of 
@@ -546,12 +546,12 @@ most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:d
 \input{fig-ddiobw}
 
 
-\subsection{DDIO\textregistered savings in Copy Out}
+\subsection{DDIO savings in Copy Out}
 \label{sec:ddiobw-savings}
 The previous sections showed how Copy Out can be costly and degrade system performance because of the consumed memory bandwidth. We also examined how DDIO traffic plays a big role 
 in modern CPU architecture in limiting I/O costs. We are going to examine the interesting side effect of the additional \memcpy~ . Figure ~\ref{fig:ddiobw-percent} shows what percentage of consumed 
 memory bandwidth results from misses from the DDIO region. It tells us that While we pay the price of \memcpy to bring data to the LLC, it actually helps in limiting further DRAM access while transmitting 
-from the region reserved for DDIO\textregistered. If not for this effect, both Copy Out and Zero Copy might have added Memory Bandwidth consumption in bringing data from DRAM for transmission. 
+from the region reserved for DDIO. If not for this effect, both Copy Out and Zero Copy might have added Memory Bandwidth consumption in bringing data from DRAM for transmission. 
 \input{fig-ddiobw-percent}
 \input{takeaway-impact-ddiobw-savings}
 

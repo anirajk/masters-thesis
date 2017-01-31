@@ -47,6 +47,9 @@ highest order for an In-memory database. They could even scale distributed trans
 hundreds of millions of operations with recovery times of the order of milliseconds. There 
 are other systems such as Silo~\cite{silo} which effectively utilises multi core CPUs.
 
+\subsection{Column Stores}
+TODO: \cite{cstore,cstorevsrowstore,cstore-material,cstorecompression}
+
 \subsection{Lock freedom}
 Lock freedom is important for Zero Copy and RDMA since these complicates concurrency since
 you have less control over NIC read and writes. Lock and latch freedom are 
@@ -84,10 +87,10 @@ heavily skewed workloads. Like others, Squall also operates on platforms with th
 magnitude less than what is possible with today's hardware. The key challenge in implementing migration in a system 
 like RAMCloud is to maintain the latencies which are 1000$\times$ tighter than these systems.
 
-
 \section{Data Transfer in Fast Networks}
-As pointed out by various researchers in the past, the days of slow networks are over~\cite{slow}
-and the thesis argues heavily in favor of that fact. Several efforts in the past have exploited
+As pointed out by various researchers in the past, the days of slow networks are over~\cite{slow} 
+and network no longer remains the primary bottleneck which database designers should take for granted.
+This thesis argues heavily in favor of that fact. Several efforts in the past have exploited
 user level NIC access as well as RDMA for highly performant distributed database systems~\cite{ramcloud,farm,farmtx,drtm,hyper}
 as well as block I/O for file systems~\cite{rdmagfs}. The closest analysis that we have found on 
 range queries and in-memory databases~\cite{zerocopyrangequery} argues for use of RDMA reads and 

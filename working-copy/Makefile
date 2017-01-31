@@ -128,6 +128,8 @@ PDFFILES	= fig1.pdf			  \
 		  figures/fig-colocation.pdf      \
 		  figures/fig-deltas-tput.pdf     \
 		  figures/fig-overheads.pdf       \
+      figures/fig-colstore.pdf        \
+      figures/fig-rowstore.pdf        \
       figures/100B_transrate.pdf      \
       figures/fig-1000B-RDMAverbs.pdf \
       figures/fig-cycles.pdf          \
@@ -178,6 +180,7 @@ TEXFILES        = abstract.tex			\
 		  fig-bw-tree.tex               \
 		  fig-deltas.tex                \
 		  fig-colocation.tex            \
+		  fig-rowstore-colstore.tex     \
 		  fig-bottlenecks.tex           \
 		  fig-cycles.tex                \
 		  fig-overheads.tex             \

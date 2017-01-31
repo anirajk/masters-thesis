@@ -18,27 +18,26 @@ We set out to improve the efficiency of RAMCloud's~\cite{ramcloud} data migratio
 RAMCloud is a storage system that keeps all data in DRAM at all times and provides low latency access by
 leveraging advancements like kernel bypass which are present in a modern NIC.
 To thoroughly understand the complexities involved in NIC in doing huge
-transfers of data, we profiled a modern NIC with a focus on heavy data transfers.
+transfers of data, we profiled a modern NIC with a focus on massive data transfers.
  We made several discoveries that informed our design for RAMCloud,
- but they also generalize to other operations involving large transfer of data in a distributed in-memory database. 
+ but they also generalize to other operations involving large transfers of data in a distributed in-memory database. 
 
-This thesis is structured into four key pieces. 
-Chapter~\ref{chap:intro} gives an introduction of the problem space and the motivation for this work. 
+This thesis is structured into six key pieces. 
+Chapter~\ref{chap:intro} gives an introduction to the problem space and the motivation for this work. 
 It also outlines an overview of all the experiments and key contributions. Chapter~\ref{chap:modernnics} introduces 
 our notion of \enquote{\textbf{Zero Copy}} and \enquote{\textbf{Copy Out}} and explains 
-the lessons we learned when we developed a microbenchmark to profile a modern NIC with kernel bypass and RDMA doing bulk transfer 
-of data. The chapter also provides a detailed study of impact on the available system resources while we achieve 
-near line rate network transmission performance. Recommendations for a database designer are provided and takeaways 
+the lessons we learned when we developed a microbenchmark to profile a modern NIC with kernel bypass and RDMA doing bulk transfers 
+of data. The chapter also provides a detailed study of the impact on the available system resources while we achieve 
+near the line rate of network transmission performance. Recommendations for a database designer are provided, and takeaways 
 from our experiments are explicitly listed. Chapter~\ref{chap:applications} enumerates a few scenarios where we can 
-leverage our observations to improve server efficiency and transmission throughput using an advanced NIC. We evaluate a 
-client assisted design and discuss future directions on how column stores can benefit from the NIC.
-Chapter~\ref{chap:migration} discusses how the nuanced performance characteristics for the NIC can influence 
+leverage our observations to improve server efficiency and network transmission using a client assisted design.
+ We quantify the benefits of such an approach and discuss future directions on how this design will apply to column-oriented 
+ databases. Chapter~\ref{chap:migration} discusses how the nuanced performance characteristics for the NIC can influence 
 design for rapid reconfiguration in RAMCloud~\cite{ramcloud}. It discusses a breakdown of RAMCloud’s existing migration mechanism to understand its bottlenecks
 and propose the basics of a new design for migration that we believe will advance state of the art
-in terms of time taken to migrate large amounts of data within a cluster of in-memory storage systems
-with minimal disruption to the normal case operation. Chapter~\ref{chap:relatedwork} discuss prior work that laid the 
-foundation for this work and the state-of-the-art research in in-memory databases and data transfer in fast networks and 
-Chapter~\ref{chap:conclusion} concludes and discusses future directions.
+in the reconfiguration of distributed in-memory database. Chapter~\ref{chap:relatedwork} discuss prior work that laid the 
+foundation for this research and the state-of-the-art in in-memory databases and data transfer in high-speed networks. 
+Chapter~\ref{chap:conclusion} reiterates our conclusions and discusses future directions for this work.
 
 While developing the microbenchmark to analyze a NIC, one thing was becoming increasingly clearer to us.
 Modern network cards have grown incredibly complex, partly in response to
