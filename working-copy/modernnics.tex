@@ -217,36 +217,41 @@ avoid as many TLB misses as possible.
 \input{fig-setup}
 
 \subsection{Comparing RDMA modes for transmission}
-We started out by getting measurements of transmission speeds using RDMA verbs.
-We implemented operations using Infinibands verbs library. We implemented 
+We started out by getting measurements of transmission speeds using RDMA verbs.  
+READ and WRITE are the most commonly employed RDMA verbs because they are one sided
+and does not require both ends to be active in theory. RDMA read has the additional incentive 
+that it is client initiated. SEND/RECEIVE primitives on the other hand are two-sided and 
+server initiated.  We evaluated the performance of each of this using Infinibands verbs library. We implemented 
 RDMA reads and write as op codes on the \cpp{ibv_send_wr} request which 
 transmit data via \cpp{ibv_post_send} and measured the transmit 
 performance while enabling Zero Copy using \cpp{IBV_WR_SEND} as the opcode.
 \cpp{SEND} operations can transmit multiple entries in the S/G list.
-Another issue we uncovered was that one-sided RDMA verbs are not well positioned to 
+One issue we uncovered was that one-sided RDMA verbs are not well positioned to 
 take advantage of the Zero Copy paradigm since it only supports a remote read 
-from a registered location from the other side in addition to requiring a secondary notification mechanism.
+from a registered location from the other side. READ also requires a secondary notification mechanism 
+to work in pradtice negating the advantage of being one sided.
 Others have argued for the use of one-sided RDMA for key-value stores~\cite{pilaf} and even for accelerating 
 range queries~\cite{zerocopyrangequery}. We estimate that these would be suitable for large transmissions only when there is a strong 
 correlation of queries with resulting values that are contigous in memory. In the general case, the receiver 
-needs to be active and you can  only gather one remote location in one call to the \cpp{ibv_post_send}.
+needs to be active and you can only gather one remote location in one call to the \cpp{ibv_post_send}.
 It could work better if we were to pipeline multiple requests, but we are losing out on efficiency per operation.
 
 Figure~\ref{fig:200B_transrate} shows a comparison of transmission
-peformance of various verbs transmitting 200 Byte records varying the number of records
+performance of different verbs transmitting 200 Bytes(B) records varying the number of records
 that could be transmitted at a time for various operations.The green dot shows
 the performance for RDMA reads which is also unfair
 since RDMA reads can only transmit a single record at a time. Others have argued The blue dot
 shows RDMA write performance using a full scatter/gather list. The record sizes were 
-also an interesting measure to arrive at. Higher data sizes such as 1000~B recoreds showed a clearer benefit of using \cpp{SEND} in Figure~\ref{fig:1000B_transrate}.
-They almost always result in better throughput measurements than when we employ the other RDMA primitives.
-In the world of In-memory databases,
-there is an argument to be made that record sizes will get smaller since 
-database designers can aggresively normalise and this has proven increasingly to
-the liking of companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload,inmemoryworkload}.
-\clearpage
+also an interesting measure to arrive at. Larger data sizes such as 1000~B recoreds showed a clearer benefit of using \cpp{SEND} in Figure~\ref{fig:1000B_transrate}.
 \input{fig-200B-manymodes}
 \input{fig-1000B-manymodes}
+SEND almost always result in better throughput measurements than when we employ the other RDMA primitives.
+
+\subsection{Record Sizes}
+In the world of In-memory databases, there is an argument to be made that record sizes will get smaller since 
+database designers can aggresively normalise and this has proven increasingly to
+the liking of companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
+We choose 128~B records and 1024~B records for our evaluations in the rest of the thesis
 
 
 \input{takeaway-verbs}
