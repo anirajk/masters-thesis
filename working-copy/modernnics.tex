@@ -251,7 +251,7 @@ In the world of In-memory databases, there is an argument to be made that record
 The decreased access latency of in-memory databases makes them well-suited to smaller, finer-grained records
 than were previously common. One expectation is that this will drive databases
 toward more aggressively normalized layouts with small records. This
-seems to be increasingly the case as records of a few hundreds bytes or less
+seems to be increasingly the case as records of a few hundred bytes or less
 are now typical even for companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
 We choose 128~B records as a realistic sample of record sizes in the future and compare it against 
 1024~B records to see the performance impact due to bounded-disorder in our evaluations in the rest of the thesis.
@@ -349,59 +349,57 @@ increase the transmission sizes further but never gets back to the peak transmis
 for careful attention to the length of S/G list in order for a database designer to get peak performance while using small record sizes and larger 
 transmissions. We dig deeper into this anomaly and find evidence as to why this happens with the 
 help of measuring traffic induced in the Memory controller due to LLC misses because of DDIO and 
-PCIe traffic in Section~\ref{sec:impact}. Owing to this abberation, copying 128~B records 
+PCIe traffic in Section~\ref{sec:impact}. Owing to this aberration, copying 128~B records 
 on-the-fly can significantly outperform Zero Copy transmission when there are 
-enough results (more than 16 records in our NIC which is capable of transmitting 32 at once) to group per transmission.
-In fact, Copy Out can saturate the network with small records, and it
-performs similar to Zero Copy with larger 1024~B records.
+enough results (more than 16 records in our NIC which is capable of transmitting 32 at once) 
+in a response. In fact, Copy Out can saturate the network with small records, and it
+performs identical to Zero Copy with larger 1024~B records.
 \input{takeaway-tput}
 
 \section{System Impact}
 \label{sec:impact}
 
-We saw how the Zero Copy promises savings enhanced performance 
-in the previous section. To put things in the context of resource utilisation and
- to quantify performance gains, we profiled our benchmark code for CPU utlisation, memory bandwidth 
+We saw how the Zero Copy promises enhanced savings and performance 
+in the previous section. To put things in the context of resource utilization and
+ to quantify performance gains, we profiled our benchmark code for CPU utilization, memory bandwidth 
  and some other metrics such as memory pressure due to Last Level Cache(LLC) misses from DDIO and PCIe.
-We used cycle counters present in the original RAMCloud~\cite{ramcloud} code base for non intrusive profiling 
-of CPU time.
-We wanted to make sure our profiling code shouldn't interfere with the timing of our highly performant 
+We used cycle counters present in the original RAMCloud~\cite{ramcloud} code base for non-intrusive profiling 
+of CPU time. We wanted to make sure our profiling code shouldn't interfere with the timing of our highly performant 
  benchmark which churns out millions of operations per second and microsecond latencies. 
- We searchaed for light weight profiling methods which adds minimal overheads.
+ We searched for light weight profiling methods which add minimal overheads.
  We ended up using Intel\textregistered's Performance Counter Monitoring module~\cite{intelpcm}. 
  An interesting thing about measuring performance 
  of a modern CPU is that almost all of the metrics of significance exist outside of the cores. These measurements 
- are classified as uncore or offcore measurements in the Performance Monitoring Unit(PMU) moniker.
- The newer generation CPUs that we used had the Sandy Bridge microarchitecture which provide uncore performance 
- monitoring unit and we measured their performance counters to accurately gauge impact.
+ are classified as uncore and offcore measurements in the Performance Monitoring Unit(PMU) moniker.
+ The newer generation CPUs that we used had the Sandy Bridge microarchitecture which provides uncore performance 
+ monitoring unit and we measured their performance counters to gauge impact accurately.
 
 
 \subsection{Breakdown of CPU costs}
 \label{sec:overhead}
 
-While we just showed in Section~\ref{sec:zero-copy-tput} that judicious use of Zero Copy results in enhanced transmission performance
-, the goal of zero-copy DMA is to also mitigate the server-side CPU cost. Figure~\ref{fig:overheads} breaks down
-CPU time for all the scenarios; small and large records using Zero Copy and Copy-Out. In the case 
+While we just showed in Section~\ref{sec:zero-copy-tput} that judicious use of Zero Copy results 
+in enhanced transmission performance, the goal of zero-copy DMA is also to 
+mitigate the server-side CPU cost. Figure~\ref{fig:overheads} breaks down CPU time for 
+all the scenarios; small and large records using Zero Copy and Copy-Out. In the case 
 of Zero Copy, most of the server CPU time is spent idling waiting for the NIC 
-to complete transmissions at smaller record sizes. For 128~B records,
-smaller transmissions take up more fraction of CPU owing to the overhead of more descriptors
-per transmission. Zero-copy always reduces the CPU load of the server in all record sizes except for the cases where
+to complete transmissions at smaller record sizes.
+
+ For 128~B records, smaller transmissions take up more fraction of CPU owing to the overhead of more descriptors
+per transmission. Zero Copy always reduces the CPU load on the server in all record sizes except for the cases where
 overheads for a small number of small records and, as expected, there is a bigger
-benefit for larger record sizes. 
-With 1024~B records, the \memcpy ~step of Copy-Out uses a maximum of 18\% of all available
-CPU cycles. What's alarming is the fact that this constitues ~95\% of all the time spent busy waiting.
-This is a pure overhead that we could eliminate by using Zero Copy. While Zero Copy eleminates the \memcpy ~overhead, it adds an overhead of its own to create and copy transmit descriptors.
+benefit for larger record sizes. With 1024~B records, the \memcpy ~step of Copy-Out uses a maximum of 18\% of all available
+CPU cycles. What's alarming is the fact that this constitutes ~95\% of all the time spent busy waiting.
+This is a pure overhead that we could eliminate by using Zero Copy.
+
+While Zero Copy eliminates the \memcpy ~overhead, it adds an overhead of its own to create and copy transmit descriptors.
 Each gather entry adds 16~B to the descriptor that is posted to the NIC.
 These entries are considerable in size compared to
 small records, and they are copied twice. The gather list
-is first staged on the thread's stack and passed to the userlevel NIC driver. Next,
+is first staged on the thread's stack and passed to the user level NIC driver. Next,
 the driver makes a posted PCIe write by copying the descriptor (including the
 gather entry) into a memory-mapped device buffer.
 \input{fig-overheads}
-
-
-
-
 We will see later in Section~\ref{sec:membw-savings} that memory bandwidth savings for zero-copy are more substantial.
 Figure~\ref{fig:zero-copy-tput} shows that copy-out transmit performance nearly
 matches zero-copy (5.6~GB/s versus 5.8~GB/s) for larger records at larger transmissions. Copy-out introduces exactly one

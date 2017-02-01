@@ -414,8 +414,8 @@ makeOverheadsFigure <- function () {
   p <- plotBreakdown(d) +
     coord_cartesian(ylim=c(0, 0.3))
   p
-    #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-overheads.pdf',
-    #     width=5, height=3, units='in')
+    ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-overheads.pdf',
+         width=5, height=5, units='in')
 }
 
 makeCyclesFigure <- function () {
