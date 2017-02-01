@@ -42,7 +42,7 @@ plotRDMAModes <- function(size=""){
                        trans=log2_trans(),
                        breaks=c(1000, 2000, 4000, 8000, 16000, 32000))+
     scale_y_continuous(name='Transfer Rate (MB/s)',
-                       breaks=c(2000,4000,6000,8000)) +
+                       breaks=c(0,2000,4000,6000,8000)) +
     
     #scale_shape_manual(name='RDMA Verb',
     #                   labels=c('SEND', 'WRITE', 'READ'),
