@@ -175,8 +175,7 @@ TEXFILES        = abstract.tex			\
 		  relatedwork.tex               \
 		  migration.tex                 \
 		  timeline.tex                  \
-		  fig-200B-manymodes.tex        \
-		  fig-1000B-manymodes.tex       \
+		  fig-rdmamodes.tex             \
 		  fig-bw-tree.tex               \
 		  fig-deltas.tex                \
 		  fig-colocation.tex            \

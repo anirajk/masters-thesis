@@ -220,8 +220,8 @@ avoid as many TLB misses as possible.
 We started out by getting measurements of transmission speeds using RDMA verbs.  
 READ and WRITE are the most commonly employed RDMA verbs because they are one sided
 and does not require both ends to be active in theory. RDMA read has the additional incentive 
-that it is client initiated. SEND/RECEIVE primitives on the other hand are two-sided and 
-server initiated.  We evaluated the performance of each of this using Infinibands verbs library. We implemented 
+that it is client initiated. SEND/RECEIVE primitives, on the other hand, are two-sided and 
+server initiated.  We evaluated the performance of each of this using Infiniband verbs library. We implemented 
 RDMA reads and write as op codes on the \cpp{ibv_send_wr} request which 
 transmit data via \cpp{ibv_post_send} and measured the transmit 
 performance while enabling Zero Copy using \cpp{IBV_WR_SEND} as the opcode.
@@ -229,7 +229,7 @@ performance while enabling Zero Copy using \cpp{IBV_WR_SEND} as the opcode.
 One issue we uncovered was that one-sided RDMA verbs are not well positioned to 
 take advantage of the Zero Copy paradigm since it only supports a remote read 
 from a registered location from the other side. READ also requires a secondary notification mechanism 
-to work in pradtice negating the advantage of being one sided.
+to work in practice negating the advantage of being one sided.
 Others have argued for the use of one-sided RDMA for key-value stores~\cite{pilaf} and even for accelerating 
 range queries~\cite{zerocopyrangequery}. We estimate that these would be suitable for large transmissions only when there is a strong 
 correlation of queries with resulting values that are contigous in memory. In the general case, the receiver 
@@ -238,23 +238,24 @@ It could work better if we were to pipeline multiple requests, but we are losing
 
 Figure~\ref{fig:200B_transrate} shows a comparison of transmission
 performance of different verbs transmitting 200 Bytes(B) records varying the number of records
-that could be transmitted at a time for various operations.The green dot shows
-the performance for RDMA reads which is also unfair
-since RDMA reads can only transmit a single record at a time. Others have argued The blue dot
-shows RDMA write performance using a full scatter/gather list. The record sizes were 
-also an interesting measure to arrive at. Larger data sizes such as 1000~B recoreds showed a clearer benefit of using \cpp{SEND} in Figure~\ref{fig:1000B_transrate}.
-\input{fig-200B-manymodes}
-\input{fig-1000B-manymodes}
-SEND almost always result in better throughput measurements than when we employ the other RDMA primitives.
+that could be transmitted at a time for various operations. The green dot shows
+the performance for RDMA READ which is also unfair since RDMA READ can only transmit from a single remote virtual address at a time.
+The blue dot shows RDMA write performance using a full scatter/gather list. This tells us that WRITE and SEND will offer 
+similar performance. Transmission using larger data sizes such as 1000~B recoreds showed a clearer benefit of using \cpp{SEND} than 
+using 200~B records as shown in Figure~\ref{fig:1000B_transrate}.
+\input{fig-rdmamodes}
+\input{takeaway-verbs}
 
 \subsection{Record Sizes}
-In the world of In-memory databases, there is an argument to be made that record sizes will get smaller since 
-database designers can aggresively normalise and this has proven increasingly to
-the liking of companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
-We choose 128~B records and 1024~B records for our evaluations in the rest of the thesis
+In the world of In-memory databases, there is an argument to be made that record sizes will get smaller.
+The decreased access latency of in-memory databases makes them well-suited to smaller, finer-grained records
+than were previously common. One expectation is that this will drive databases
+toward more aggressively normalized layouts with small records. This
+seems to be increasingly the case as records of a few hundreds bytes or less
+are now typical even for companies that manage large volumes of data in memory~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
+We choose 128~B records as a realistic sample of record sizes in the future and compare it against 
+1024~B records to see the performance impact due to bounded-disorder in our evaluations in the rest of the thesis.
 
-
-\input{takeaway-verbs}
 
 
 \subsection{Performance Impact of Data Layout}
@@ -271,16 +272,16 @@ We choose 128~B records and 1024~B records for our evaluations in the rest of th
 % records stable for the NIC.  Larger transmissions can also accommodate
 % discontinuity through two different methods: copy-out or zero-copy, but
 % discontinuity results in increased transmit descriptor size and complexity.
-To explore how different designs trade-off database server efficiency and
+To explore how different design decisions affect trade-offs in server efficiency and
 performance, we built a simple model of an in-memory database system that
 concentrates on data transfer rather than full query processing.
 
 The first key question is understanding how database record layout affects the
 performance of the transmission of query results.  The transmission of large
-result sets presents a number of complex choices that affect
+result sets presents many complex choices that affect
 database layout and design as well as NIC parameters.  Range query
 results can be transmitted in small batches or large batches and either via
-copy-out or zero-copy.
+Copy Out or Zero Copy.
 
 To understand these trade-offs, we measure the aggregate transmission
 throughput of a server to its 15~clients under several
@@ -294,22 +295,22 @@ to the single transmit buffer. Each transmission still sends exactly $ns$
 bytes, but copy-out first requires $ns$ bytes to be copied into the transmit buffer.
 We vary $n$ from 1 to as much as the NIC can support DMAing in a single transmission.
 Intuitively, larger groups of records (larger sends) result in less host-to-NIC
-interaction, which reduces host load and can increase throughput; the benefits
+interaction, which reduces host load and can increase throughput; the actual benefits
 depend on the specific configuration and are explored below.
 
-Figure~\ref{fig:zero-copy-tput} shows how each of these configurations impact
+Figure~\ref{fig:zero-copy-tput} shows how each of these configurations impacts
 transmission throughput. For larger 1024~B records, using the NIC's DMA engine
-for zero-copy shows clear benefits even when you are transmitting less number of 
+for Zero Copy shows clear benefits even when you are transmitting less number of 
 records. This is in addition to the CPU and memory bandwidth savings, which 
-we explore in Section~\ref{sec:overhead}). The database server is able
-to saturate the network with zero-copy so long as it can post 2 or more
+we explore in Section~\ref{sec:overhead}). The database server can 
+saturate the network with Zero Copy as long as it can post 2 or more
 records per transmit operation to the NIC (that is, if it sends 2~KB or larger
 messages at a time). For the Copy Out approach, you get roughly the same transmission 
 throughput as Zero Copy when your transmission sizes get bigger at around 16~KB. In 
 the impact study in Section~\ref{sec:impact} we explain why this is not a good value 
-proposition as well as the dip in transmission throughput when we go from 2 to 3 records.
-We saw the DMA engine could provide a throughput boost
-of up to 86\% over Copy Out while transmitting two 1024~B records. It's also interesting to note that if range scans return even just 16 records per query, the
+proposition. We saw the DMA engine could provide a throughput boost
+of up to 86\% over Copy Out while transmitting two 1024~B records. It's also interesting 
+to note that if range scans return even just 16 scattered, small(128~B) records per query, the
 benefits of Zero Copy purely from the perspective of transmission throughput is almost eliminated.
 \input{fig-zero-copy-tput}
 
@@ -327,12 +328,7 @@ benefits of Zero Copy purely from the perspective of transmission throughput is 
 % [31]  5.746029  5.610679
 % [1] "Max 86.0644167799178"
 
-Next, we consider 128~B records. The decreased access latency of
-in-memory databases makes them well-suited to smaller, finer-grained records
-than were previously common. One expectation is that this will drive databases
-toward more aggressively normalized layouts with small records. This
-seems to be increasingly the case as records of a few hundreds bytes or less
-are now typical~\cite{fb-memcache,fb-workload,inmemoryworkload}.
+
 
 %Copy Out 128 B - 8chunks(1024B) - 2400 MB/s
 %Copy Out 128 B - max 32 chunks - 3885MB/s
