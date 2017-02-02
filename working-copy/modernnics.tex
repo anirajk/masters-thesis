@@ -400,14 +400,14 @@ is first staged on the thread's stack and passed to the user level NIC driver. N
 the driver makes a posted PCIe write by copying the descriptor (including the
 gather entry) into a memory-mapped device buffer.
 \input{fig-overheads}
-We will see later in Section~\ref{sec:membw-savings} that memory bandwidth savings for zero-copy are more substantial.
-Figure~\ref{fig:zero-copy-tput} shows that copy-out transmit performance nearly
-matches zero-copy (5.6~GB/s versus 5.8~GB/s) for larger records at larger transmissions. Copy-out introduces exactly one
+We will see later in Section~\ref{sec:membw-savings} that memory bandwidth savings for Zero Copy are more substantial.
+Figure~\ref{fig:zero-copy-tput} shows that Copy Out transmit performance nearly
+matches Zero Copy (5.6~GB/s versus 5.8~GB/s) for larger records at larger transmissions. Copy Out introduces exactly one
 extra copy of the data, and \memcpy~reads each cache line once and writes it
-once. So, copy-out is expected to increase memory bandwidth consumption
-by 2$\times$ the transmit rate of the NIC or 11.2~GB/s in the worst case.  This
+once. So, Copy Out is expected to increase memory bandwidth consumption
+by 2$\times$ the transmit rate of the NIC or 11.2~GB/s in the worst case. This
 accounts for about 45\% of the available memory bandwidth for the server that we used. Whether
-using zero-copy or copy-out, the NIC must copy data from main memory, across the PCIe bus, to its own buffers, which
+using Zero Copy or Copy Out, the NIC must copy data from main memory, across the PCIe bus, to its own buffers, which
 could end up using another 6~GB/s of memory bandwidth. With these estimates in mind, we extensively profiled
  our benchmark with Intel's PMU module and the details of that is given in Section~\ref{sec:membw-savings}.
 \input{takeaway-cpu-overhead}
@@ -433,7 +433,7 @@ could end up using another 6~GB/s of memory bandwidth. With these estimates in m
 The results from previous section break down where the CPU savings come from,
 but not all configurations result in the same transmit performance. For
 example, Figure~\ref{fig:zero-copy-tput} shows that when transmitting
-128~B~records, copy-out gets up to 15\% better throughput than zero-copy while transmitting
+128~B~records, Copy Out gets up to 15\% better throughput than Zero Copy while transmitting
 32~records at once. As a result, minimizing CPU overhead can come at the expense of transmit
 performance. CPU overheads as a total fraction of CPU tells us what makes up for the overheads 
 in transmission where CPU cost per transmitted byte will tell us the CPU efficiency of the 
@@ -441,7 +441,7 @@ transmission. The real CPU efficiency of the server in transmission is shown in
 Figure~\ref{fig:cycles}. The figure shows how many cycles of work the CPU needs to do
 for every byte transmitted in each of the configurations, which reveals two key things.
 First, it shows that, though the absolute savings in total CPU cycles is small
-for zero-copy, it does reduce CPU overhead due to transmission by up to 95\% for 
+for Zero Copy, it does reduce CPU overhead due to transmission by up to 95\% for 
 larger records and around 64\% for smaller records. For smaller records, small transmission
 results in more CPU usage (till around 3~records or 384~B) owing to the overhead of descriptors.
 \input{fig-cycles}
@@ -496,7 +496,7 @@ In a modern In-Memory Database server, DRAM utilisation is the most precious res
  \texttt{CAS\_COUNT.RD} and \texttt{CAS\_COUNT.WR} metrics which are the number of cache lines read and written in the sampling 
  interval. We used an interactive reporting tool written on top of perf with named mappings for these events
  to measure this metric. We profiled the total memory bandwidth consumed by the system while our benchmark 
- was running with fixed record sizes, number of records and mode of copying (Zero Copy and Copy Out). We took the median of our measurements 
+ was running with fixed record sizes, a number of records and mode of copying (Zero Copy and Copy Out). We took the median of our measurements 
  to account for consumption only while the system was transmitting data.
 
 
@@ -509,22 +509,20 @@ larger record sizes is beneficial. The savings are highlighted along largest tra
  server. This is even more interesting considering that the modern day In-memory stores are not tuned for large responses.
   When the DRAM latency and accesses go up, the performance of the whole system could degrade to the point at which the system might become unusable.
 \input{fig-membw}
-
 For smaller data sizes, it's even more interesting. Zero Copy doesn't show a huge contrast in memory bandwidth utilisation. There are times 
-when Copy out outperforms Zero Copy even in terms of memory bandwidth utilisation. Its interesting to note that these data points overlap the anomalous transmit performance 
+when Copy out outperforms Zero Copy even in terms of memory bandwidth utilisation. It is interesting to note that these data points overlap the anomalous transmit performance 
 degradation we saw while observing transmission throughput in Figure~\ref{fig:zero-copy-tput}. Interestingly, after this region in the graph 
-where you transmit 16 or more 128~B records where Zero Copy offers better transmission throughput, the memory bandwidth consumption by Zero Copy 
-is reduced and Copy-out starts to appear more expensive in terms of memory bandwidth. These anomalies are better explained in Section~\ref{sec:anomaly} but we 
+where you transmit 16 or more 128~B records where Zero Copy offers better transmission performance, the memory bandwidth consumption by Zero Copy 
+is reduced, and Copy Out starts to appear more expensive in terms of memory bandwidth. These anomalies are better explained in Section~\ref{sec:anomaly} but we 
 can conclude from this figure that there is a linear correlation between transmit performance and consumed memory bandwidth for Zero Copy.
-
 \input{takeaway-impact-membw}
 
 \subsection{Memory Bandwidth and Transmission throughput}
 \label{sec:membw-savings}
 Figure~\ref{fig:membw-ratio} shows the ratio of Memory pressure exerted per bytes transmitted. We can clearly see the value proposition of 
-Zero Copy mode of transmitting here. For Zero Copy, We can see that the system is consistent and predictable and only incurs a tiny overhead of 
-copying descriptors other than DMAing the data on to the NIC. The overhead of the descriptors is evident from the fact that 128~B records show 
-a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultous across varying number of records, 
+Zero Copy mode of transmitting here. For Zero Copy, We can see that the system is consistent and predictable and only incurs a small overhead of 
+copying descriptors other than DMAing the data onto the NIC. The cost of the descriptors is evident from the fact that 128~B records show 
+a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultuous across varying number of records, 
  but still shows Zero Copy as the clear winner. If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
  2X memory bandwidth cost on copying out 1024~B records. 
 \input{fig-membw-ratio}
@@ -537,15 +535,18 @@ and more recently named DDIO. This changes our perception of memory consumption 
 and even the destination for a packet over the network becomes this dedicated portion of LLC. This has significant impact in the number of LLC misses the system 
 has to take while dealing with network traffic. The key limitation to DDIO is that usually it's allocated as only 10\% of LLC which is around 2~MB in a modern system. 
 But as long as a single transmission doesn't surpass this size, we can expect higher efficiency in transmission due to DDIO. In all of our experiments, we were doing transmission of 
-at most 32 records of 1~KB each and hence the effect of DDIO will be visible in our benchmarks. In order to measure the 
+at most 32 records of 1~KB each and hence the effect of DDIO will be visible in our benchmarks. To measure the 
 effect of DDIO, we measured the number of bytes read from memory by LLC due to misses from the DDIO marked region. 
 
-Figure~\ref{fig:ddiobw} shows the reads issued to memory controller from LLC due to misses from the  DDIO region. We can clearly see that when we use Copy out 
+Figure~\ref{fig:ddiobw} shows the reads issued to the memory controller from LLC due to misses from the  DDIO region. We can clearly see that when we use Copy out 
 method to transmit data, we don't see much traffic in this area. When we issue a \memcpy~ to copy data into the transmit buffer, it's already loaded in the LLC. 
 Unless that data is ejected from LLC, a miss from the DDIO region need not necessarily involve a read from DRAM. On the other hand, if we were employing Zero Copy technique, 
-and we were transmitting randomised chunks of data. Randomisation plays an important role in cache invalidation and we had to tune our benchmark so that it is always transmitting randomised data. 
-We can see that the DDIO misses follow the same trend as transmission throughput we showed in Figure~\ref{fig:zero-copy-tput}. Since our data sets are limited in size and doesn't cause much of cache pollution, we see that the 
-memory reads due to misses in DDIO is only. For transmisions using Zero-Copy, the read requests to memory happens because of misses from the DDIO region and account for 
+and we were transmitting randomized chunks of data. Randomisation plays an important role in cache invalidation,
+ and we had to tune our benchmark so that it is always transmitting randomized data. 
+We can see that the DDIO misses are following the same trend as transmission throughput we showed in Figure~\ref{fig:zero-copy-tput}. 
+Since our data sets are limited in size and do not cause much of cache pollution, we see that the 
+memory reads due to misses in DDIO is only. For transmissions using Zero Copy, 
+the read requests to memory happen because of misses from the DDIO region and account for 
 most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:ddiobw-savings} explains this in detail.
 \input{takeaway-impact-ddiobw}
 \input{fig-ddiobw}
@@ -553,10 +554,14 @@ most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:d
 
 \subsection{DDIO savings in Copy Out}
 \label{sec:ddiobw-savings}
-The previous sections showed how Copy Out can be costly and degrade system performance because of the consumed memory bandwidth. We also examined how DDIO traffic plays a big role 
-in modern CPU architecture in limiting I/O costs. We are going to examine the interesting side effect of the additional \memcpy~ . Figure ~\ref{fig:ddiobw-percent} shows what percentage of consumed 
-memory bandwidth results from misses from the DDIO region. It tells us that While we pay the price of \memcpy to bring data to the LLC, it actually helps in limiting further DRAM access while transmitting 
-from the region reserved for DDIO. If not for this effect, both Copy Out and Zero Copy might have added Memory Bandwidth consumption in bringing data from DRAM for transmission. 
+The previous sections showed how Copy Out could be costly and degrade system performance 
+because of the consumed memory bandwidth. We also examined how DDIO traffic plays a big role 
+in modern CPU architecture in limiting I/O costs. We are going to examine the 
+interesting side effect of the additional \memcpy. Figure ~\ref{fig:ddiobw-percent} shows what percentage of consumed 
+memory bandwidth results from misses from the DDIO region. It tells us that while 
+we pay the price of \memcpy~ to bring data to the LLC, it helps in limiting further DRAM access while transmitting 
+from the region reserved for DDIO. If not for this effect, both Copy Out and Zero Copy 
+might have added Memory Bandwidth consumption in bringing data from DRAM for transmission. 
 \input{fig-ddiobw-percent}
 \input{takeaway-impact-ddiobw-savings}
 
