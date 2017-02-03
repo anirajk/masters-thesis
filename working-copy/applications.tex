@@ -6,43 +6,44 @@
 We have seen the impact of Zero Copy on network transmission and Memory Bandwidth and how that 
 compares to using Copy Out to transmit data over the network. The difference
 in throughput is explicitly seen for smaller 128~B records, where owing to the descriptor overhead and anomalies discussed 
-in Chapter~\ref{chap:modernnics}, Copy Out gives better throughput performance especially when the transmissions get lareger.
-Since more databases have started to store all data in memory at all times, database designers have started to normalize 
-aggressively and as a result, record sizes are trending smaller and 128~B records show
-a more realistic depiction of record sizes in the future~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
+in Chapter~\ref{chap:modernnics}, Copy Out gives better throughput performance especially when the transmissions get larger.
+We have already established that 128~B records show a more realistic depiction of record sizes in the future
+and that seems to be the growing consensus in the community~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
+
 At first, the throughput results from comparing Zero Copy and Copy Out for 128~B 
 records might tempt us to think that it's always better to use a Copy Out get maximum throughput with smaller records.
 The complications of implementation and the cost of overheads are also rampant when using small records with Zero Copy.
 The bigger problem with Copy Out might get overlooked in the face of all these issues sorrounding Zero Copy.
-While transmitting at around ~5.9GB/s(near line rate for the Connect-X3\textregistered NIC),
-we saw that the memory pressure on the system is close to 12GB/s which is half of what we evaluated our server's total available memory bandwidth.
- This implies  that network transmission will bottlenecks available memory bandwidth for doing useful work such as processing data in a hybrid or analytical workload.
+While transmitting at around 5.9~GB/s(near line rate for the Connect-X3\textregistered NIC),
+we saw that the memory pressure on the system is close to 12~GB/s which is half of what we evaluated our server's total available memory bandwidth. 
+This implies that network transmission will bottlenecks available memory bandwidth for doing useful work such as processing data in a hybrid or analytical workload.
 
 On-Line Analytical Processing (OLAP) and hybrid workloads composed of transactional and analytical queries have fuelled a renewed interest in column stores~\cite{cstore,cstorevsrowstore} in recent years. 
 Column stores are uniquely positioned to take advantage of the NIC because of their layout and compression benefits.
  The impact of modern NIC while designing column stores should also be discussed for completeness. 
 
-This chapter introduces a client assisted design with bounded disorder for using Zero Copy with no-update-in-place row stores as well as column stores. 
-We evaluate the improvement in throughput and efficiency to provide evidence to back the approach of bounded disorder.
-We also make informed opinions on how Zero Copy might perform on column store designs for in-memory databases with co-operation from clients for materialising data.
+This chapter introduces a client assisted design with bounded-disorder for using Zero Copy with no-update-in-place row stores as well as column stores. 
+We evaluate the improvement in throughput and efficiency to provide evidence to back this approach.
+We also make informed opinions on how Zero Copy might perform on column store designs 
+for in-memory databases with co-operation from clients for materializing data.
 
 
 \section{Bw-Trees}
 Chapter~\ref{chap:modernnics} showed us Copy Out might offer better transmission throughput for a large set 
 of scattered small records. It also showed the perils of using Copy Out where it consumes a lot of memory bandwidth, 
-starving the server of memory bandwidth which could be utilised for doing useful work.
+starving the server of memory bandwidth which could be utilized for doing useful work.
 Zero Copy promises memory bandwidth savings in addition to eliminating CPU overhead, 
-while Copy Out can saturate the NIC throughput. We wanted to extract the best of both worlds 
-and we wanted to analyse structures that can uniquely take advantage of the 
-Zero Copy paradigm. This would impy an arrangement of small records where the total transmission size 
-goes up helping the transmission throughput while being able to do Zero Copy to help reduce memory footprint. In order for this 
-to work, we would also need a way of efficient update and synchronisation so that data being fetched for transmission remains 
+while Copy Out can saturate the NIC throughput. We wanted to extract the best of both worlds, 
+and we wanted to analyze structures that can uniquely take advantage of the 
+Zero Copy paradigm. This would imply an arrangement of small records where the total transmission size 
+goes up helping the transmission throughput while being able to do Zero Copy to help reduce memory footprint. For this 
+to work, we would also need a way of efficient update and synchronization so that data being fetched for transmission remains 
 stable throughout the transmission.
 
 Microsoft\textregistered Research came up with a modern B-tree structure called 
 the Bw-Tree~\cite{bw-tree} which is their primary indexing structure for SQL Server Hekaton~\cite{hekaton}.
-Bw-Tree is a highly performant, ordered index employing lock and latch free concurrency and effective utilisation of caches in 
-modern multi core processors. In the following sections, we explore how a client assisted design involving a no-update-in-place 
+Bw-Tree is a highly performant, ordered index employing lock and latch free concurrency and effective utilization of caches in 
+modern multi-core processors. In the following sections, we explore how a client assisted design involving a no-update-in-place 
 structure such as Bw-Trees can take advantage of Zero Copy and gain maximum throughput 
 without much system impact. We discuss how it's lock freedom and delta records makes it 
 particulary suitable to exploit Zero Copy in the following sections. We then present
@@ -54,7 +55,7 @@ to show the gains in throughput without consuming more memory bandwidth.
 The Bw-Tree~\cite{bw-tree} is an atomic record store designed for extreme
 concurrency. It is an ordered index that supports basic record create, update,
 and delete (CRUD) operations in addition to searches and range scans.  It is
-fully lock-free and non-blocking, and is optimized for modern multicore
+fully lock-free and non-blocking and is optimized for modern multicore
 workloads. It can store to flash, but is also intended for in-memory
 workloads; it serves as the ordered secondary index structure for in-memory SQL
 Server Hekaton~\cite{hekaton} engine.
@@ -62,7 +63,7 @@ Server Hekaton~\cite{hekaton} engine.
 In many ways, the Bw-Tree is a conventional paged B-link tree,
 but it also has unique characteristics that interact with network-layer
 design choices. Its lock-freedom, its elimination of update-in-place,
-and its lazily consolidation of updated records in virtual memory give it
+and its lazy consolidation of updated records in virtual memory give it
 tremendous flexibility in how query results are transmitted by the NIC.
 
 Records may be embedded within leaf pages, or the leaf pages may
@@ -73,13 +74,13 @@ have to be materialized twice and the copies would need to be kept consistent.
 The key challenge in a lock-free structure is providing atomic reads, updates,
 inserts, and deletes without ever being able to quiesce ongoing operations (not
 even on portions of the tree). Bw-Tree solves this problem by eliminating
-update-in-place. All mutations are written to newly allocated memory, then
+update-in-place. All mutations are written to newly allocated memory; then
 the changes are installed with a single atomic compare-and-swap instruction
 that publishes the change.  Figure~\ref{fig:bw-tree} shows how this works.
-In place update are avoided by creating delta records ``off to the side'' 
+In place updates are avoided by creating delta records ``off to the side'' 
 that describe a logical modification to a page. Delta records are
 prefixed to a chain ultimately attached to a base page.  When delta chains
-grow long they are compacted together with the base page to create a new base page.
+grow long, they are compacted together with the base page to create a new base page.
 All references to pages are translated through a mapping table that maps page
 numbers to virtual addresses. This allows pages to be relocated in memory, and
 it allows the contents of a page to swapped with a single atomic
@@ -107,13 +108,13 @@ will see the delta record. As readers traverse the tree, they consider
 the base pages to be logically augmented by their delta records. Delta records
 can be chained together up to a configurable length.  When the chain becomes
 too long, a new base page is formed that combines the original base page
-contents with the updates from the deltas. The new page is swapped-in
+contents with the updates from the deltas. The new page is swapped in
 the same way as other updates.
 
 Read operations that run concurrent to update operations can observe superseded
 pages and delta records, so their garbage collection must be deferred.
 To solve this, each thread that
-accesses the tree and each unlinked object is associated with a current {\em epoch}.
+accesses the tree and each unlinked object are associated with a current {\em epoch}.
 The global epoch is periodically incremented. Memory for an unlinked object can be
 recycled when no thread belongs to its epoch or any earlier epoch.
 The epoch mechanism gives operations consistent reads of the
@@ -127,10 +128,10 @@ Lock-freedom has major implications on the in-memory layout of the
 Bw-Tree. Most importantly, readers (such as the NIC DMA engine) can collect a
 consistent view of the tree without interference from writers, and holding that
 view consistent cannot stall concurrent readers or writers to the tree.  This
-natural record stability fits with the zero-copy capabilities of modern NICs;
+natural record stability fits with the Zero Copy capabilities of modern NICs;
 because the NIC's DMA engine is oblivious to any locks in the database engine,
 structures requiring locking for updates would have to consider the NIC to
-have a non-preemtible read lock for the entire memory region until the DMA completes.
+have a non-preemptible read lock for the entire memory region until the DMA completes.
 Instead of copying records ``out'' of the data structure for transmission,
 records can be accessed directly by the NIC. Eliminating the explicit copy of
 the records into transmit buffers can save database server CPU and memory
@@ -208,7 +209,7 @@ transmit base pages along with their deltas and have clients merge the results.
 This approach is attractive because it organically fits with the design of the
 Bw-Tree and it suits the DMA engine of the NIC well.  The NIC can transmit the
 large contiguous base pages (16~KB, for example) with little CPU overhead.
-It also eliminates copy-out for small records, but avoids the transmission
+It also eliminates Copy Out for small records but avoids the transmission
 throughput ceiling longer gather lists suffer. %(\ref{Chnics-sec:zero-copy-tput}).
 Merging records on the client side is cheap; the server can even append them to
 the response in a sort order that matches the record order in the base page for
@@ -239,13 +240,13 @@ when chains grow long; we consider this overhead in more detail in the next sect
 \label{sec:consolidation}
 
 
-Bw-Tree and many indexing structures are paged in order to amortize storage
+Bw-Tree and many indexing structures are paged to amortize storage
 access latency, and paging can have similar benefits for network transmission
-as well. However, the userlevel access of modern NICs makes interacting with
+as well. However, the user level access of modern NICs makes interacting with
 them much lower-latency than storage devices. This raises the question of
 whether paging is still beneficial for in-memory structures. That is, is the
 cost of preemptively consolidating updates into pages worth the cost, or is it
-better to transmit fine-grained scattered records via zero-copy or copy-out?
+better to transmit fine-grained scattered records via Zero Copy or Copy Out?
 
 %\input{fig-deltas}
 \input{fig-deltas-tput}
@@ -323,16 +324,16 @@ better to transmit fine-grained scattered records via zero-copy or copy-out?
 
 
 
-The results of our earlier experiments help answer this question.  If copy-out
+The results of our earlier experiments help answer this question.  If Copy Out
 is used to gain faster transmission of small records, then the answer is
 simple. Even if every update created a complete copy of the full base page, the
 extra copies would still be worthwhile so long as more pages are read per
-second than updated. This true for most update/lookup workloads, and read-only
+second than updated. This true for most update/lookup workloads and read-only
 range queries make this an even better trade-off.
 
-However, consolidation must be more conservative when using zero-copy to yield
-savings, since zero-copy can collect scattered records with less overhead than
-copy-out. Yet, there is good reason to be optimistic.  Delta records
+However, consolidation must be more conservative when using Zero Copy to yield
+savings, since Zero Copy can collect scattered records with less overhead than
+Copy Out. Yet, there is a good reason to be optimistic.  Delta records
 reduce the cost of updates for paged structures. If each base page is limited
 to $d$ delta records before consolidation, the number of consolidations is
 $\frac{1}{d}$. This means that allowing short delta chains dramatically reduces
@@ -340,15 +341,15 @@ consolidation costs, while longer chains offer decreasing returns. This fits wit
 the NIC's preference for short gather lists; allowing delta chains of length 4
 would reduce consolidation by 75\% while maintaining transmit throughput that
 meets or exceeds on-the-fly copy-out.  The large 16~KB base pages also
-improve transmit throughput slightly, which improves efficiency.
+improve transmit performance slightly, which improves efficiency.
 
 For small records, transmitting compacted base pages that have a few deltas gives
 a total CPU savings of about 10\%. For the same CPU cost, a server can perform
 about 6.5~GB/s of page compaction or about 425,000 compactions per second for
 16~KB pages. Even in the worst case scenario where all updates are focused on a
-single page, delta chains of length 4 would tolerate 1.7~million updates per
-second with CPU overhead lower than copy-out. So, delta records can give the
-efficiency of zero-copy with the performance of copy-out.
+single page, delta chains of length four would tolerate 1.7~million updates per
+second with CPU overhead lower than Copy Out. So, delta records can give the
+efficiency of Zero Copy with the performance of Copy Out.
 
 
 \subsection{Impact on Memory Bandwidth}
@@ -360,8 +361,8 @@ delta record sizes, Memory bandwidth stays roughly the same. Comparing Copy Out
 transmissions of similar size, we get a 46\% reduction in the consumption of 
 Memory bandwidth in the system. Another interesting factor is that if the transmission 
 involved only a few consolidated delta records which we showed in Section~\ref{sec:consolidation} is 
-beneficial, there is no added memory bandwidth pressure if we decide to transmit smaller 
-or larger records. The bigger base page gets us to peak transmission and a small number of 
+beneficial; there is no added memory bandwidth pressure if we decide to transmit smaller 
+or larger records. The bigger base page gets us to peak transmission, and a limited number of 
 delta records is favored for aggregate CPU costs. We have arrived at the sweet spot of 
 transmitting large amounts of data in a modern NIC.
 \input{fig-deltas-membw}
@@ -369,63 +370,64 @@ transmitting large amounts of data in a modern NIC.
 
 \subsection{Impact on Garbage Collection}
 
-Using zero-copy tightly couples the higher-level database engine's record
+Using Zero Copy tightly couples the higher-level database engine's record
 allocation and deallocation, since records submitted must remain stable until
 transmission completes. Fortunately, existing mechanisms in systems that avoid
 update-in-place accommodate this well, like Bw-Tree's epoch mechanism described
 in Section~\ref{sec:bwtree-intro}. Normally, the Bw-Tree copies-out returned records.
-While an operation and its copy-out are ongoing, memory that contains records
-that have been unlinked or superseded cannot be reclaimed. Zero-copy
+While an operation and its Copy Out are ongoing, the memory that contains records
+that have been unlinked or superseded cannot be reclaimed. Zero Copy
 effectively defers the copy until the actual time of transmission. As a result,
 transmissions completions must notify the higher level database of transmission
 completion to allow reclamation. This delay results in more latent garbage and
-hurts the effective memory utilization of the system.
+hurts the memory utilization of the system.
 
-In practice, this effect will be small for two reasons. First, zero-copy adds a
+In practice, this effect will be small for two reasons. First, Zero Copy adds a
 transmission, which completes within a few microseconds; however, it also saves a
 \memcpy~ which accounts for 1~to~2~$\mu$s for a 16~KB transmission. Second, the
 amount of resulting data held solely for transmission should generally be
 more than compensated for by eliminating the need for explicit transmit
-buffers. With copy-out, the size of the transmit buffer pool is necessarily
+buffers. With Copy out, the size of the transmit buffer pool is necessarily
 larger than the amount of data under active transmission, and internal
 fragmentation in the transmit buffers makes this worse.
 
 
 \section{Zero Copy for Column Stores}
 
-Column oriented in-memory databases poses unique challenges in interacting with a modern NIC. 
-Column stores use contigous memory locations to store adjacent columns. They have also been known 
-to use Run-Length Encoding, Dictionary Encoding, Bit-Vector Encoding and more heavier schemes 
+Column-oriented in-memory databases pose unique challenges in interacting with a modern NIC. 
+Column stores use contiguous memory locations to store adjacent columns. They have also been known 
+to use Run-Length Encoding, Dictionary Encoding, Bit-Vector Encoding, and heavier schemes 
 like Lempel-Ziv Encoding for yielding better compression which is one of the many value 
-propositions of using a column oriented layout. We observed in the previous 
-sections, Zero Copy offers promising performance if we had stable entries and used Zero Copy
- to transmit the results while responding to a range query. 
-However, the key problem lies in the fact that end-users expect query processing and analytics on data 
-to materialise results in row-order. It has been argued before that early materialisation of data
-helps performance in column oriented databases~\cite{cstore-material}. This makes the application 
-of a scatter gather list difficult and we might have already used a \memcpy ~or an alternative 
-to materialise the data. 
+propositions of using a column-oriented layout. 
 
-We argue for the possibility of a different materialisation strategy with more engagement from the 
+We observed in the previous  sections, Zero Copy offers promising performance if 
+we had stable entries and used Zero Copy to transmit the results while responding to a range query. 
+However, the fundamental problem lies in the fact that end-users expect query processing and analytics on data 
+to materialize results in row-order. It has been argued before that early materialization of data
+helps performance in column-oriented databases~\cite{cstore-material}. This makes the application 
+of a scatter gather list difficult, and we might have already used a \memcpy ~or an alternative 
+to materialize the data. 
+
+We argue for the possibility of a different materialization strategy with more engagement from the 
 clients. If the database server were to sent filtered columns and required metadata such as the 
 dictionary encoding as scatter gather entries, we could leverage Zero Copy's performance. We believe 
 this approach would work even for hybrid layouts~\cite{hyrise-hybridstores} which use row oriented or 
-column oriented formats varying width of columns according to the type of workload. Figure ~\ref{fig:rowstore-colstore}
+column oriented formats varying the width of columns according to the type of workload. Figure ~\ref{fig:rowstore-colstore}
 shows how row stores and column stores could transmit data using Zero Copy using a client assisted design.
 In practice, there are numerous challenges associated with this design:
 \begin{enumerate}
-\item Client co-operation; this scheme of transmitting results would need smart clients which are 
+\item {\em Client co-operation}; this scheme of transmitting results would need smart clients which are 
 capable of materialising data given the encoding scheme and the columns. We assume that the client 
 has enough resources to spend in finessing the results.
-\item Low selectivity in queries; we have seen packing more data yields more savings and performance 
+\item {\em Low selectivity in queries}; we have seen packing more data yields more savings and performance 
 from Zero Copy. We also know that the compression schemes in column stores can limit transfer sizes. 
 As a result, queries with low selectivity are a natural fit for Zero Copy.
-\item Well compressed metadata; the client assisted design would need the encoding to be transmitted 
-along with the results, this would need efficient compression and lean data structures for metadata
+\item {\em Compressed metadata}; the client assisted design would need the encoding to be transmitted
+along with the results, this would need efficient compression and lean data structures for metadata.
 \end{enumerate}
-\input{fig-rowstore-colstore}
 There needs to be further evaluation of how we can extract maximum performance and efficiency from 
 a server equipped with a modern NIC.
+\input{fig-rowstore-colstore}
 
 \section{Conclusion}
 

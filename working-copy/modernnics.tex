@@ -583,15 +583,15 @@ NIC itself is connected via PCIe interface.
 \subsection{PCIe induced DRAM accesses and Throughput}
 Figure ~\ref{fig:pciebw-ratio} shows the ratio of DRAM accesses induced by PCIe traffic to the obtained transmission throughput for various data points. When we transmit 16 smal records (2048~B),
 the PCIe effectiveness goes down and the ratio peaks. This is strictly in line with transmission throughput shown in Figure~\ref{fig:zero-copy-tput} where at 2048~B, we see a sharp drop in transmission 
-throughput which it slowly recovers from as we increase the number of S/G entries per transmission. There is an inverse correlation between the ratio of PCIe induced DRAM accesses and Transmission throughput
+throughput which it slowly recovers from as we increase the number of S/G entries per transmission. There is an inverse correlation between the ratio of PCIe induced DRAM accesses and transmission throughput.
 \input{fig-pciebw-ratio}
 
 \input{takeaway-impact-pciebw}
 
 \section{Conclusions}
 \begin{itemize}
-\item For large sets of small records, Copy Out offers better performance; if your record sizes are larger, use Zero Copy
-\item Zero Copying larger records will give you good memory bandwidth utilisation
+\item For large sets of small records, Copy Out offers better performance; if your record sizes are larger, use Zero Copy.
+\item Zero Copying larger records will give you good memory bandwidth utilisation.
 \item DDIO compensates for some of the memory bandwidth cost to Copy Out data if transmissions are smaller; this is irrelevant in the bigger scheme of things.
 \item Careful tuning of parameters is required if you were to only use Zero Copy; PCIe induced memory accesses maybe the reason Copy Out outperforms Zero Copy for certain parameters. 
 \end{itemize}
