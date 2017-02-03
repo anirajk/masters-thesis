@@ -4,11 +4,12 @@
 \label{chap:relatedwork}
 
 In-memory databases and low latency networks are very heavily researched areas
-these days. Our work borrows concepts from numerous efforts both $\grave{a}$-
-la-mode and prior from the databases, networking and systems research communities.
+these days. Our work borrows concepts from numerous efforts both current and 
+prior from the databases, networking and operating systems research communities.
 RAMCloud~\cite{ramcloud} itself was a research product built on top of other 
-work on log-structured file systems, striping filesystems and distributed 
-crash recovery~\cite{ryan-thesis,ongaro2011fast}
+work on log-structured file systems and kernel by-pass networking and it gave the 
+community scalable defragmentation, distributed recovery and a new consensus 
+algorithm~\cite{ryan-thesis,ongaro2011fast,raft}.
 
 \section{In-memory Databases}
 In-memory databases sparked a new wave of systems research in the 
