@@ -58,8 +58,8 @@ plotRDMAModes <- function(size=""){
     annotate("text", x=4000, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
   
   p
-   ggsave(plot=p, filename=outputfilename,
-         width=5, height=2, units='in')
+   #ggsave(plot=p, filename=outputfilename,
+  #       width=5, height=2, units='in')
    p
   
 }
@@ -359,7 +359,7 @@ plotDeltasMemBW <- function (d) {
 }
 
 save <- function (p) {
-  ggsave('plot.pdf', width=6, height=4, units='in')
+  #ggsave('plot.pdf', width=6, height=4, units='in')
 }
 
 aggregateClients <- function (d) {
@@ -400,8 +400,8 @@ makeZeroCopyTputFigure <- function () {
     annotate("text", x=1024, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
   
     p 
-  ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
-          width=5, height=2, units='in')
+  #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
+  #        width=5, height=2, units='in')
   p
 }
 
@@ -414,8 +414,8 @@ makeOverheadsFigure <- function () {
   p <- plotBreakdown(d) +
     coord_cartesian(ylim=c(0, 0.3))
   p
-    ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-overheads.pdf',
-         width=5, height=5, units='in')
+    #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-overheads.pdf',
+    #     width=5, height=5, units='in')
 }
 
 makeCyclesFigure <- function () {

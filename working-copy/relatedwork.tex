@@ -8,8 +8,8 @@ these days. Our work borrows concepts from numerous efforts both current and
 prior from the databases, networking and operating systems research communities.
 RAMCloud~\cite{ramcloud} itself was a research product built on top of other 
 work on log-structured file systems and kernel by-pass networking and it gave the 
-community scalable defragmentation, distributed recovery and a new consensus 
-algorithm~\cite{ryan-thesis,ongaro2011fast,raft}.
+community distributed fast crash recovery, scalable log structured DRAM storage, and a new consensus 
+algorithm~\cite{ryan-thesis,ongaro2011fast,ramcloudfast,raft}.
 
 \section{In-memory Databases}
 In-memory databases sparked a new wave of systems research in the 
@@ -26,11 +26,13 @@ enabled it to operate at a scale of billions of operations per second on trillio
 Another orthogonal area of research was to completely store all data in main memory.
 This was made possible in the late 2000s by the evolution of DRAM technologies and declining cost of main memory.
 Questions about durability and cost of replication 
-were responded by means of distributed recovery~\cite{ongaro2011fast}. 
-A more recent development was in the acceptance of high throughput and low latency networks. 
+were responded by means of distributed recovery~\cite{ongaro2011fast} and advances in defragmentation techniques~\cite{ramcloudfast} 
+ensured high DRAM utilization. Another recent development was in the acceptance of high throughput and low latency networks. 
 Pioneered by the high performance computing community, these advanced networking fabrics 
 such as infiniband~\cite{pfister2001introduction} became more commonplace in 
-data center networks. These developments have led to a deluge of storage systems research~\cite{mmdbmstutorial} ,
+data center networks and kernel by-pass networking was made ubiquitous by packet processing 
+frameworks such as DPDK~\cite{dpdk} which enabled them to operate over universally accepted protocols
+such as ethernet. These developments have led to a deluge of storage systems research~\cite{mmdbmstutorial} ,
 exploring multiple verticals. Among the particularly notable ones are RAMCloud~\cite{ramcloud},
 FaRM~\cite{farm} and H-Store~\cite{hstore} (Scale out memory stores) and
 MICA~\cite{mica}, HyPer~\cite{hyper} and HERD~\cite{herd} (Focused on single node performance).
@@ -38,18 +40,24 @@ While each of these systems have been driven by different dimensions
 of research, they all share the same concerns of In-memory storage systems 
 operating on high speed networks.
 
-Main memory database systems of today offers a plethora of features that are at par with traditional
-database systems including data storage and indexing, concurrency control, durability and 
-recovery techniques, query processing and compilation, support for high availability, and 
+Today's main memory database systems offer a plethora of features that are at par with traditional
+database systems including structured storage and indexing, concurrency control and transactions,
+ durability and recovery techniques, query processing and compilation, support for high availability, and 
 ability to support hybrid transactional and analytics workloads~\cite{mmdbmstutorial}.
 FaRM~\cite{farm} is a phenomenal In-memory, distributed computing platform that leverage lock free reads over RDMA~\cite{rdma},
 collocating objects and function shipping to provide performance characteristics of the 
 highest order for an In-memory database. They could even scale distributed transactions to
 hundreds of millions of operations with recovery times of the order of milliseconds. There 
-are other systems such as Silo~\cite{silo} which effectively utilises multi core CPUs.
+are other systems such as Silo~\cite{silo} which effectively utilizes multi core CPUs.
 
 \subsection{Column Stores}
-TODO: \cite{cstore,cstorevsrowstore,cstore-material,cstorecompression}
+Column oriented databases have generated a lot of renewed interest in recent years owing to the growing 
+need of running complex analytical queries over a large amount of data. Most enterprise 
+database solutions today ships with the ability column stores. This new focus has resulted 
+in advanced materialisation strategies and compression schemes\cite{cstore,cstorevsrowstore,cstore-material,cstorecompression}.
+In-memory databases with hybrid layouts~\cite{hybridinmemorycolstore} and other recent work on in-memory column stores~\cite{inmemorycracking} 
+focus a lot on analytical workloads and techniques like database cracking~\cite{databasecracking} for adaptive indexing.
+
 
 \subsection{Lock freedom}
 Lock freedom is important for Zero Copy and RDMA since these complicates concurrency since
@@ -79,7 +87,7 @@ published guidelines to maximise performance for dispatch heavy workloads~\cite{
 
 \subsection{Data Migration}
 Research efforts focussing on reconfiguration for in-memory databases has seen a lot of 
-renewed interest. Albatross~\cite{albatross} offered live reconfiguration with unavailability windows as low as 
+interest lately. Albatross~\cite{albatross} offered live reconfiguration with unavailability windows as low as 
 300ms. Zephyr~\cite{zephyr} focuses on mitigating violations to Service Level Agreements (SLAs) and limits 
 change in average latency to 10-20\% but like albatross, operates on latencies of the order of tens of milliseconds 
 Squall~\cite{squall} employs reactive pulls and pre partitioning
@@ -109,7 +117,11 @@ different analysis of host interaction with Mellanox Infiniband network adapters
 and they extract rules of thumb to help developers get the best performance from the hardware.
 The low-level nature of their analysis is especially suited for
 optimizing dispatch-heavy workloads with a high-volume of small
-request-response operations.
+request-response operations. While most of RDMA research prefers one-sided RDMA verbs, more recent efforts have shown 
+the benefits of two-sided RDMA and datagram RPCs~\cite{fasst}. We believe that 
+two-sided RDMA and RPC semantics are the most promising in today's architecture. In the future, 
+richer semantics that allow  gathering of remote data might prove beneficial for one-sided RDMA verbs.
+
 
 \section{Summary}
 Our work is built on the premises of these research ideas and it's unique take on
