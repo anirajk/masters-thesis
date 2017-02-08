@@ -14,12 +14,12 @@
 
 source('common.R')
 
-tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw-out.log")
-membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw.csv")
-ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*ddiobw.csv")
-pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*pciebw.csv")
-deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/deltaprofiles/run_60s/*membw-out.log")
-deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/deltaprofiles/run_60s/*membw.csv")
+tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/*membw-out.log")
+membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/filtered-*membw.csv")
+ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_ddiobw_profiles/filtered-*ddiobw.csv")
+pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_pciebw_profiles/filtered-*pciebw.csv")
+deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/*membw-out.log")
+deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/filtered-*membw.csv")
 
 
 
@@ -76,7 +76,13 @@ loadMerged <- function (i=1,extratitle='') {
     d["ddiobw"]<-d$CBO.LLC_DDIO_MEM_TOTAL_BYTES
     print(str(p))
     print(summary(p))
-    print(pciebwfilenames[i])
+    print(ddiobwfilenames[i])
+    print(summary(d))
+    print('convert')
+    d$ddiobw <- as.numeric(d$ddiobw)
+    p$pciebw <- as.numeric(p$pciebw)
+    m$membw <- as.numeric(m$membw)
+    print(summary(d))
     membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
     pciebw<-rep(unname(quantile(p$pciebw,0.5,na.rm=TRUE)),nrow(t))
     ddiobw<-rep(unname(quantile(d$ddiobw,0.5,na.rm=TRUE)),nrow(t))
@@ -400,8 +406,8 @@ makeZeroCopyTputFigure <- function () {
     annotate("text", x=1024, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
   
     p 
-  #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
-  #        width=5, height=2, units='in')
+  ggsave(plot=p, filename='/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-zero-copy-tput.pdf',
+          width=5, height=2, units='in')
   p
 }
 
@@ -437,8 +443,8 @@ makeDeltasFigure <- function () {
   
   p <- multiplot(p1,p2)
  p
-  # ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-deltas.pdf',
-#         width=5, height=1.5, units='in')
+   ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-deltas.pdf',
+         width=5, height=1.5, units='in')
 }
 
 makeAllFigures <- function () {

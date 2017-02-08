@@ -1,11 +1,11 @@
 source('common.R')
 
-tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw-out.log")
-membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*membw.csv")
-ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*ddiobw.csv")
-pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/randomised_run_60s/*pciebw.csv")
-deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/deltaprofiles/run_60s/*membw-out.log")
-deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/deltaprofiles/run_60s/*membw.csv")
+tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/*membw-out.log")
+membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/filtered-*membw.csv")
+ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_ddiobw_profiles/filtered-*ddiobw.csv")
+pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_pciebw_profiles/filtered-*pciebw.csv")
+deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/*membw-out.log")
+deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/filtered-*membw.csv")
 
 
 mergealltputfiles <- function(){
@@ -185,9 +185,13 @@ makeMergedFigure <- function (i=1,extratitle='') {
   m <- perfload(filename=membwfilenames[i])
   d <- perfload(filename=ddiobwfilenames[i])
   p <- perfload(filename=pciebwfilenames[i])
-  m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)
-  p["pciebw"]<-p$CBO.LLC_PCIE_MEM_TOTAL_BYTES
-  d["ddiobw"]<-d$CBO.LLC_DDIO_MEM_TOTAL_BYTES
+  m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)*10
+  p["pciebw"]<-p$CBO.LLC_PCIE_MEM_TOTAL_BYTES*10
+  d["ddiobw"]<-d$CBO.LLC_DDIO_MEM_TOTAL_BYTES*10
+  print('convert because of factor error')
+  d$ddiobw <- as.numeric(d$ddiobw)
+  p$pciebw <- as.numeric(p$pciebw)
+  m$membw <- as.numeric(m$membw)
   membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
   pciebw<-rep(unname(quantile(p$pciebw,0.5,na.rm=TRUE)),nrow(t))
   ddiobw<-rep(unname(quantile(d$ddiobw,0.5,na.rm=TRUE)),nrow(t))
@@ -523,7 +527,7 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
     coord_cartesian(xlim=xlim,
                     ylim=c(0, 3))+
     geom_vline(xintercept=2048,color="black",linetype="longdash")+
-    annotate("text", x=2048, y=2.5, label="Throughput tipping point", size=2.5, color = "black",vjust=-1)+
+    annotate("text", x=2048, y=2.5, label="Throughput tipping point", size=2.5, color = "black",vjust=-1)
     
   
   
@@ -536,16 +540,16 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
   #ggsave("ddiobw.pdf",p3,width=5,height=2,units='in')  
   #ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
   #ggsave("membw-ratio.pdf",p5,width=5,height=2,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=5,height=2,units='in')
-  #ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=6,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
-  ggsave("~/development/thesis/working-copy/figures/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
-  ggsave("~/development/thesis/working-copy/figures/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/working-copy/figures/tlocalseededrandom/tlocalseededrandom-fig-tput.pdf",p1,width=5,height=2,units='in')
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-membw.pdf",p2,width=5,height=6,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
   
-  p7
-  
+  p1
+
   }
 
 
