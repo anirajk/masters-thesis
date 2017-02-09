@@ -124,8 +124,10 @@ from our evaluation of delta records in Bw-Trees here. Data could be pre-aggrega
  memory bandwidth. Refer Section~\ref{sec:delta-tput-efficiency} for how a 16KB 
  basepage can enhance transmission throughput by 1.6 times.
 
-\item {\em Defer re-replication} to the end; Our analysis of experiments only showed minor increase of performance when we avoided re-replication. Larger migrations would need higher {\em disk I/O bandwidth} which gets bottlenecked at around 
-300MB/s for regular spinning disks. It would be ideal to defer re-replication to the end provided there is some way to ensure safety of data in the face of failures during migration.
+\item {\em Defer re-replication} to the end; Our analysis of experiments only showed minor increase of performance when we avoided re-replication. 
+Larger migrations would need higher {\em disk I/O bandwidth} which gets bottlenecked at around 
+300MB/s for regular spinning disks. It would be ideal to defer re-replication to the end or use RDMA to achieve re-replication 
+provided there is some way to ensure safety of data in the face of failures during migration.
 
 \item {\em Defer partitioning} decisions before migration; We mentioned that ordering data within a RAMCloud server is not feasible because of utilisation. Any new migration scheme should continue to adhere to the principle of assuming no locality 
 of data within the server before migration unless significant changes are made to the log cleaning mechanism.

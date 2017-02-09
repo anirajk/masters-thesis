@@ -302,46 +302,43 @@ Figure~\ref{fig:zero-copy-tput} shows how each of these configurations impacts
 transmission throughput. For larger 1024~B records, using the NIC's DMA engine
 for Zero Copy shows clear benefits even when you are transmitting less number of 
 records. This is in addition to the CPU and memory bandwidth savings, which 
-we explore in Section~\ref{sec:overhead}). The database server can 
-saturate the network with Zero Copy as long as it can post 2 or more
+we explore in Section~\ref{sec:overhead}). The database server can come close to
+saturating the network with Zero Copy as long as it can post 2 or more
 records per transmit operation to the NIC (that is, if it sends 2~KB or larger
 messages at a time). For the Copy Out approach, you get roughly the same transmission 
 throughput as Zero Copy when your transmission sizes get bigger at around 16~KB. In 
 the impact study in Section~\ref{sec:impact} we explain why this is not a good value 
-proposition. We saw the DMA engine could provide a throughput boost
-of up to 86\% over Copy Out while transmitting two 1024~B records. It's also interesting 
+proposition. We see that the DMA engine could provide a throughput boost
+of up to 82\% over Copy Out while transmitting a single 1024~B record. For small 
+records, the biggest improvement of 67\% comes while transmitting 6 records. It's also interesting 
 to note that if range scans return even just 16 scattered, small(128~B) records per query, the
 benefits of Zero Copy purely from the perspective of transmission throughput is almost eliminated.
 \input{fig-zero-copy-tput}
 
-% computePctTputImprovementForZeroCopy(loadMerged())
 % [1] "128 B item pct improvement in tput for zero-copy"
-%  [1]   8.105552  10.928705  14.097586  18.910805  28.721654  43.346138  51.993156  44.439383  55.446378
-% [10]  43.414034  35.736397  26.654478  23.842016  20.787579  18.376618  -5.310453  -2.382863  -4.469114
-% [19]  -5.565349  -6.927329  -6.270677  -7.919818  -8.681226  -9.356702 -11.269678 -11.943183 -12.265026
-% [28] -13.209408 -13.396745 -13.930867 -14.057826 -12.286999
-% [1] "Max 55.4463782269341"
+%  [1]  11.028650  11.592911  20.786107  41.404516  56.840692  67.254500  67.200293
+%  [8]  44.833240  47.253588  37.238784  33.664302  26.848139  23.514396  20.315944
+% [15]  17.993814  -5.403675  -3.181313  -5.018687  -5.653289  -6.857504  -6.432338
+% [22]  -7.975186  -8.226700  -8.981360 -10.787161 -11.431439 -11.565276 -12.160634
+% [29] -12.614729 -13.338489 -13.484387 -12.221107
+% [1] "Max 67.2544996567177"
 % [1] "1024 B item pct improvement in tput for zero-copy"
-%  [1] 53.841302 86.064417 55.299614 40.553317 37.989062 33.750689 30.841420 23.594658 21.917508 19.037890
-% [11] 18.186771 15.621109 14.475694 12.246097 11.008283  7.318041  7.586871  7.262891  7.572221  7.396499
-% [21]  7.427524  7.109614  7.039692  6.980079  6.610857  5.824279  5.979297  5.631181  5.694890  5.299445
-% [31]  5.746029  5.610679
-% [1] "Max 86.0644167799178"
-
-
-
-%Copy Out 128 B - 8chunks(1024B) - 2400 MB/s
-%Copy Out 128 B - max 32 chunks - 3885MB/s
-%Copy out 1024B  -max 32chunks - 5507MB/s
-%ZeroCopy 128 B - chunks-MB/s, 1-526,7-3430,8-3466,9-3450,10-3417,
-% 11-3431,12-3375,13-3437,14-3493,15-3532,16-2908, 30-3314,31-3304,32-3408
-%ZeroCopy 1024 B - 1-3841, 2-5861, 32-5816
+%  [1] 82.410417 74.091815 54.526147 40.871349 38.498740 34.769999 30.432565 24.488659
+%  [9] 22.453177 19.152159 17.601357 15.239700 14.286781 12.323574 10.774225  7.225814
+% [17]  7.274280  7.100385  7.056163  7.077580  6.816057  6.404356  6.311769  6.087628
+% [25]  5.834562  5.273241  4.925994  4.807291  4.699854  4.502716  4.354560  4.762348
+% [1] "Max 82.4104173561517"
+% > 
+% cpsmall[1] 3917.423
+% nocpsmall[1] 3574.717
+% cpbig[1] 5552.109
+% nocpbig[1] 5816.52
 
 Figure~\ref{fig:zero-copy-tput} shows that for small 128~B records, Zero Copy
 provides little throughput benefit if you were only returning a few records 
 at a time. Our NIC is limited to gather lists
 of 32~entries, which is insufficient to saturate the network with such a small
-record size. Transmission peaks at 3.4~GB/s. In fact, Zero Copy performs best when
+record size. Transmission peaks at 3.8~GB/s. In fact, Zero Copy performs best when
 we transmit between 8-15 records or 1 to 2~KB per transmission above which the transmit performance 
 tapers off. Zero Copy gives around 55\% improvement over Copy Out while dealing 
 with transmissions around 1~KB or 8 records. Throughput dips with 16 records per send operation and it gradually moves up as we 
@@ -388,8 +385,8 @@ to complete transmissions at smaller record sizes.
  For 128~B records, smaller transmissions take up more fraction of CPU owing to the overhead of more descriptors
 per transmission. Zero Copy always reduces the CPU load on the server in all record sizes except for the cases where
 overheads for a small number of small records and, as expected, there is a bigger
-benefit for larger record sizes. With 1024~B records, the \memcpy ~step of Copy-Out uses a maximum of 18\% of all available
-CPU cycles. What's alarming is the fact that this constitutes ~95\% of all the time spent busy waiting.
+benefit for larger record sizes. With 1024~B records, the \memcpy ~step of Copy-Out uses a maximum of 19\% of all available
+CPU cycles. What's alarming is the fact that this constitutes ~98\% of all the time spent busy waiting.
 This is a pure overhead that we could eliminate by using Zero Copy.
 
 While Zero Copy eliminates the \memcpy ~overhead, it adds an overhead of its own to create and copy transmit descriptors.
@@ -419,15 +416,32 @@ could end up using another 6~GB/s of memory bandwidth. With these estimates in m
 % probably at least when the copies are larger enough.
 % Based on Erik's work it looks like row-buffers are 8 KB! Wow, this might
 % actually impact our story in terms of energy efficiency!
+% computeOverheads(loadMerged())
+%   copied chunkSize     minBusy    maxBusy
+% 1      0       128 0.017478744 0.09527377
+% 2      0      1024 0.004226719 0.06934659
+% 3      1       128 0.061007249 0.16221580
+% 4      1      1024 0.086972528 0.19095831
+%   copied chunkSize   minMemcpy maxMemcpy
+% 1      0       128 0.000000000 0.0000000
+% 2      0      1024 0.000000000 0.0000000
+% 3      1       128 0.005777513 0.1475228
+% 4      1      1024 0.058111184 0.1882956
+%   copied chunkSize minAppendGE maxAppendGE
+% 1      0       128 0.003739592 0.015009912
+% 2      0      1024 0.001298045 0.003519684
+% 3      1       128 0.000000000 0.000000000
+% 4      1      1024 0.000000000 0.000000000
+
 
 % computeBestCyclesPerRecordImprovement(loadMerged())
-% [1] "1773889090.13867 624551729.013333 2961703308.21867 148009809.173333"
+% [1] "2248450154.29689 623838985.255111 3039327303.11467 149365368.917333"
 % [1] "Pct overhead reduction of nocp versus cp for"
 % [1] "128 B records"
-% [1] 64.79195
+% [1] 72.25471
 % [1] "1024 B records"
-% [1] 95.00254
-% > 
+% [1] 95.08558
+
 
 \subsection {CPU Efficiency of transmission}
 The results from previous section break down where the CPU savings come from,
@@ -442,8 +456,8 @@ Figure~\ref{fig:cycles}. The figure shows how many cycles of work the CPU needs 
 for every byte transmitted in each of the configurations, which reveals two key things.
 First, it shows that, though the absolute savings in total CPU cycles is small
 for Zero Copy, it does reduce CPU overhead due to transmission by up to 95\% for 
-larger records and around 64\% for smaller records. For smaller records, small transmission
-results in more CPU usage (till around 3~records or 384~B) owing to the overhead of descriptors.
+larger records and around 72\% for smaller records. If you were to transmit at least 
+two small records, Zero Copy becomes more CPU efficient.
 \input{fig-cycles}
 
 \input{takeaway-cpu-cycles}
@@ -509,8 +523,9 @@ larger record sizes is beneficial. The savings are highlighted along largest tra
  server. This is even more interesting considering that the modern day In-memory stores are not tuned for large responses.
   When the DRAM latency and accesses go up, the performance of the whole system could degrade to the point at which the system might become unusable.
 \input{fig-membw}
-For smaller data sizes, it's even more interesting. Zero Copy doesn't show a huge contrast in memory bandwidth utilisation. There are times 
-when Copy out outperforms Zero Copy even in terms of memory bandwidth utilisation. It is interesting to note that these data points overlap the anomalous transmit performance 
+For smaller data sizes, it's even more interesting. Zero Copy shows less memory utilisation until we get to the point where it's transmit performance 
+drops below that of Copy out. This would imply that there are times when Copy out outperforms Zero Copy in terms of transmit performance and 
+memory bandwidth utilisation. It is interesting to note that these data points overlap the anomalous transmit performance 
 degradation we saw while observing transmission throughput in Figure~\ref{fig:zero-copy-tput}. Interestingly, after this region in the graph 
 where you transmit 16 or more 128~B records where Zero Copy offers better transmission performance, the memory bandwidth consumption by Zero Copy 
 is reduced, and Copy Out starts to appear more expensive in terms of memory bandwidth. These anomalies are better explained in Section~\ref{sec:anomaly} but we 
@@ -523,8 +538,11 @@ Figure~\ref{fig:membw-ratio} shows the ratio of Memory pressure exerted per byte
 Zero Copy mode of transmitting here. For Zero Copy, We can see that the system is consistent and predictable and only incurs a small overhead of 
 copying descriptors other than DMAing the data onto the NIC. The cost of the descriptors is evident from the fact that 128~B records show 
 a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultuous across varying number of records, 
- but still shows Zero Copy as the clear winner. If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
- 2X memory bandwidth cost on copying out 1024~B records. 
+ but still shows Zero Copy as the clear winner. It is interesting to note that transmitting a single record via Copy Out, 
+ introducing an unnecessary copy makes your transmission 3x less efficient in terms of memory utilisation.
+  If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
+ 2X memory bandwidth cost on copying out 1024~B records. Like in the case of smaller records, the additional copy reduces the 
+ transmission efficiency more in the case of small number of records.
 \input{fig-membw-ratio}
 
 \input{takeaway-impact-membw-ratio}

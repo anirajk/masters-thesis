@@ -3,7 +3,6 @@
   \parbox{0.7\textwidth}{
   \textbf{Takeaways: Copy Out side effects of DDIO}
   \begin{enumerate}
-  \item While doing smaller transmissions, unnecessary evictions in cache can lead to more reads from DRAM 
   \item The additional \memcpy ~ step pre-fetches data to LLC at a cost and improves the number of DDIO misses that result in DRAM accesses. 
   \item If not for the DDIO effects, we would have seen a bigger drop in throughput and memory efficiency for Copy Out. 
   \end{enumerate}

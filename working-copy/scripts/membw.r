@@ -541,12 +541,12 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
   #ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
   #ggsave("membw-ratio.pdf",p5,width=5,height=2,units='in')  
   #ggsave("~/development/thesis/working-copy/figures/tlocalseededrandom/tlocalseededrandom-fig-tput.pdf",p1,width=5,height=2,units='in')
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-membw.pdf",p2,width=5,height=6,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=6,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
   ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
   
   p1
 

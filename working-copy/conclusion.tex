@@ -23,63 +23,37 @@ require additional acknowledgement mechanisms. We also found that client initiat
 scatter gather DMA engine effectively. We arrived at the conclusion that \cpp{SEND} primitives 
 are the most suited for returning scattered set of records.
 
-We analysed the transmission throughput of Zero Copy and Copy Out for 128~B records and found the following:
-  \begin{enumerate}
-  \item Bigger records can saturate the NIC;Zero Copy is significantly faster for bigger chunks.
-  \item Zero Copy is limited by the length of S/G list; Zero Copy can't saturate the NIC transmitting 128~B records.
-  \item Copy out can be faster for smaller records unless S/G length {\em is carefully tuned}; we examine Copy Out's efficiency in Section ~\ref{sec:overhead}
-  \end{enumerate}
-  \textbf{Recommendation}: For large sets of small, scattered records, use Copy Out. If your record sizes are bigger, always use Zero Copy.
+We analysed the transmission throughput of Zero Copy and Copy Out for 128~B records and found that Bigger records can saturate the NIC.
+Zero Copy is significantly faster for bigger chunks. Zero Copy is also limited by the length of S/G list for small 128~B records.
+We also found that Copy Out can perform better if you have more records. We arrived at the following conclusion that 
+unless your records are small and scattered, always use Zero Copy, for small and scattered records, you might need to tune your layout 
+to get Zero Copy advantage.
 
 Zero Copy with two-sided RDMA promises CPU savings by offloading CPU from the critical data transfer path of the sender. We found that 
-CPU overheads in transmissions are largely due to the additional copies involved in Copy Out and Zero Copy benefits from avoiding the copies.
-  \begin{enumerate}
-  \item \memcpy ~dominates the CPU overheads in transmission; Zero Copy offers 8x savings for small records and 45x savings for larger records.
-  \item Considerable CPU overhead means Copy Out is better at transmitting $<$384~B of data; For smaller records, overhead of adding and copying descriptors can't be ignored.
-  \end{enumerate}
-  \textbf{Recommendation}: If CPU overhead is the likely concern, use Zero Copy; Adding an exception for this rule for transmissions $<$384~B might help minimising overheads.
+CPU overheads in transmissions are largely due to the additional copies involved in Copy Out and Zero Copy benefits from avoiding the extra copy.
+ 
+CPU Efficiency of transmission is better measured in cycles spent per transmitted byte. We see that even transmitting two records at a time makes 
+Zero Copy more CPU efficient in transmission and the gains get bigger for bigger transmissions.
 
-CPU Efficiency of transmission is better measured in cycles spent per transmitted byte. This shows the humongous advantage that Zero Copy have over Copy Out 
-at larger transmissions.
-  \begin{enumerate}
-  \item Most efficient CPU utilisation for transmission is obtained while using Zero Copy on large batches; 64\% savings for 128~B records and 95\% savings for 1024 B records
-  \item Zero Copy is 3x costlier than Copy Out in transmitting a single 128B record; results like equality searches on small records might be better served by Copy Out. 
-  \end{enumerate}
-  \textbf{Recommendation}: Zero Copy effectively offloads CPU and cost per byte goes down drastically when you transmit larger records.
-
-Memory bandwidth is a crucial resource in an in-memory database server bound by DRAM capacity and latency. We found the following characteristics comparing 
-Zero Copy with Copy Out
-  \begin{enumerate}
-  \item Copy Out might occupy significant portion of available Memory Bandwidth; Transmissions of 32 records of 1~KB size consumed \textbf{half of all available bandwidth}.
-  \item Smaller records have a smaller memory footprint and may not affect available bandwidth; The trend follows transmission throughput and there are areas where Zero Copy is costlier
-  \end{enumerate}
-  \textbf{Recommendation}: Zero Copying larger records saves the most memory bandwidth while giving stellar throughput.
-
+Memory bandwidth is a crucial resource in an in-memory database server bound by DRAM capacity and latency. We found that for transfer of large 
+records, the pressure on the memory controller is approximately 2X the transmission throughput and while transmitting at the line rate of our NIC, 
+the server consumed half of all available memory bandwidth. If memory bandwidth is not an expendable resource, we ascertain that the designer should 
+always use Zero Copy.
+  
 Intel\textregistered's recent micro-architectures has support for DDIO which treats LLC as the source and destination for I/O transfers. This has significant impact on 
-the memory pressure exerted to the system, especially for Copy Out
-  \begin{enumerate}
-  \item While doing Zero Copy, almost all of the misses from DDIO region results in reads issued to memory controller.
-  \item While doing Copy Out, since the data is already in memory, A miss from the DDIO region may not always result in a memory read.
-  \item While doing smaller transmissions, unnecessary evictions in cache can lead to more reads from DRAM. 
-  \item The additional \memcpy ~ step pre-fetches data to LLC at a cost and improves the number of DDIO misses that result in DRAM accesses. 
-  \item If not for the DDIO effects, we would have seen a bigger drop in throughput and memory efficiency for Copy Out. 
-  \end{enumerate}
-  \textbf{Recommendation}:Keeping your transmission sizes under the size of a modern LLC (~20MB) can lower your memory bandwidth consumption considerably.
-  \textbf{Recommendation}: DDIO paints a slightly different picture of memory consumption favoring Copy Out; In the bigger scheme of things, Total memory bandwidth consumed still makes us prefer Zero Copy.
-
+the memory pressure exerted to the system, especially for Copy Out. DDIO paints a slightly different picture favoring Copy Out since the cost of pre-fetching the data is 
+paid up front, we don't incur additional misses from DDIO. This is less relevant in the bigger scheme of things and Zero Copy still wins in terms of total 
+consumed memory bandwidth in the server
+  
 The transmission throughput anomaly where throughput of Zero Copy is limited while transferring a large set of small scattered records is best explained to 
 our knowledge with PCIe errors tapering off with 16 records per transmission.
-  \begin{enumerate}
-  \item The memory pressure induced by PCIe errors from LLC peaks at the same time as the transmission througput drops for small records doing Zero Copy.
-  \end{enumerate}
+ 
+We argued for a client assisted design with no-update-in-place records that can gain the benefits of Zero Copy while retaining the transmission throughput of larger records. 
+We get a 50\% reduction in memory bandwidth consumption using this approach without compromising transmission throughput. 
+No updates in place and latch and lock freedom makes this approach clearly favorable for the modern NIC. 
 
-We argued for a client assisted design with no-update-in-place records that can gain the benefits of Zero Copy while retaining the transmission throughput of larger records.
-  \begin{enumerate}
-  \item Use of a large enough base page and updates as delta records helps in saturating NIC's transmission throughput.
-  \item We get a 50\% reduction in memory bandwidth consumption using this approach without compromising transmission throughput.
-  \item No updates in place and latch and lock freedom makes this approach clearly favorable for the modern NIC. 
-  \end{enumerate}
-  \textbf{Recommendation}: \textbf{Novel Data Structures can significantly influence the performance of a modern NIC}; To extract maximum performance from the NIC without compromising system resources, make use of client assisted designs using lock free structures that offer no updates in place.
+We also laid out the basic design for a new migration protocol in RAMCloud which makes use of Zero Copy, smart layout for transmission and bypassing re-replication using 
+RDMA.
 
 \section{Future Directions}
 
@@ -111,14 +85,18 @@ without disrupting the actual transmissions.
 I learned a lot while developing many portions of this benchmark. My most important takeaway from this work 
 is the virtue of having truly repeatable experiments. Having hardware environments which are set up to encourage 
 repeatable research and the seemingly disproportionate amount of time spent on developing the tooling of the 
-framework certainly helped in this regard, especially for comparing results after code modifications and root-cause analysis. 
+framework certainly helped in this regard, especially for comparing results after code modifications and root-cause analysis.
+I got first hand experience in concurrent programming, use of Infiniband verbs, RDMA and accurate cycle counting 
+for profiling wall time. I have significantly improved my scripting and documentation skills over the course of this work. 
 I have also learned valuable lessons on team work and collaboration and received a lot of help from my 
 advisor and peers over the course of the work. I believe the guidelines that we drew from this work will 
-enable researchers to come up with co-designing hardware and software to extract maximum performance. 
+enable researchers of the future with better performing in memory databases for large transfers. 
 
-\section{Final Comments}
-Today's database designer has to navigate a multi-dimensional space of trade offs and network transmission 
+\section{Parting thoughts}
+Today's database designer has to navigate a complex, multi-dimensional space of trade offs and network transmission 
 is a critical aspect of performance for the distributed, scale out stores of tomorrow. Smart layout of data and  
-use of the right concurrency primitives are paramount in extracting maximum network performance without consuming 
+co-designing for hardware are paramount in extracting maximum network performance without consuming 
 unnecessary system resources. The use of Zero Copy offers better transmission throughput and memory bandwidth utilisation for 
-large transfers if we carefully co-design the software keeping the network hardware in mind.
+large transfers if we carefully co-design the software keeping the network hardware in mind. Research on how to extract 
+more transmission performance from column oriented layouts and advanced indexing structures should continue until we bridge the 
+gap between what a modern distributed database server can deliver and what the hardware, especially fast networks is capable of doing.

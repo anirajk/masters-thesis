@@ -259,8 +259,8 @@ plotCyclesPerRecord <- function(d) {
              memcpy=sum(memcpySecs) / sum(seconds),
              appendGE=sum(addingGESecs) / sum(seconds),
              getTxBuffer=sum(getTxSecs) / sum(seconds),
-             chunksPerSecond=sum(chunksTx) / mean(seconds),
-             recordsPerSecond=sum(chunksTx) / mean(seconds))
+             chunksPerSecond=sum(as.numeric(chunksTx)) / mean(seconds),
+             recordsPerSecond=sum(as.numeric(chunksTx)) / mean(seconds))
 #misc=sum(miscSecs) / sum(seconds))
   
   d$bytesPerSecond <- as.double(as.character(d$chunkSize)) * d$chunksPerSecond
@@ -406,7 +406,7 @@ makeZeroCopyTputFigure <- function () {
     annotate("text", x=1024, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
   
     p 
-  ggsave(plot=p, filename='/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-zero-copy-tput.pdf',
+  ggsave(plot=p, filename='/Users/aniraj/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
           width=5, height=2, units='in')
   p
 }
@@ -420,8 +420,9 @@ makeOverheadsFigure <- function () {
   p <- plotBreakdown(d) +
     coord_cartesian(ylim=c(0, 0.3))
   p
-    #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-overheads.pdf',
-    #     width=5, height=5, units='in')
+    ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-overheads.pdf',
+         width=5, height=5, units='in')
+  p
 }
 
 makeCyclesFigure <- function () {
@@ -429,8 +430,9 @@ makeCyclesFigure <- function () {
   d <- d[d$chunkSize %in% c(128,1024),]
   p <- plotCyclesPerRecord(d)
   p
-  #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-cycles.pdf',
-  #       width=5, height=2, units='in')
+  ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-cycles.pdf',
+         width=5, height=2, units='in')
+  p
 }
 
 makeDeltasFigure <- function () {
@@ -488,6 +490,10 @@ computePctTputImprovementForZeroCopy <- function (d) {
   nolen <- length(nocpSmall)
   cpSmall <- head(d[d$copied == 1 & d$chunkSize == 128,]$aggMBs, n=nolen)
   cpBig <- head(d[d$copied == 1 & d$chunkSize == 1024,]$aggMBs, n=nolen)
+  print(max(cpSmall))
+  print(max(nocpSmall))
+  print(max(cpBig))
+  print(max(nocpBig))
   
   print('128 B item pct improvement in tput for zero-copy')
   i <- (nocpSmall/cpSmall -1) * 100

@@ -3,8 +3,9 @@
   \parbox{0.7\textwidth}{
   \textbf{Takeaways: CPU Efficiency of Transmission}
   \begin{enumerate}
-  \item Most efficient CPU utilisation for transmission is obtained while using Zero Copy on large batches; 64\% savings for 128~B records and 95\% savings for 1024 B records
-  \item Zero Copy is 3x costlier than Copy Out in transmitting a single 128B record; results like equality searches on small records might be better served by Copy Out. 
+  \item Most efficient CPU utilisation for transmission is obtained while using Zero Copy on large batches; 72\% savings for 128~B records and 95\% savings for 1024 B records
+  \item Zero Copy is 2x costlier than Copy Out in transmitting a single 128B record; results like equality searches on small records might be better served by Copy Out.
+  \item If the results to be transmitted involve 2 or more records, Zero Copy is always more CPU efficient.
   \end{enumerate}
-  \textbf{Recommendation}: Zero Copy effectively offloads CPU and cost per byte goes down drastically when you transmit larger records \label{takeaway:cpu-cycles}
+  \textbf{Recommendation}: Zero Copy effectively offloads CPU and cost per byte goes down drastically when you transmit larger batches of records \label{takeaway:cpu-cycles}
  }}
