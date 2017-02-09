@@ -46,7 +46,7 @@ We saw from previous section what the latest reconfiguration protocols are capab
 offer 1000$\times$ less throughput than the latestoperating under millisecond latencies. There is a different class of systems~\cite{ramcloud,farm,rdmabillion,herd} that 
 were developed recently which optimises for end-to-end latency and has the ability to perform millions of operations 
 per second per server. RAMCloud~\cite{ramcloud} is a prime example of such a system which promises median read latencies 
-of 5$\mu$s and responds to workloads upto a million operations per second. These characteristics result from the fact that 
+of 5\textmu~s and responds to workloads upto a million operations per second. These characteristics result from the fact that 
 these systems were designed from ground up keeping low latencies in mind and any significant disruption to their operating 
 latencies might deem them less useful. RAMCloud has a migration protocol which offers around 100MB/s data transfer speeds albeit 
 synchronous and unpipelined. While this is better by leaps and bounds than other systems, we believe that carefully leveraging the NIC, 
@@ -84,7 +84,7 @@ it is safe to assume that use of Zero Copy while transmitting dat from source wi
 \input{fig-bottlenecks}
 
 \subsection{Locality in RAMCloud}
-RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5$\mu$s~\cite{ramcloud}. RAMCloud doesn't have a strong notion of collocating data across servers. 
+RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5\textmu~s~\cite{ramcloud}. RAMCloud doesn't have a strong notion of collocating data across servers. 
 It is known that transactions~\cite{ramcloudtx} and secondary indices~\cite{slik} can benefit with collocation of data. RAMCloud's data is hash partitioned and within a server, the in-memory log is organised 
 in a temporal order. We might be tempted to think that storing data in contigous memory location in some order based on primary or secondary keys or even some other pre-determined order will give better NIC performance. 
 The key obstruction to doing this is RAMCloud's log cleaning mechanism~\cite{ramcloudfast}. RAMCloud's design philosophy rightly highlights the importance of DRAM utilisation when all data is in memory. 

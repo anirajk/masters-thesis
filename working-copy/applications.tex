@@ -384,7 +384,7 @@ hurts the memory utilization of the system.
 
 In practice, this effect will be small for two reasons. First, Zero Copy adds a
 transmission, which completes within a few microseconds; however, it also saves a
-\memcpy~ which accounts for 1~to~2~$\mu$s for a 16~KB transmission. Second, the
+\memcpy~ which accounts for 1~to~2~\textmu~s for a 16~KB transmission. Second, the
 amount of resulting data held solely for transmission should generally be
 more than compensated for by eliminating the need for explicit transmit
 buffers. With Copy out, the size of the transmit buffer pool is necessarily

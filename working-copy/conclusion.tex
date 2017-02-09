@@ -6,7 +6,7 @@ Section~\ref{sec:contributions} remarked the following thesis statement .
 
 \textbf{\enquote{Scale-out in-memory stores are optimized for small requests
 under tight SLAs, and bulk data movement, for rebalancing and range queries, interfere;
-We hypothesize that carefully leveraging data layout and advancements in modern NICs
+The thesis argues carefully leveraging data layout and advancements in modern NICs
 will yield to gains in performance and efficiency for large transfers in these systems
 without disrupting their primary obligations.}}
 
@@ -18,16 +18,10 @@ data in RAMCloud and benchmarked the key bottlenecks in the current migration pr
 guidelines for a new migration protocol for RAMCloud drawing lessons from observing the NIC closely while it was 
 transferring gigabytes of data. 
 
-While evaluating the various RDMA primitives, we found that one-sided RDMA verbs, though offloads destination CPU, 
-requires additional acknowledgement mechanisms. We also found that client initiated \cpp{READ}s cannot use the 
-scatter gather DMA engine effectively.
-  \begin{enumerate}
- \item \cpp{SEND} saturates NIC; can gather records and notify receiver when transmission completes.
- \item \cpp{WRITE} avoids invoking receiver; server must induce notifications some other way.
- \item \cpp{READ} is client initiated and avoids the server CPU in critical path; it's the lowest overhead on server,
-  but can only collect one contigous chunk per posted op limiting it's usefulness for returning complex responses.
-  \end{enumerate}
-  \textbf{Recommendation}: Use \cpp{SEND} primitives for returning scattered set of records.
+While evaluating the various RDMA primitives, we found that one-sided RDMA verbs, though they offload destination CPU, 
+require additional acknowledgement mechanisms. We also found that client initiated \cpp{READ}s cannot use the 
+scatter gather DMA engine effectively. We arrived at the conclusion that \cpp{SEND} primitives 
+are the most suited for returning scattered set of records.
 
 We analysed the transmission throughput of Zero Copy and Copy Out for 128~B records and found the following:
   \begin{enumerate}
