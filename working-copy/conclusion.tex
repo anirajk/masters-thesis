@@ -100,3 +100,25 @@ released plans of releasing NICs that offer 4$\times$ maximum throughput and lat
 all our observations, it would be interesting to note how the behaviour of the system will change with a scatter-gather list of a different length. We also need to draw parallel 
 conclusions for other advanced NICs which may not explicitly support S/G DMA like the mellanox hardware.
 \end{enumerate}
+
+\section{Lessons Learned}
+We started out to measure the impact of data layout and pre-aggregation on network transmit performance. 
+It was rewarding to explore the complexities of handling kernel by-pass over the infiniband library and 
+scoreboarding in a multi threaded environment to arrive at the right measurements for transmission.
+It was also challenging to profile the code for additional metrics reflecting system resource consumption 
+without disrupting the actual transmissions. 
+
+I learned a lot while developing many portions of this benchmark. My most important takeaway from this work 
+is the virtue of having truly repeatable experiments. Having hardware environments which are set up to encourage 
+repeatable research and the seemingly disproportionate amount of time spent on developing the tooling of the 
+framework certainly helped in this regard, especially for comparing results after code modifications and root-cause analysis. 
+I have also learned valuable lessons on team work and collaboration and received a lot of help from my 
+advisor and peers over the course of the work. I believe the guidelines that we drew from this work will 
+enable researchers to come up with co-designing hardware and software to extract maximum performance. 
+
+\section{Final Comments}
+Today's database designer has to navigate a multi-dimensional space of trade offs and network transmission 
+is a critical aspect of performance for the distributed, scale out stores of tomorrow. Smart layout of data and  
+use of the right concurrency primitives are paramount in extracting maximum network performance without consuming 
+unnecessary system resources. The use of Zero Copy offers better transmission throughput and memory bandwidth utilisation for 
+large transfers if we carefully co-design the software keeping the network hardware in mind.
