@@ -20,6 +20,8 @@ ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/
 pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_pciebw_profiles/filtered-*pciebw.csv")
 deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/*membw-out.log")
 deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/filtered-*membw.csv")
+extendedtputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_extended_copyout_points/*membw-out.log")
+extendedmembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_extended_copyout_points/filtered-*membw.csv")
 
 
 
@@ -146,6 +148,9 @@ plot <- function (d, xlim=c(2 * 1024, 64 * 1024)) {
     scale_shape_manual(name='Transmit Mode',
                          labels=c('Zero-Copy', 'Copy-Out'),
                          values=c(19,3)) +
+    #scale_color_manual(name='Record Size (B)',
+    #                   values=c("steelblue","red")) +
+    
     scale_color_manual(name='Record Size (B)',
                        values=brewer.pal(6, 'Set1')) +
     coord_cartesian(xlim=xlim,
@@ -411,6 +416,51 @@ makeZeroCopyTputFigure <- function () {
   p
 }
 
+makeZeroCopyFiguresExtendeded <- function () {
+  d <- loadExtended()
+  print(head(d))
+  #d <- d[d$chunkSize==128,]
+  d <- d[d$chunkSize %in% c(128,1024),]
+  p <- plot(d) +
+    coord_cartesian(ylim=c(0, 8000), xlim=c(128, 32 * 1024))+
+    geom_hline(yintercept=c(6051, 7*1024),color="black",linetype="longdash")+
+    annotate("text", x=1024, y=7168, label="7168 MB/s (Theoretical line rate) ", size=2.5, color = "black",vjust=-1)+
+    annotate("text", x=1024, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
+  
+  p
+  d <- aggregateClientsmembw(loadExtended())
+  print("after aggclients")
+  d$chunkSize <- factor(d$chunkSize)
+  p2 <- ggplot(d, aes(x=bytesPerMessage, y=membw,
+                      linetype=chunkSize, color=chunkSize,
+                      shape=copied)) +
+    geom_line() +
+    geom_point(size=1) +
+    scale_x_continuous(name='Bytes per Send',
+                       trans=log2_trans(),
+                       breaks=c(128, 1024, 2048, 4096, 8192, 16384,32768)) +
+    scale_y_continuous(name='Memory B/w (MB/s)',
+                       #trans=log2_trans(),
+                       #breaks=c(2000,4000,6000,8000,10000,12000,14000,16000,18000,20000,22000,24000)
+                       breaks=c(4000,8000,12000,16000,20000,24000)
+    ) +
+    scale_linetype_discrete(name='Record Size (B)') +
+    scale_shape_manual(name='Transmit Mode',
+                       labels=c('Zero-Copy', 'Copy-Out'),
+                       values=c(19,3)) +
+    scale_color_manual(name='Record Size (B)',
+                       values=brewer.pal(6, 'Set1')) +
+    #    geom_line(aes(x=bytesPerMessage,y=membw,linetype=chunkSize,color=membw,shape=copied))+
+    myTheme+
+    coord_cartesian(ylim=c(0, 24000), xlim=c(128, 32 * 1024))+
+    geom_hline(yintercept=c(23950, 39321),color="black",linetype="longdash")+
+    annotate("text", x=2000, y=39321, label="38.4 GB/s (Intel ARK spec Xeon E5-2450) ", size=2.5, color = "black",vjust=-1)+
+    annotate("text", x=2000, y=23950, label="23.3 GB/s (Measured Peak Memory B/W) ", size=2.5, color = "black",vjust=-1)
+  
+  p2
+}
+
+
 makeOverheadsFigure <- function () {
   d <- loadMerged()
   #d <- d[d$copied == 0,]
@@ -608,6 +658,37 @@ computeBestCyclesPerRecordImprovement <- function (d) {
   
   print('1024 B records')
   print((1 - bestBigNoCp/bestBigCp) * 100)
+}
+
+loadExtended <- function (i=1,extratitle='') {
+  for (i in seq(tputfilenames)){
+    t <- tputload(filename=tputfilenames[i])
+    t <- t[t$chunkSize %in% c(128,1024),]
+    m <- perfload(filename=membwfilenames[i])
+    m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)*10
+    m$membw <- as.numeric(m$membw)
+    print(summary(d))
+    membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
+    curr<-data.frame(membw=membw,t)
+    if(i==1){
+      merged<-curr
+    }else{
+      merged<-rbind(merged,curr)
+    }
+  }
+  for (i in seq(extendedtputfilenames)){
+    t <- tputload(filename=extendedtputfilenames[i])
+    t <- t[t$chunkSize %in% c(128,1024),]
+    m <- perfload(filename=extendedmembwfilenames[i])
+    m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)*10
+    m$membw <- as.numeric(m$membw)
+    print(summary(d))
+    membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
+    curr<-data.frame(membw=membw,t)
+    merged<-rbind(merged,curr)
+  }
+  
+  merged
 }
 
 computeCPUOverheadOfDeltas <- function (d) {
