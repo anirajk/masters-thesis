@@ -56,20 +56,20 @@ transmission performance and system stability. We wanted to enumerate and underl
 We specifically looked at five factors that make it especially challenging to design NIC-friendly
 database engines:
 \begin{itemize}
-  \item {\em Zero-copy} DMA engines reduce server load for transferring large data
+  \item {\em Zero Copy} DMA engines reduce server load for transferring large data
     blocks, but large, static blocks are uncommon for in-memory databases,
     where records can be small, and update rates can be high.
-  \item The performance gains from zero-copy DMA do not generalize to
+  \item The performance gains from Zero Copy DMA do not generalize to
       {\em finer-grained objects} which are commonplace in in-memory stores for two reasons:
       \begin{enumerate}
         \item Transmit descriptors grow linearly in the number of records;
         \item NIC hardware limits descriptor length, restricting speed for small records.
       \end{enumerate}
-      Despite this, we find that zero-copy can make sense for small objects under certain conditions, such as
+      Despite this, we find that Zero Copy can make sense for small objects under certain conditions, such as
       small ``add-ons'' to larger transmissions.
    \item Absolute savings in {\em consumed memory bandwidth} is far greater than the CPU savings 
        offered by Zero Copy
-   \item Zero-copy introduces complications for \emph{locking and object
+   \item Zero Copy introduces complications for \emph{locking and object
       lifetime}, as objects must remain in memory and must be
       unchanged for the life of the DMA operation (which includes transmission
       time).
@@ -178,7 +178,7 @@ evidence for the thesis statement in the beginning of this section.
     \item Measured transmission throughput and CPU overhead in the face of varying
     data layouts
 
-    \item Compared the performance of Zero-Copy and Copy Out mechanisms of 
+    \item Compared the performance of Zero Copy and Copy Out mechanisms of 
     transmitting data from an RDMA capable modern NIC.
    \end{itemize} 
 

@@ -91,7 +91,7 @@ issue a transmission. With Mellanox NICs, a thread creates a work request and a
 gather list on its stack. The work request indicates that the requested
 operation is a transmission, and the gather list is a contiguous list of
 base-bound pairs that indicate what data should be transmitted by the NIC (and
-hence DMAed). For zero-copy, the gather list is as long as the number of chunks
+hence DMAed). For Zero Copy, the gather list is as long as the number of chunks
 that the host would like to transmit, up to a small limit. The NICs we use support
 posting up to 32~chunks per transmit operation. Later, we find that this small
 limit bottlenecks NIC transmit performance when chunks are small and numerous.
@@ -115,12 +115,12 @@ kernel-based networking stack: chunks of data are first copied into a single
 transmit buffer in host memory, usually by a \memcpy ~call to copy from the record's 
 virtual address to the transmit buffer. Then, a simple, single-entry descriptor is
 posted to the NIC that DMAs the transmit buffer to an on-device buffer for transmission.
-As a result, copy-out requires an extra and explicit copy of the data, which is made
+As a result, Copy Out requires an extra and explicit copy of the data, which is made
 by the host CPU.  Making the copy uses host CPU cycles, consumes memory
 bandwidth, and is pure overhead. 
 % Rob was of the opinion to cut this here since lessons should either be in chapter
 % beginning or after evaluations
-% Surprisingly, though, copy-out has
+% Surprisingly, though, CO has
 % advantages including better performance when
 % records are small and scattered.  In those cases, complex gather descriptors
 % bottleneck the NIC, and using the host CPU to pre-assemble the responses can
@@ -267,10 +267,10 @@ We choose 128~B records as a realistic sample of record sizes in the future and 
 %
 % Smaller transmissions require more NIC interaction and PCI Express (PCIe)
 % writes to transmit query results, but they can deal with discontinuous
-% in-memory data layouts. In the case of zero-copy transmission, smaller
+% in-memory data layouts. In the case of Zero Copy transmission, smaller
 % transmissions may also reduce the amount of time that the database must keep
 % records stable for the NIC.  Larger transmissions can also accommodate
-% discontinuity through two different methods: copy-out or zero-copy, but
+% discontinuity through two different methods: Copy Out or Zero Copy, but
 % discontinuity results in increased transmit descriptor size and complexity.
 To explore how different design decisions affect trade-offs in server efficiency and
 performance, we built a simple model of an in-memory database system that
@@ -287,12 +287,12 @@ To understand these trade-offs, we measure the aggregate transmission
 throughput of a server to its 15~clients under several
 configurations.  In each experiment, the record size, $s$, is set as either 1024~B or
 128~B. Given a set of records that must be transmitted, they are then grouped
-for transmission. For zero-copy, an $n$ entry DMA gather descriptor is created
+for transmission. For Zero Copy, an $n$ entry DMA gather descriptor is created
 to transmit those records where $ns$ bytes are transmitted per NIC transmit
-operation. For copy-out, each of the $n$ records is copied into a single
+operation. For Copy Out, each of the $n$ records is copied into a single
 transmit buffer that is associated with a transmit descriptor that only points
 to the single transmit buffer. Each transmission still sends exactly $ns$
-bytes, but copy-out first requires $ns$ bytes to be copied into the transmit buffer.
+bytes, but Copy Out first requires $ns$ bytes to be copied into the transmit buffer.
 We vary $n$ from 1 to as much as the NIC can support DMAing in a single transmission.
 Intuitively, larger groups of records (larger sends) result in less host-to-NIC
 interaction, which reduces host load and can increase throughput; the actual benefits
@@ -315,14 +315,14 @@ to note that if range scans return even just 16 scattered, small(128~B) records 
 benefits of Zero Copy purely from the perspective of transmission throughput is almost eliminated.
 \input{fig-zero-copy-tput}
 
-% [1] "128 B item pct improvement in tput for zero-copy"
+% [1] "128 B item pct improvement in tput for ZC"
 %  [1]  11.028650  11.592911  20.786107  41.404516  56.840692  67.254500  67.200293
 %  [8]  44.833240  47.253588  37.238784  33.664302  26.848139  23.514396  20.315944
 % [15]  17.993814  -5.403675  -3.181313  -5.018687  -5.653289  -6.857504  -6.432338
 % [22]  -7.975186  -8.226700  -8.981360 -10.787161 -11.431439 -11.565276 -12.160634
 % [29] -12.614729 -13.338489 -13.484387 -12.221107
 % [1] "Max 67.2544996567177"
-% [1] "1024 B item pct improvement in tput for zero-copy"
+% [1] "1024 B item pct improvement in tput for ZC"
 %  [1] 82.410417 74.091815 54.526147 40.871349 38.498740 34.769999 30.432565 24.488659
 %  [9] 22.453177 19.152159 17.601357 15.239700 14.286781 12.323574 10.774225  7.225814
 % [17]  7.274280  7.100385  7.056163  7.077580  6.816057  6.404356  6.311769  6.087628
@@ -378,14 +378,14 @@ of CPU time. We wanted to make sure our profiling code shouldn't interfere with 
 While we just showed in Section~\ref{sec:zero-copy-tput} that judicious use of Zero Copy results 
 in enhanced transmission performance, the goal of zero-copy DMA is also to 
 mitigate the server-side CPU cost. Figure~\ref{fig:overheads} breaks down CPU time for 
-all the scenarios; small and large records using Zero Copy and Copy-Out. In the case 
+all the scenarios; small and large records using Zero Copy and Copy Out. In the case 
 of Zero Copy, most of the server CPU time is spent idling waiting for the NIC 
 to complete transmissions at smaller record sizes.
 
  For 128~B records, smaller transmissions take up more fraction of CPU owing to the overhead of more descriptors
 per transmission. Zero Copy always reduces the CPU load on the server in all record sizes except for the cases where
 overheads for a small number of small records and, as expected, there is a bigger
-benefit for larger record sizes. With 1024~B records, the \memcpy ~step of Copy-Out uses a maximum of 19\% of all available
+benefit for larger record sizes. With 1024~B records, the \memcpy ~step of Copy Out uses a maximum of 19\% of all available
 CPU cycles. What's alarming is the fact that this constitutes ~98\% of all the time spent busy waiting.
 This is a pure overhead that we could eliminate by using Zero Copy.
 

@@ -176,12 +176,12 @@ times hinder performance by delaying garbage collection of stale records?
 % K: Range scan performance key. But raises key question? How to inexpensively
 % get the data to the NIC?
 
-% K: Simplest approach: copy-out results and transmit. Tradtionally this would
+% K: Simplest approach: CO results and transmit. Tradtionally this would
 % have yielded three copies. One into the results buffer, one for the kernel to
 % copy the results into packet buffers, and one for the NIC to DMA the data for
 % transmit.
 
-% What about zero-copy? Several problems:
+% What about Zero Copy? Several problems:
 %  - atomicity
 %  - garbage collection and object lifetime
 %  - packaging the objects for efficient transmit.
@@ -190,7 +190,7 @@ times hinder performance by delaying garbage collection of stale records?
 % Key question? What are the gains?
 %  - Reduced copies -> reduced memory bandwidth use, reduced CPU time
 
-% K: Zero-copy? Then data structure must be tied into messaging layer. Can work
+% K: Zero copy? Then data structure must be tied into messaging layer. Can work
 % with epoch-based GC, but what about long scans? Could hold back GC and stall
 % tree in the limit.
 
@@ -340,7 +340,7 @@ $\frac{1}{d}$. This means that allowing short delta chains dramatically reduces
 consolidation costs, while longer chains offer decreasing returns. This fits with
 the NIC's preference for short gather lists; allowing delta chains of length 4
 would reduce consolidation by 75\% while maintaining transmit throughput that
-meets or exceeds on-the-fly copy-out.  The large 16~KB base pages also
+meets or exceeds on-the-fly Copy Out.  The large 16~KB base pages also
 improve transmit performance slightly, which improves efficiency.
 
 For small records, transmitting compacted base pages that have a few deltas gives
