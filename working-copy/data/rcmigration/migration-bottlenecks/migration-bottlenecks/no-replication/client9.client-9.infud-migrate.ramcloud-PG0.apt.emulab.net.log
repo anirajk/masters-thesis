@@ -1,0 +1,23 @@
+1484255755.779279502 RamCloud.cc:70 in RamCloud NOTICE[1]: Connecting to basic+udp:host=128.110.96.124,port=12246
+1484255755.779487985 UdpDriver.cc:88 in UdpDriver NOTICE[1]: UdpDriver bandwidth: 10 Gbits/sec, maxTransmitQueueSize: 2800 bytes
+1484255755.779518831 UdpDriver.cc:119 in UdpDriver NOTICE[1]: UdpDriver using port 0
+1484255755.779609014 BasicTransport.cc:102 in BasicTransport NOTICE[1]: BasicTransport parameters: maxDataPerPacket 1374, roundTripBytes 9618, grantIncrement 6870, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484255755.779914340 CoordinatorSession.cc:105 in getSession NOTICE[1]: Opened session with coordinator at basic+udp:host=128.110.96.124,port=12246
+1484255755.780954035 ClusterPerf.cc:369 in WorkloadGenerator NOTICE[1]: >>> Workload: YCSB-B
+1484255755.780965585 ClusterPerf.cc:370 in WorkloadGenerator NOTICE[1]: >>> Record Count: 10000000
+1484255755.780968612 ClusterPerf.cc:371 in WorkloadGenerator NOTICE[1]: >>> Record Size: 100
+1484255755.780970828 ClusterPerf.cc:373 in WorkloadGenerator NOTICE[1]: >>> Total Table Size: 953 MB
+1484255755.780973138 ClusterPerf.cc:374 in WorkloadGenerator NOTICE[1]: >>> Read Percentage: 95
+1484255755.780975345 ClusterPerf.cc:375 in WorkloadGenerator NOTICE[1]: >>> Migrate Percentage: 100
+1484255756.901290135 InfUdDriver.cc:125 in InfUdDriver NOTICE[1]: InfUdDriver bandwidth: 32 Gbits/sec, maxTransmitQueueSize: 8000 bytes
+1484255756.918146457 InfUdDriver.cc:148 in InfUdDriver NOTICE[1]: Initialized InfUdDriver buffers: 50000 receive buffers (97 MB), 50 transmit buffers (0 MB), took 15.4 ms
+1484255756.919665539 InfUdDriver.cc:601 in refillReceiver NOTICE[1]: 1000 receive buffers now in use (2.0%)
+1484255756.919917046 BasicTransport.cc:102 in BasicTransport NOTICE[1]: BasicTransport parameters: maxDataPerPacket 1982, roundTripBytes 29730, grantIncrement 9910, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484255783.114617514 ClientLeaseAgent.cc:54 in getLease NOTICE[1]: Blocked waiting for lease to renew.
+1484255788.261791504 RpcWrapper.cc:220 in isReady NOTICE[1]: Server basic+infud:host=server-0.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=44,qpn=610 returned STATUS_RETRY from READ request: Tablet is currently locked for migration!
+1484255788.261791504 ClientLeaseAgent.cc:54 in getLease NOTICE[1]: (1329 duplicates of this message were skipped) Blocked waiting for lease to renew.
+1484255983.104810669 ObjectRpcWrapper.cc:95 in checkStatus NOTICE[1]: Server basic+infud:host=server-0.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=44,qpn=610 doesn't store <1, 0xdd0d5fc49594b86d>; refreshing object map
+1484255983.104810669 RpcWrapper.cc:220 in isReady NOTICE[1]: (22 duplicates of this message were skipped) Server basic+infud:host=server-0.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=44,qpn=610 returned STATUS_RETRY from READ request: Tablet is currently locked for migration!
+1484255987.770539354 ClusterPerf.cc:512 in run WARNING[1]: Actual OPS 48902 / Target OPS 48900
+1484255987.770548713 ClusterPerf.cc:515 in run WARNING[1]: 927683 Misses / 9780414 Total -- 9291898/488516 R/W
+1484255987.807478386 TimeTrace.cc:189 in printInternal NOTICE[1]: No time trace events to print

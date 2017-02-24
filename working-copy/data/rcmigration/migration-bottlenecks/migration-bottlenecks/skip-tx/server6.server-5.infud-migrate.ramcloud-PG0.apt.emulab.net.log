@@ -1,0 +1,84 @@
+1484256676.477957742 ServerMain.cc:251 in main NOTICE[1]: Command line: /users/anirajk/RAMCloud/obj.master/server -C basic+udp:host=128.110.96.124,port=12246 -L basic+infud:host=server-5.infud-migrate.ramcloud-PG0.apt.emulab.net -r 3 -l NOTICE --clusterName __unnamed__ --logFile logs/20170112143103/server6.server-5.infud-migrate.ramcloud-PG0.apt.emulab.net.log --preferredIndex 6 --totalMasterMemory=8000 --segmentFrames=4096 -f /dev/sda4,/dev/sdb
+1484256676.477990799 ServerMain.cc:252 in main NOTICE[1]: Server process id: 84439
+1484256676.478304449 InfUdDriver.cc:125 in InfUdDriver NOTICE[1]: InfUdDriver bandwidth: 32 Gbits/sec, maxTransmitQueueSize: 8000 bytes
+1484256676.520110629 InfUdDriver.cc:148 in InfUdDriver NOTICE[1]: Initialized InfUdDriver buffers: 50000 receive buffers (97 MB), 50 transmit buffers (0 MB), took 39.8 ms
+1484256676.521456544 InfUdDriver.cc:187 in InfUdDriver NOTICE[1]: Locator for InfUdDriver: basic+infud:host=server-5.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=72,qpn=593
+1484256676.521509893 InfUdDriver.cc:601 in refillReceiver NOTICE[1]: 1000 receive buffers now in use (2.0%)
+1484256676.521654549 BasicTransport.cc:102 in BasicTransport NOTICE[1]: BasicTransport parameters: maxDataPerPacket 1982, roundTripBytes 29730, grantIncrement 9910, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484256676.521701329 ServerMain.cc:284 in main NOTICE[1]: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE: Listening on basic+infud:host=server-5.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=72,qpn=593
+1484256676.522609520 ServerMain.cc:324 in main NOTICE[1]: Using 3 backups
+1484256676.522624695 ServerConfig.h:570 in setLogAndHashTableSize NOTICE[1]: Master to allocate 8388608000 bytes total, 838860800 of which are for the hash table
+1484256676.522627610 ServerConfig.h:572 in setLogAndHashTableSize NOTICE[1]: Master will have 900 segments and 13107200 lines in the hash table
+1484256676.522629554 ServerConfig.h:576 in setLogAndHashTableSize NOTICE[1]: Hash table will have one entry for every 72 bytes in the log
+1484256676.522631450 ServerMain.cc:329 in main NOTICE[1]: PortTimeOut=-1
+1484256676.522633509 PortAlarm.cc:160 in setPortTimeout NOTICE[1]: Set PortTimeout to -1 (ms: -1 to disable.)
+1484256676.523470987 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[5]: Memory usage now 114 MB (increased 114 MB)
+1484256676.523597575 Server.cc:86 in run NOTICE[1]: Starting services
+1484256676.523608291 Server.cc:150 in createAndRegisterServices NOTICE[1]: Master is using 3 backups
+1484256676.523639640 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 0 of 7200 MB
+1484256677.031581506 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 1024 of 7200 MB
+1484256677.524483112 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 2048 of 7200 MB
+1484256678.012817411 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 3072 of 7200 MB
+1484256678.496042194 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 4096 of 7200 MB
+1484256678.978753391 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 5120 of 7200 MB
+1484256679.461052654 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 6144 of 7200 MB
+1484256679.943674952 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 7168 of 7200 MB
+1484256679.967339623 SegletAllocator.cc:162 in initializeEmergencyHeadReserve NOTICE[1]: Reserved 256 seglets for emergency head segments (16 MB). 114944 seglets (7184 MB) left in default pool.
+1484256680.250752419 InfUdDriver.cc:312 in registerMemory NOTICE[1]: Created zero-copy region with 7549747200 bytes at 0x40000000
+1484256680.250830901 SegletAllocator.cc:197 in initializeCleanerReserve NOTICE[1]: Reserved 1920 seglets for the cleaner (120 MB). 113024 seglets (7064 MB) left in default pool.
+1484256680.250863291 LogCleaner.cc:798 in TombstoneRatioBalancer NOTICE[1]: Using tombstone ratio balancer with ratio = 0.400000
+1484256680.250915107 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 0 of 512 MB
+1484256680.521112980 Server.cc:155 in createAndRegisterServices NOTICE[1]: Starting backup service
+1484256680.525167073 MultiFileStorage.cc:1021 in MultiFileStorage NOTICE[1]: Backup storage opened with 34359738368 bytes available; allocated 4096 frame(s) across 2 file(s) with 8388608 bytes per frame
+1484256680.964223929 BackupStorage.cc:68 in benchmark NOTICE[1]: Backup storage speeds (min): 81 MB/s read
+1484256680.964229670 BackupStorage.cc:69 in benchmark NOTICE[1]: Backup storage speeds (avg): 335 MB/s read,
+1484256680.964230911 BackupStorage.cc:75 in benchmark NOTICE[1]: RANDOM_REFINE_AVG BackupStrategy selected
+1484256680.965597763 BackupService.cc:92 in BackupService NOTICE[1]: Cluster '__unnamed__'; ignoring existing backup storage. Any replicas stored will not be reusable by future backups. Specify clusterName for persistence across backup restarts.
+1484256680.965607091 Server.cc:159 in createAndRegisterServices NOTICE[1]: Backup service started
+1484256680.965609431 Server.cc:88 in run NOTICE[1]: Services started
+1484256680.965610522 Server.cc:93 in run NOTICE[1]: Pinning memory
+1484256681.989139145 Server.cc:95 in run NOTICE[1]: Memory pinned
+1484256681.989276636 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[5]: Memory usage now 8936 MB (increased 8822 MB)
+1484256681.989288376 Server.cc:192 in enlist NOTICE[5]: Enlisting with cooordinator
+1484256681.989331248 UdpDriver.cc:88 in UdpDriver NOTICE[5]: UdpDriver bandwidth: 10 Gbits/sec, maxTransmitQueueSize: 2800 bytes
+1484256681.989356135 UdpDriver.cc:119 in UdpDriver NOTICE[5]: UdpDriver using port 0
+1484256681.991609168 BasicTransport.cc:102 in BasicTransport NOTICE[5]: BasicTransport parameters: maxDataPerPacket 1374, roundTripBytes 9618, grantIncrement 6870, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484256681.991915339 CoordinatorSession.cc:105 in getSession NOTICE[5]: Opened session with coordinator at basic+udp:host=128.110.96.124,port=12246
+1484256681.992270026 AdminService.cc:120 in getServerId NOTICE[8]: Returning invalid server id
+1484256681.992298959 Server.cc:199 in enlist NOTICE[5]: Enlisted; serverId 6.0
+1484256681.992301237 MasterService.cc:822 in initOnceEnlisted NOTICE[5]: My server ID is 6.0
+1484256681.996699647 BackupService.cc:323 in initOnceEnlisted NOTICE[5]: My server ID is 6.0
+1484256681.996719221 LogCleaner.cc:199 in cleanerThreadEntry NOTICE[9]: LogCleaner thread started
+1484256681.996766643 ServerList.cc:188 in applyServerList NOTICE[8]: Server 1.0 is up (server list version 13)
+1484256681.996780086 ServerList.cc:188 in applyServerList NOTICE[8]: Server 2.0 is up (server list version 13)
+1484256681.996785820 ServerList.cc:188 in applyServerList NOTICE[8]: Server 3.0 is up (server list version 13)
+1484256681.996789174 ServerList.cc:188 in applyServerList NOTICE[8]: Server 4.0 is up (server list version 13)
+1484256681.996791922 ServerList.cc:188 in applyServerList NOTICE[8]: Server 5.0 is up (server list version 13)
+1484256681.996794421 ServerList.cc:188 in applyServerList NOTICE[8]: Server 6.0 is up (server list version 13)
+1484256681.996796739 ServerList.cc:188 in applyServerList NOTICE[8]: Server 7.0 is up (server list version 13)
+1484256682.016979893 BackupService.cc:330 in initOnceEnlisted NOTICE[5]: Backup 6.0 will store replicas under cluster name '__unnamed__'
+1484256682.019208995 FailureDetector.cc:104 in detectorThreadEntry NOTICE[10]: Failure detector thread started
+1484256703.076864308 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 2: 108.4 ms for 512 bytes
+1484256720.909778851 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 147.9 ms for 35840 bytes
+1484256724.060061020 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 133.3 ms for 172032 bytes
+1484256725.648308676 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 150.2 ms for 154624 bytes
+1484256727.999252922 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 158.0 ms for 31744 bytes
+1484256741.435442984 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 123.5 ms for 167424 bytes
+1484256746.933144682 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 149.9 ms for 24064 bytes
+1484256748.521512191 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 150.0 ms for 28160 bytes
+1484256763.886526619 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 104.0 ms for 115712 bytes
+1484256766.320688248 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 102.0 ms for 52224 bytes
+1484256776.104997140 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 123.2 ms for 39424 bytes
+1484256780.976979113 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 109.5 ms for 11264 bytes
+1484256782.607083931 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 117.1 ms for 71680 bytes
+1484256789.100334651 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 107.7 ms for 7168 bytes
+1484256792.388988391 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 145.7 ms for 13312 bytes
+1484256806.177976994 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 109.9 ms for 4608 bytes
+1484256834.619574053 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 110.2 ms for 7680 bytes
+1484256844.377232095 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 120.5 ms for 7168 bytes
+1484256848.436518200 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 111.9 ms for 38400 bytes
+1484256855.776808042 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 106.1 ms for 135680 bytes
+1484256909.448343898 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 120.5 ms for 17408 bytes
+1484256911.070313733 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 103.3 ms for 153088 bytes
+1484256917.637395091 TimeTrace.cc:189 in printInternal NOTICE[8]: No time trace events to print
+1484256917.637727181 CacheTrace.cc:113 in printInternal NOTICE[8]: No cache trace events to print

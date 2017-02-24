@@ -1,0 +1,46 @@
+1484256386.173609138 CoordinatorMain.cc:96 in main NOTICE[1]: Command line: /users/anirajk/RAMCloud/obj.master/coordinator -C basic+udp:host=128.110.96.124,port=12246 -l NOTICE --logFile logs/20170112142615/coordinator.client-16.infud-migrate.ramcloud-PG0.apt.emulab.net.log
+1484256386.173644988 CoordinatorMain.cc:97 in main NOTICE[1]: Coordinator process id: 29965
+1484256386.193761809 UdpDriver.cc:88 in UdpDriver NOTICE[1]: UdpDriver bandwidth: 10 Gbits/sec, maxTransmitQueueSize: 2800 bytes
+1484256386.196400886 BasicTransport.cc:102 in BasicTransport NOTICE[1]: BasicTransport parameters: maxDataPerPacket 1374, roundTripBytes 9618, grantIncrement 6870, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484256386.196425916 CoordinatorMain.cc:108 in main NOTICE[1]: coordinator: Listening on basic+udp:host=128.110.96.124,port=12246
+1484256386.196429956 CoordinatorMain.cc:111 in main NOTICE[1]: PortTimeOut=-1
+1484256386.196432579 PortAlarm.cc:160 in setPortTimeout NOTICE[1]: Set PortTimeout to -1 (ms: -1 to disable.)
+1484256386.196446819 CoordinatorMain.cc:138 in main NOTICE[1]: Cluster name is 'main', external storage workspace is '/ramcloud/main/'
+1484256386.199446788 CoordinatorClusterClock.cc:159 in recoverClusterTime WARNING[1]: couldn't find "coordinatorClusterClock" object in external storage; starting new clock from zero; benign if starting new cluster from scratch, may cause linearizability failures otherwise
+1484256386.199459305 CoordinatorClusterClock.cc:164 in recoverClusterTime NOTICE[1]: initializing CoordinatorClusterClock: startingClusterTime = 0
+1484256386.202006821 CoordinatorUpdateManager.cc:68 in init WARNING[8]: couldn't find "coordinatorUpdateManager" object in external storage; starting new cluster from scratch
+1484256386.203099305 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[9]: Memory usage now 91 MB (increased 91 MB)
+1484256386.203228732 CoordinatorServerList.cc:401 in recover NOTICE[8]: CoordinatorServerList recovery completed: 0 master(s), 0 backup(s), 0 update(s) to disseminate, server list version is 0
+1484256386.203253045 TableManager.cc:764 in recover NOTICE[8]: Table recovery complete: 0 table(s)
+1484256386.203280435 CoordinatorService.cc:112 in init NOTICE[8]: Coordinator state has been recovered from external storage; starting service
+1484256387.203173623 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[9]: Memory usage now 107 MB (increased 16 MB)
+1484256392.828460259 CoordinatorServerList.cc:148 in enlistServer NOTICE[7]: Enlisting server at basic+infud:host=server-0.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=44,qpn=611 (server id 1.0) supporting services: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE
+1484256392.828628884 InfUdDriver.cc:125 in InfUdDriver NOTICE[10]: InfUdDriver bandwidth: 32 Gbits/sec, maxTransmitQueueSize: 8000 bytes
+1484256392.833841838 UdpDriver.cc:322 in readerThreadMain NOTICE[11]: dispatch thread not keeping up with UdpDriver packet reader
+1484256392.846467772 InfUdDriver.cc:148 in InfUdDriver NOTICE[10]: Initialized InfUdDriver buffers: 50000 receive buffers (97 MB), 50 transmit buffers (0 MB), took 16.4 ms
+1484256392.847632310 InfUdDriver.cc:601 in refillReceiver NOTICE[10]: 1000 receive buffers now in use (2.0%)
+1484256392.847784860 BasicTransport.cc:102 in BasicTransport NOTICE[10]: BasicTransport parameters: maxDataPerPacket 1982, roundTripBytes 29730, grantIncrement 9910, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484256392.847899575 CoordinatorServerList.cc:148 in enlistServer NOTICE[6]: Enlisting server at basic+infud:host=server-4.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=110,qpn=593 (server id 5.0) supporting services: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE
+1484256392.859138956 CoordinatorServerList.cc:148 in enlistServer NOTICE[6]: Enlisting server at basic+infud:host=server-7.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=67,qpn=592 (server id 7.0) supporting services: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE
+1484256392.859175592 CoordinatorServerList.cc:772 in createReplicationGroups NOTICE[6]: Server 7.0 is now in replication group 1
+1484256392.859182186 CoordinatorServerList.cc:772 in createReplicationGroups NOTICE[6]: Server 5.0 is now in replication group 1
+1484256392.859185619 CoordinatorServerList.cc:772 in createReplicationGroups NOTICE[6]: Server 1.0 is now in replication group 1
+1484256392.859303426 AbstractServerList.cc:184 in getSession NOTICE[10]: retrying server id check for 7.0: server not yet enlisted
+1484256392.891639844 CoordinatorServerList.cc:148 in enlistServer NOTICE[6]: Enlisting server at basic+infud:host=server-1.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=69,qpn=658 (server id 2.0) supporting services: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE
+1484256392.894639965 CoordinatorServerList.cc:148 in enlistServer NOTICE[6]: Enlisting server at basic+infud:host=server-2.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=80,qpn=658 (server id 3.0) supporting services: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE
+1484256393.063953728 CoordinatorServerList.cc:148 in enlistServer NOTICE[6]: Enlisting server at basic+infud:host=server-3.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=22,qpn=618 (server id 4.0) supporting services: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE
+1484256393.063975796 CoordinatorServerList.cc:772 in createReplicationGroups NOTICE[6]: Server 4.0 is now in replication group 2
+1484256393.063980341 CoordinatorServerList.cc:772 in createReplicationGroups NOTICE[6]: Server 3.0 is now in replication group 2
+1484256393.063984012 CoordinatorServerList.cc:772 in createReplicationGroups NOTICE[6]: Server 2.0 is now in replication group 2
+1484256393.203486495 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[9]: Memory usage now 211 MB (increased 104 MB)
+1484256393.595244649 CoordinatorServerList.cc:148 in enlistServer NOTICE[6]: Enlisting server at basic+infud:host=server-5.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=72,qpn=592 (server id 6.0) supporting services: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE
+1484256393.870412392 TableManager.cc:1031 in createTable NOTICE[6]: Creating table 'data' with id 1
+1484256393.870427549 TableManager.cc:1291 in notifyCreate NOTICE[6]: Assigning table id 1, key hashes 0x0-0xffffffffffffffff, to master 1.0
+1484256393.871505703 TableManager.cc:1031 in createTable NOTICE[6]: Creating table 'control' with id 2
+1484256393.871512259 TableManager.cc:1291 in notifyCreate NOTICE[6]: Assigning table id 2, key hashes 0x0-0xffffffffffffffff, to master 2.0
+1484256423.532031679 Buffer.cc:481 in getNewAllocation NOTICE[5]: buffer has consumed 4392 bytes of extra storage, current allocation: 2928 bytes
+1484256423.532031679 AbstractServerList.cc:184 in getSession NOTICE[10]: (4 duplicates of this message were skipped) retrying server id check for 7.0: server not yet enlisted
+1484256423.532031679 UdpDriver.cc:322 in readerThreadMain NOTICE[11]: (220 duplicates of this message were skipped) dispatch thread not keeping up with UdpDriver packet reader
+1484256623.528504452 TableManager.cc:1171 in dropTable NOTICE[5]: Dropping table 'data' with id 1
+1484256623.528524027 TableManager.cc:1363 in notifyDropTable NOTICE[5]: Requesting master 1.0 to drop table id 1, key hashes 0x0-0xffffffffffffffff
+1484256623.528764829 UdpDriver.cc:322 in readerThreadMain NOTICE[11]: dispatch thread not keeping up with UdpDriver packet reader

@@ -1,0 +1,69 @@
+1484255750.008895565 ServerMain.cc:251 in main NOTICE[1]: Command line: /users/anirajk/RAMCloud/obj.master/server -C basic+udp:host=128.110.96.124,port=12246 -L basic+infud:host=server-2.infud-migrate.ramcloud-PG0.apt.emulab.net -r 0 -l NOTICE --clusterName __unnamed__ --logFile logs/20170112141538/server3.server-2.infud-migrate.ramcloud-PG0.apt.emulab.net.log --preferredIndex 3 --totalMasterMemory=8000 --segmentFrames=4096 -f /dev/sda4,/dev/sdb
+1484255750.008918141 ServerMain.cc:252 in main NOTICE[1]: Server process id: 90093
+1484255750.009110830 InfUdDriver.cc:125 in InfUdDriver NOTICE[1]: InfUdDriver bandwidth: 32 Gbits/sec, maxTransmitQueueSize: 8000 bytes
+1484255750.044834251 InfUdDriver.cc:148 in InfUdDriver NOTICE[1]: Initialized InfUdDriver buffers: 50000 receive buffers (97 MB), 50 transmit buffers (0 MB), took 34.0 ms
+1484255750.046053440 InfUdDriver.cc:187 in InfUdDriver NOTICE[1]: Locator for InfUdDriver: basic+infud:host=server-2.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=80,qpn=657
+1484255750.046091556 InfUdDriver.cc:601 in refillReceiver NOTICE[1]: 1000 receive buffers now in use (2.0%)
+1484255750.046241666 BasicTransport.cc:102 in BasicTransport NOTICE[1]: BasicTransport parameters: maxDataPerPacket 1982, roundTripBytes 29730, grantIncrement 9910, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484255750.046271755 ServerMain.cc:284 in main NOTICE[1]: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE: Listening on basic+infud:host=server-2.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=80,qpn=657
+1484255750.046935100 ServerMain.cc:324 in main NOTICE[1]: Using 0 backups
+1484255750.046945731 ServerConfig.h:570 in setLogAndHashTableSize NOTICE[1]: Master to allocate 8388608000 bytes total, 838860800 of which are for the hash table
+1484255750.046947879 ServerConfig.h:572 in setLogAndHashTableSize NOTICE[1]: Master will have 900 segments and 13107200 lines in the hash table
+1484255750.046949211 ServerConfig.h:576 in setLogAndHashTableSize NOTICE[1]: Hash table will have one entry for every 72 bytes in the log
+1484255750.046950805 ServerMain.cc:329 in main NOTICE[1]: PortTimeOut=-1
+1484255750.046952327 PortAlarm.cc:160 in setPortTimeout NOTICE[1]: Set PortTimeout to -1 (ms: -1 to disable.)
+1484255750.047182210 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[5]: Memory usage now 113 MB (increased 113 MB)
+1484255750.047281100 Server.cc:86 in run NOTICE[1]: Starting services
+1484255750.047288150 Server.cc:150 in createAndRegisterServices NOTICE[1]: Master is using 0 backups
+1484255750.047312440 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 0 of 7200 MB
+1484255750.477169518 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 1024 of 7200 MB
+1484255750.889791072 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 2048 of 7200 MB
+1484255751.297294686 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 3072 of 7200 MB
+1484255751.704593769 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 4096 of 7200 MB
+1484255752.109465709 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 5120 of 7200 MB
+1484255752.516304019 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 6144 of 7200 MB
+1484255752.922515777 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 7168 of 7200 MB
+1484255752.942266669 SegletAllocator.cc:162 in initializeEmergencyHeadReserve NOTICE[1]: Reserved 256 seglets for emergency head segments (16 MB). 114944 seglets (7184 MB) left in default pool.
+1484255753.241329081 InfUdDriver.cc:312 in registerMemory NOTICE[1]: Created zero-copy region with 7549747200 bytes at 0x40000000
+1484255753.241399594 SegletAllocator.cc:197 in initializeCleanerReserve NOTICE[1]: Reserved 1920 seglets for the cleaner (120 MB). 113024 seglets (7064 MB) left in default pool.
+1484255753.241407660 LogCleaner.cc:92 in LogCleaner NOTICE[1]: Replication factor is 0; memory compaction disabled.
+1484255753.241429009 LogCleaner.cc:798 in TombstoneRatioBalancer NOTICE[1]: Using tombstone ratio balancer with ratio = 0.400000
+1484255753.241469396 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 0 of 512 MB
+1484255753.479887812 Server.cc:155 in createAndRegisterServices NOTICE[1]: Starting backup service
+1484255753.483278315 MultiFileStorage.cc:1021 in MultiFileStorage NOTICE[1]: Backup storage opened with 34359738368 bytes available; allocated 4096 frame(s) across 2 file(s) with 8388608 bytes per frame
+1484255753.928817813 BackupStorage.cc:68 in benchmark NOTICE[1]: Backup storage speeds (min): 79 MB/s read
+1484255753.928823642 BackupStorage.cc:69 in benchmark NOTICE[1]: Backup storage speeds (avg): 332 MB/s read,
+1484255753.928824915 BackupStorage.cc:75 in benchmark NOTICE[1]: RANDOM_REFINE_AVG BackupStrategy selected
+1484255753.929843936 BackupService.cc:92 in BackupService NOTICE[1]: Cluster '__unnamed__'; ignoring existing backup storage. Any replicas stored will not be reusable by future backups. Specify clusterName for persistence across backup restarts.
+1484255753.929851635 Server.cc:159 in createAndRegisterServices NOTICE[1]: Backup service started
+1484255753.929853666 Server.cc:88 in run NOTICE[1]: Services started
+1484255753.929854540 Server.cc:93 in run NOTICE[1]: Pinning memory
+1484255754.773427173 Server.cc:95 in run NOTICE[1]: Memory pinned
+1484255754.773629827 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[5]: Memory usage now 8936 MB (increased 8823 MB)
+1484255754.773638938 Server.cc:192 in enlist NOTICE[5]: Enlisting with cooordinator
+1484255754.773680142 UdpDriver.cc:88 in UdpDriver NOTICE[5]: UdpDriver bandwidth: 10 Gbits/sec, maxTransmitQueueSize: 2800 bytes
+1484255754.773702663 UdpDriver.cc:119 in UdpDriver NOTICE[5]: UdpDriver using port 0
+1484255754.775812771 BasicTransport.cc:102 in BasicTransport NOTICE[5]: BasicTransport parameters: maxDataPerPacket 1374, roundTripBytes 9618, grantIncrement 6870, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484255754.776092755 CoordinatorSession.cc:105 in getSession NOTICE[5]: Opened session with coordinator at basic+udp:host=128.110.96.124,port=12246
+1484255754.784291550 Server.cc:199 in enlist NOTICE[5]: Enlisted; serverId 3.0
+1484255754.784295808 MasterService.cc:822 in initOnceEnlisted NOTICE[5]: My server ID is 3.0
+1484255754.784402525 ServerList.cc:188 in applyServerList NOTICE[7]: Server 3.0 is up (server list version 2)
+1484255754.784415019 ServerList.cc:188 in applyServerList NOTICE[7]: Server 5.0 is up (server list version 2)
+1484255754.788163248 BackupService.cc:323 in initOnceEnlisted NOTICE[5]: My server ID is 3.0
+1484255754.790444053 LogCleaner.cc:199 in cleanerThreadEntry NOTICE[9]: LogCleaner thread started
+1484255754.791494752 ServerList.cc:188 in applyServerList NOTICE[7]: Server 7.0 is up (server list version 3)
+1484255754.791518732 ServerList.cc:188 in applyServerList NOTICE[7]: Server 7.0 is up (server list version 4)
+1484255754.791524468 ServerList.cc:188 in applyServerList NOTICE[7]: Server 5.0 is up (server list version 5)
+1484255754.791529365 ServerList.cc:188 in applyServerList NOTICE[7]: Server 3.0 is up (server list version 6)
+1484255754.806557921 BackupService.cc:330 in initOnceEnlisted NOTICE[5]: Backup 3.0 will store replicas under cluster name '__unnamed__'
+1484255754.808623542 FailureDetector.cc:104 in detectorThreadEntry NOTICE[10]: Failure detector thread started
+1484255754.830853095 ServerList.cc:188 in applyServerList NOTICE[7]: Server 1.0 is up (server list version 7)
+1484255754.830864226 BackupService.cc:685 in trackerChangesEnqueued NOTICE[7]: Starting backup replica garbage collector thread
+1484255754.840482696 ServerList.cc:188 in applyServerList NOTICE[7]: Server 2.0 is up (server list version 8)
+1484255754.886391983 ServerList.cc:188 in applyServerList NOTICE[7]: Server 4.0 is up (server list version 9)
+1484255754.886407491 ServerList.cc:188 in applyServerList NOTICE[7]: Server 4.0 is up (server list version 10)
+1484255754.886427272 ServerList.cc:188 in applyServerList NOTICE[7]: Server 2.0 is up (server list version 11)
+1484255754.886433148 ServerList.cc:188 in applyServerList NOTICE[7]: Server 1.0 is up (server list version 12)
+1484255755.482421223 ServerList.cc:188 in applyServerList NOTICE[7]: Server 6.0 is up (server list version 13)
+1484255988.377908199 TimeTrace.cc:189 in printInternal NOTICE[7]: No time trace events to print
+1484255988.378267578 CacheTrace.cc:113 in printInternal NOTICE[7]: No cache trace events to print

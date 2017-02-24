@@ -1,0 +1,470 @@
+1484256965.414406025 ServerMain.cc:251 in main NOTICE[1]: Command line: /users/anirajk/RAMCloud/obj.master/server -C basic+udp:host=128.110.96.124,port=12246 -L basic+infud:host=server-1.infud-migrate.ramcloud-PG0.apt.emulab.net -r 3 -l NOTICE --clusterName __unnamed__ --logFile logs/20170112143552/server2.server-1.infud-migrate.ramcloud-PG0.apt.emulab.net.log --preferredIndex 2 --totalMasterMemory=8000 --segmentFrames=4096 -f /dev/sda4,/dev/sdb
+1484256965.414431173 ServerMain.cc:252 in main NOTICE[1]: Server process id: 2151
+1484256965.414659410 InfUdDriver.cc:125 in InfUdDriver NOTICE[1]: InfUdDriver bandwidth: 32 Gbits/sec, maxTransmitQueueSize: 8000 bytes
+1484256965.449309587 InfUdDriver.cc:148 in InfUdDriver NOTICE[1]: Initialized InfUdDriver buffers: 50000 receive buffers (97 MB), 50 transmit buffers (0 MB), took 32.7 ms
+1484256965.450445395 InfUdDriver.cc:187 in InfUdDriver NOTICE[1]: Locator for InfUdDriver: basic+infud:host=server-1.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=69,qpn=660
+1484256965.450488751 InfUdDriver.cc:601 in refillReceiver NOTICE[1]: 1000 receive buffers now in use (2.0%)
+1484256965.450641768 BasicTransport.cc:102 in BasicTransport NOTICE[1]: BasicTransport parameters: maxDataPerPacket 1982, roundTripBytes 29730, grantIncrement 9910, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484256965.450677121 ServerMain.cc:284 in main NOTICE[1]: MASTER_SERVICE, BACKUP_SERVICE, ADMIN_SERVICE: Listening on basic+infud:host=server-1.infud-migrate.ramcloud-PG0.apt.emulab.net,lid=69,qpn=660
+1484256965.451459368 ServerMain.cc:324 in main NOTICE[1]: Using 3 backups
+1484256965.451472438 ServerConfig.h:570 in setLogAndHashTableSize NOTICE[1]: Master to allocate 8388608000 bytes total, 838860800 of which are for the hash table
+1484256965.451474916 ServerConfig.h:572 in setLogAndHashTableSize NOTICE[1]: Master will have 900 segments and 13107200 lines in the hash table
+1484256965.451476515 ServerConfig.h:576 in setLogAndHashTableSize NOTICE[1]: Hash table will have one entry for every 72 bytes in the log
+1484256965.451478175 ServerMain.cc:329 in main NOTICE[1]: PortTimeOut=-1
+1484256965.451479795 PortAlarm.cc:160 in setPortTimeout NOTICE[1]: Set PortTimeout to -1 (ms: -1 to disable.)
+1484256965.451691898 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[5]: Memory usage now 112 MB (increased 112 MB)
+1484256965.451823783 Server.cc:86 in run NOTICE[1]: Starting services
+1484256965.451832171 Server.cc:150 in createAndRegisterServices NOTICE[1]: Master is using 3 backups
+1484256965.451863389 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 0 of 7200 MB
+1484256965.889100256 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 1024 of 7200 MB
+1484256966.300253024 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 2048 of 7200 MB
+1484256966.707009462 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 3072 of 7200 MB
+1484256967.115824773 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 4096 of 7200 MB
+1484256967.521390108 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 5120 of 7200 MB
+1484256967.926305376 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 6144 of 7200 MB
+1484256968.332080758 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 7168 of 7200 MB
+1484256968.351662408 SegletAllocator.cc:162 in initializeEmergencyHeadReserve NOTICE[1]: Reserved 256 seglets for emergency head segments (16 MB). 114944 seglets (7184 MB) left in default pool.
+1484256968.652331065 InfUdDriver.cc:312 in registerMemory NOTICE[1]: Created zero-copy region with 7549747200 bytes at 0x40000000
+1484256968.652413025 SegletAllocator.cc:197 in initializeCleanerReserve NOTICE[1]: Reserved 1920 seglets for the cleaner (120 MB). 113024 seglets (7064 MB) left in default pool.
+1484256968.652446083 LogCleaner.cc:798 in TombstoneRatioBalancer NOTICE[1]: Using tombstone ratio balancer with ratio = 0.400000
+1484256968.652498809 LargeBlockOfMemory.h:241 in mmapGigabyteAligned NOTICE[1]: Populating pages; progress 0 of 512 MB
+1484256968.910115248 Server.cc:155 in createAndRegisterServices NOTICE[1]: Starting backup service
+1484256968.913104075 MultiFileStorage.cc:1021 in MultiFileStorage NOTICE[1]: Backup storage opened with 34359738368 bytes available; allocated 4096 frame(s) across 2 file(s) with 8388608 bytes per frame
+1484256969.374775595 BackupStorage.cc:68 in benchmark NOTICE[1]: Backup storage speeds (min): 80 MB/s read
+1484256969.374780520 BackupStorage.cc:69 in benchmark NOTICE[1]: Backup storage speeds (avg): 315 MB/s read,
+1484256969.374781685 BackupStorage.cc:75 in benchmark NOTICE[1]: RANDOM_REFINE_AVG BackupStrategy selected
+1484256969.375796882 BackupService.cc:92 in BackupService NOTICE[1]: Cluster '__unnamed__'; ignoring existing backup storage. Any replicas stored will not be reusable by future backups. Specify clusterName for persistence across backup restarts.
+1484256969.375804231 Server.cc:159 in createAndRegisterServices NOTICE[1]: Backup service started
+1484256969.375806955 Server.cc:88 in run NOTICE[1]: Services started
+1484256969.375808155 Server.cc:93 in run NOTICE[1]: Pinning memory
+1484256970.228620151 Server.cc:95 in run NOTICE[1]: Memory pinned
+1484256970.228775826 MemoryMonitor.cc:62 in handleTimerEvent NOTICE[5]: Memory usage now 8936 MB (increased 8824 MB)
+1484256970.228785269 Server.cc:192 in enlist NOTICE[5]: Enlisting with cooordinator
+1484256970.228842656 UdpDriver.cc:88 in UdpDriver NOTICE[5]: UdpDriver bandwidth: 10 Gbits/sec, maxTransmitQueueSize: 2800 bytes
+1484256970.228865590 UdpDriver.cc:119 in UdpDriver NOTICE[5]: UdpDriver using port 0
+1484256970.230905279 BasicTransport.cc:102 in BasicTransport NOTICE[5]: BasicTransport parameters: maxDataPerPacket 1374, roundTripBytes 9618, grantIncrement 6870, pingIntervals 3, timeoutIntervals 40, timerInterval 2.00 ms
+1484256970.231166252 CoordinatorSession.cc:105 in getSession NOTICE[5]: Opened session with coordinator at basic+udp:host=128.110.96.124,port=12246
+1484256970.231496925 AdminService.cc:120 in getServerId NOTICE[8]: Returning invalid server id
+1484256970.231613388 Server.cc:199 in enlist NOTICE[5]: Enlisted; serverId 2.0
+1484256970.231617922 MasterService.cc:822 in initOnceEnlisted NOTICE[5]: My server ID is 2.0
+1484256970.235719808 BackupService.cc:323 in initOnceEnlisted NOTICE[5]: My server ID is 2.0
+1484256970.235774046 LogCleaner.cc:199 in cleanerThreadEntry NOTICE[9]: LogCleaner thread started
+1484256970.235833834 ServerList.cc:188 in applyServerList NOTICE[8]: Server 1.0 is up (server list version 7)
+1484256970.235843445 ServerList.cc:188 in applyServerList NOTICE[8]: Server 2.0 is up (server list version 7)
+1484256970.236049496 ServerList.cc:188 in applyServerList NOTICE[8]: Server 5.0 is up (server list version 7)
+1484256970.236055153 ServerList.cc:188 in applyServerList NOTICE[8]: Server 7.0 is up (server list version 7)
+1484256970.252854383 BackupService.cc:330 in initOnceEnlisted NOTICE[5]: Backup 2.0 will store replicas under cluster name '__unnamed__'
+1484256970.254858010 FailureDetector.cc:104 in detectorThreadEntry NOTICE[10]: Failure detector thread started
+1484256970.278058510 ServerList.cc:188 in applyServerList NOTICE[8]: Server 3.0 is up (server list version 8)
+1484256970.278069645 BackupService.cc:685 in trackerChangesEnqueued NOTICE[8]: Starting backup replica garbage collector thread
+1484256970.348302183 ServerList.cc:188 in applyServerList NOTICE[8]: Server 4.0 is up (server list version 9)
+1484256970.348330526 ServerList.cc:188 in applyServerList NOTICE[8]: Server 4.0 is up (server list version 10)
+1484256970.348337096 ServerList.cc:188 in applyServerList NOTICE[8]: Server 3.0 is up (server list version 11)
+1484256970.348348151 ServerList.cc:188 in applyServerList NOTICE[8]: Server 2.0 is up (server list version 12)
+1484256970.891561656 ServerList.cc:188 in applyServerList NOTICE[8]: Server 6.0 is up (server list version 13)
+1484256971.084538312 MasterService.cc:2447 in takeTabletOwnership NOTICE[8]: Took ownership of new tablet [0x0,0xffffffffffffffff] in tableId 2
+1484256986.912566292 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 217.6 ms for 23552 bytes
+1484257001.614379604 MasterService.cc:1670 in prepForMigration NOTICE[8]: Ready to receive tablet [0x0,0xffffffffffffffff] in tableId 1 from "??"
+1484257001.625933657 Buffer.cc:481 in getNewAllocation NOTICE[1]: buffer has consumed 7336 bytes of extra storage, current allocation: 4192 bytes
+1484257001.626137792 Buffer.cc:481 in getNewAllocation NOTICE[1]: buffer has consumed 15720 bytes of extra storage, current allocation: 8384 bytes
+1484257001.626603654 Buffer.cc:481 in getNewAllocation NOTICE[1]: buffer has consumed 32488 bytes of extra storage, current allocation: 16768 bytes
+1484257001.627572849 Buffer.cc:481 in getNewAllocation NOTICE[1]: buffer has consumed 66024 bytes of extra storage, current allocation: 33536 bytes
+1484257001.628415203 InfUdDriver.cc:601 in refillReceiver NOTICE[1]: 2000 receive buffers now in use (4.0%)
+1484257001.629837113 Buffer.cc:481 in getNewAllocation NOTICE[1]: buffer has consumed 133096 bytes of extra storage, current allocation: 67072 bytes
+1484257001.631534095 InfUdDriver.cc:601 in refillReceiver NOTICE[1]: 3000 receive buffers now in use (6.0%)
+1484257001.633766324 Buffer.cc:481 in getNewAllocation NOTICE[1]: buffer has consumed 267240 bytes of extra storage, current allocation: 134144 bytes
+1484257001.634341010 InfUdDriver.cc:601 in refillReceiver NOTICE[1]: 4000 receive buffers now in use (8.0%)
+1484257001.637175674 InfUdDriver.cc:601 in refillReceiver NOTICE[1]: 5000 receive buffers now in use (10.0%)
+1484257001.637816689 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.659200122 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.680474622 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.701743222 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.723001445 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.744309469 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.765520373 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.786899169 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.808184633 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.829297346 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.850383216 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.871323534 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.892413853 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.913485775 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.934583335 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.955566858 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.976669470 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257001.997705139 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.018677920 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.039555313 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.060486109 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.081385406 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.102454421 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.123264945 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.144158928 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.165094039 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.186098166 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.207021579 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.227904049 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.248626757 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.269556575 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.290415793 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.311319675 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.332186809 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.353050404 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.373870048 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.394532415 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.415373840 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.436475916 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.457317621 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.478358041 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.499331138 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.520337286 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.541100094 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.562049083 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.582889308 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.603695856 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.624573929 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.645385553 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.666309757 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.687032910 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.708031329 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.728842723 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.749610923 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.770412831 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.791022944 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.811852119 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.832618937 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.853406079 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.874344152 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.895082142 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.915942435 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.936658384 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.957322629 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.978050759 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257002.998720741 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.020367516 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.041231082 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.062137015 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.082714791 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.103726722 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.124652955 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.145647998 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.166492450 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.187653238 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.208739225 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.229518420 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.250381207 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.271329569 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.292502354 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.313493737 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.334406060 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.355218505 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.376348224 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.397382823 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.418383811 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.439361286 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.460320198 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.481321132 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.502380746 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.523473772 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.544329943 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.565099154 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.586101082 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.607015004 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.628047141 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.649020300 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.669974927 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.690958654 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.712055040 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.732917344 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.754001960 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.775024918 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.795979777 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.817026208 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.837985754 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.858866129 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.879886858 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.900866511 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.921896449 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.942817765 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.963753057 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257003.984740124 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.005750603 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.026628254 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.047549864 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.068396057 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.089182896 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.109828351 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.130546461 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.151304381 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.172294356 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.193241816 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.214009455 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.234915560 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.255656558 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.276534915 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.297249127 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.318075757 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.338884428 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.359670686 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.380594756 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.401315922 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.422101225 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.443182485 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.463961114 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.484767627 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.505550272 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.526302285 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.547145266 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.568048412 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.588802570 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.609620382 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.630571571 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.651442303 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.672366906 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.693356188 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.714210139 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.734896101 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.755471221 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.776257397 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.796867742 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.817542816 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.838352964 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.859040565 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.879698633 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.900352636 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.921215737 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.941919613 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.962512371 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257004.983338915 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.004105471 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.024870906 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.045712558 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.066457421 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.087280055 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.107801758 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.128609878 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.149472970 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.170330776 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.191167464 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.211806856 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.232567165 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.253225559 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.274018827 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.294693504 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.315367495 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.336024296 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.356823473 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.377582722 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.398533649 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.419415952 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.440350520 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.461125701 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.481998797 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.502899977 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.523618586 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.544272323 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.564849655 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388522 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.587694006 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388572 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.613195507 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388534 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.638571658 MasterService.cc:1812 in receiveMigrationData NOTICE[7]: Receiving 8388571 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.664018726 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388534 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.689507264 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 8388571 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257005.697964467 MasterService.cc:1812 in receiveMigrationData NOTICE[8]: Receiving 2850305 bytes of migration data for tablet [0x0,??] in tableId 1
+1484257020.237810616 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 153.4 ms for 69632 bytes
+1484257024.202283440 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 148.9 ms for 169984 bytes
+1484257031.614626728 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 30 seconds; is it possible that something is hung?
+1484257032.614651114 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 31 seconds; is it possible that something is hung?
+1484257033.614673678 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 32 seconds; is it possible that something is hung?
+1484257034.614695010 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 33 seconds; is it possible that something is hung?
+1484257035.614774817 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 34 seconds; is it possible that something is hung?
+1484257036.614794631 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 35 seconds; is it possible that something is hung?
+1484257037.614814973 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 36 seconds; is it possible that something is hung?
+1484257038.614832012 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 37 seconds; is it possible that something is hung?
+1484257039.614852762 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 38 seconds; is it possible that something is hung?
+1484257040.614873001 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 39 seconds; is it possible that something is hung?
+1484257040.784749073 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 133.6 ms for 76288 bytes
+1484257041.614894155 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 40 seconds; is it possible that something is hung?
+1484257042.614915248 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 41 seconds; is it possible that something is hung?
+1484257043.614933407 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 42 seconds; is it possible that something is hung?
+1484257044.614953767 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 43 seconds; is it possible that something is hung?
+1484257045.614966960 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 44 seconds; is it possible that something is hung?
+1484257046.614988744 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 45 seconds; is it possible that something is hung?
+1484257047.615010519 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 46 seconds; is it possible that something is hung?
+1484257048.615028525 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 47 seconds; is it possible that something is hung?
+1484257049.615048597 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 48 seconds; is it possible that something is hung?
+1484257050.615068148 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 49 seconds; is it possible that something is hung?
+1484257051.615089058 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 50 seconds; is it possible that something is hung?
+1484257052.615107110 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 51 seconds; is it possible that something is hung?
+1484257053.615126332 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 52 seconds; is it possible that something is hung?
+1484257054.615145523 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 53 seconds; is it possible that something is hung?
+1484257055.615165834 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 54 seconds; is it possible that something is hung?
+1484257056.047827563 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 103.4 ms for 80384 bytes
+1484257056.615187227 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 55 seconds; is it possible that something is hung?
+1484257057.615205153 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 56 seconds; is it possible that something is hung?
+1484257058.615226226 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 57 seconds; is it possible that something is hung?
+1484257059.615244975 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 58 seconds; is it possible that something is hung?
+1484257060.615265373 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 59 seconds; is it possible that something is hung?
+1484257061.615287981 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 60 seconds; is it possible that something is hung?
+1484257062.615350534 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 61 seconds; is it possible that something is hung?
+1484257063.615376703 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 62 seconds; is it possible that something is hung?
+1484257064.615396106 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 63 seconds; is it possible that something is hung?
+1484257064.997144794 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 112.8 ms for 174592 bytes
+1484257065.615412029 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 64 seconds; is it possible that something is hung?
+1484257066.615433255 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 65 seconds; is it possible that something is hung?
+1484257067.615453639 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 66 seconds; is it possible that something is hung?
+1484257068.615473855 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 67 seconds; is it possible that something is hung?
+1484257069.615493255 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 68 seconds; is it possible that something is hung?
+1484257070.615485472 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 69 seconds; is it possible that something is hung?
+1484257071.615505641 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 70 seconds; is it possible that something is hung?
+1484257072.311024408 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 107.6 ms for 145920 bytes
+1484257072.615528249 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 71 seconds; is it possible that something is hung?
+1484257073.615548433 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 72 seconds; is it possible that something is hung?
+1484257074.615633622 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 73 seconds; is it possible that something is hung?
+1484257075.615654756 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 74 seconds; is it possible that something is hung?
+1484257076.615675243 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 75 seconds; is it possible that something is hung?
+1484257077.615693853 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 76 seconds; is it possible that something is hung?
+1484257078.615712676 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 77 seconds; is it possible that something is hung?
+1484257078.823067808 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 107.2 ms for 155136 bytes
+1484257079.615730427 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 78 seconds; is it possible that something is hung?
+1484257080.615750931 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 79 seconds; is it possible that something is hung?
+1484257081.615769225 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 80 seconds; is it possible that something is hung?
+1484257082.615789697 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 81 seconds; is it possible that something is hung?
+1484257083.615809868 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 82 seconds; is it possible that something is hung?
+1484257084.533864735 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 122.0 ms for 14336 bytes
+1484257084.615827938 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 83 seconds; is it possible that something is hung?
+1484257085.615851398 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 84 seconds; is it possible that something is hung?
+1484257086.615871885 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 85 seconds; is it possible that something is hung?
+1484257087.615892147 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 86 seconds; is it possible that something is hung?
+1484257088.615910157 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 87 seconds; is it possible that something is hung?
+1484257089.615930561 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 88 seconds; is it possible that something is hung?
+1484257090.615950370 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 89 seconds; is it possible that something is hung?
+1484257091.615969641 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 90 seconds; is it possible that something is hung?
+1484257092.615989464 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 91 seconds; is it possible that something is hung?
+1484257093.616011053 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 92 seconds; is it possible that something is hung?
+1484257094.616028166 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 93 seconds; is it possible that something is hung?
+1484257095.616049370 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 94 seconds; is it possible that something is hung?
+1484257096.616067829 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 95 seconds; is it possible that something is hung?
+1484257097.566086341 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 103.2 ms for 74752 bytes
+1484257097.616088197 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 96 seconds; is it possible that something is hung?
+1484257098.616107685 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 97 seconds; is it possible that something is hung?
+1484257099.616125225 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 98 seconds; is it possible that something is hung?
+1484257100.616145390 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 99 seconds; is it possible that something is hung?
+1484257101.616166040 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 100 seconds; is it possible that something is hung?
+1484257102.616185933 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 101 seconds; is it possible that something is hung?
+1484257103.616205751 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 102 seconds; is it possible that something is hung?
+1484257104.616225934 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 103 seconds; is it possible that something is hung?
+1484257105.616243995 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 104 seconds; is it possible that something is hung?
+1484257106.497827144 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 109.2 ms for 7680 bytes
+1484257106.616264871 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 105 seconds; is it possible that something is hung?
+1484257107.616283853 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 106 seconds; is it possible that something is hung?
+1484257108.616302347 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 107 seconds; is it possible that something is hung?
+1484257109.616322391 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 108 seconds; is it possible that something is hung?
+1484257109.741163355 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 112.1 ms for 38912 bytes
+1484257110.616341077 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 109 seconds; is it possible that something is hung?
+1484257111.616361752 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 110 seconds; is it possible that something is hung?
+1484257112.616384050 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 111 seconds; is it possible that something is hung?
+1484257113.616403520 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 112 seconds; is it possible that something is hung?
+1484257114.616420289 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 113 seconds; is it possible that something is hung?
+1484257115.616440467 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 114 seconds; is it possible that something is hung?
+1484257116.616461381 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 115 seconds; is it possible that something is hung?
+1484257117.616479164 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 116 seconds; is it possible that something is hung?
+1484257118.616498488 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 117 seconds; is it possible that something is hung?
+1484257118.715239786 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 104.3 ms for 34304 bytes
+1484257119.616517158 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 118 seconds; is it possible that something is hung?
+1484257120.616537120 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 119 seconds; is it possible that something is hung?
+1484257121.616559357 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 120 seconds; is it possible that something is hung?
+1484257122.616576365 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 121 seconds; is it possible that something is hung?
+1484257123.616596462 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 122 seconds; is it possible that something is hung?
+1484257124.616616891 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 123 seconds; is it possible that something is hung?
+1484257125.616635197 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 124 seconds; is it possible that something is hung?
+1484257126.616654227 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 125 seconds; is it possible that something is hung?
+1484257127.616673814 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 126 seconds; is it possible that something is hung?
+1484257128.616692065 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 127 seconds; is it possible that something is hung?
+1484257129.616710117 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 128 seconds; is it possible that something is hung?
+1484257130.616731656 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 129 seconds; is it possible that something is hung?
+1484257131.616751591 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 130 seconds; is it possible that something is hung?
+1484257132.568348304 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 111.3 ms for 98304 bytes
+1484257132.616770164 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 131 seconds; is it possible that something is hung?
+1484257133.616792393 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 132 seconds; is it possible that something is hung?
+1484257134.616813431 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 133 seconds; is it possible that something is hung?
+1484257135.003892015 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 117.7 ms for 7680 bytes
+1484257135.616832683 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 134 seconds; is it possible that something is hung?
+1484257136.616855254 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 135 seconds; is it possible that something is hung?
+1484257136.617863889 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 108.8 ms for 33280 bytes
+1484257137.616876044 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 136 seconds; is it possible that something is hung?
+1484257138.616893659 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 137 seconds; is it possible that something is hung?
+1484257139.616912736 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 138 seconds; is it possible that something is hung?
+1484257140.616932888 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 139 seconds; is it possible that something is hung?
+1484257141.616952421 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 140 seconds; is it possible that something is hung?
+1484257142.616970480 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 141 seconds; is it possible that something is hung?
+1484257143.616990117 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 142 seconds; is it possible that something is hung?
+1484257144.617009748 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 143 seconds; is it possible that something is hung?
+1484257145.617049899 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 144 seconds; is it possible that something is hung?
+1484257146.617069509 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 145 seconds; is it possible that something is hung?
+1484257147.617091573 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 146 seconds; is it possible that something is hung?
+1484257148.617110312 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 147 seconds; is it possible that something is hung?
+1484257149.617130564 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 148 seconds; is it possible that something is hung?
+1484257150.617179904 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 149 seconds; is it possible that something is hung?
+1484257151.617199033 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 150 seconds; is it possible that something is hung?
+1484257152.617218213 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 151 seconds; is it possible that something is hung?
+1484257153.617238514 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 152 seconds; is it possible that something is hung?
+1484257154.617256929 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 153 seconds; is it possible that something is hung?
+1484257155.617276178 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 154 seconds; is it possible that something is hung?
+1484257156.617294589 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 155 seconds; is it possible that something is hung?
+1484257157.617311820 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 156 seconds; is it possible that something is hung?
+1484257158.617330310 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 157 seconds; is it possible that something is hung?
+1484257159.617350929 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 158 seconds; is it possible that something is hung?
+1484257160.225130059 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 115.3 ms for 56320 bytes
+1484257160.617370495 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 159 seconds; is it possible that something is hung?
+1484257161.617391062 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 160 seconds; is it possible that something is hung?
+1484257162.617412388 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 161 seconds; is it possible that something is hung?
+1484257162.660919475 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 113.6 ms for 24064 bytes
+1484257163.617429721 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 162 seconds; is it possible that something is hung?
+1484257164.617447700 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 163 seconds; is it possible that something is hung?
+1484257165.617466836 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 164 seconds; is it possible that something is hung?
+1484257166.617485553 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 165 seconds; is it possible that something is hung?
+1484257167.617504377 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 166 seconds; is it possible that something is hung?
+1484257168.617527103 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 167 seconds; is it possible that something is hung?
+1484257169.617547794 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 168 seconds; is it possible that something is hung?
+1484257170.617565592 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 169 seconds; is it possible that something is hung?
+1484257171.617584280 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 170 seconds; is it possible that something is hung?
+1484257172.617603860 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 171 seconds; is it possible that something is hung?
+1484257173.617623632 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 172 seconds; is it possible that something is hung?
+1484257174.617644673 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 173 seconds; is it possible that something is hung?
+1484257175.617665512 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 174 seconds; is it possible that something is hung?
+1484257176.617686651 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 175 seconds; is it possible that something is hung?
+1484257177.276654144 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 104.3 ms for 67072 bytes
+1484257177.617707804 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 176 seconds; is it possible that something is hung?
+1484257178.617724385 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 177 seconds; is it possible that something is hung?
+1484257179.617743719 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 178 seconds; is it possible that something is hung?
+1484257180.617762594 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 179 seconds; is it possible that something is hung?
+1484257181.617780079 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 180 seconds; is it possible that something is hung?
+1484257182.166120892 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 124.7 ms for 17920 bytes
+1484257182.617796890 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 181 seconds; is it possible that something is hung?
+1484257183.617817250 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 182 seconds; is it possible that something is hung?
+1484257183.796321273 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 123.7 ms for 55808 bytes
+1484257184.617838430 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 183 seconds; is it possible that something is hung?
+1484257185.617861381 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 184 seconds; is it possible that something is hung?
+1484257186.617884878 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 185 seconds; is it possible that something is hung?
+1484257187.617904555 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 186 seconds; is it possible that something is hung?
+1484257188.617923892 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 187 seconds; is it possible that something is hung?
+1484257189.617943552 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 188 seconds; is it possible that something is hung?
+1484257190.617965321 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 189 seconds; is it possible that something is hung?
+1484257191.617985247 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 190 seconds; is it possible that something is hung?
+1484257191.936295299 MultiFileStorage.cc:723 in unlockedWrite WARNING[11]: Slow write to replica storage on device 1: 114.4 ms for 62976 bytes
+1484257192.618005741 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 191 seconds; is it possible that something is hung?
+1484257193.618024800 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 192 seconds; is it possible that something is hung?
+1484257194.618042180 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 193 seconds; is it possible that something is hung?
+1484257195.618061765 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 194 seconds; is it possible that something is hung?
+1484257196.618082710 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 195 seconds; is it possible that something is hung?
+1484257197.618075184 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 196 seconds; is it possible that something is hung?
+1484257198.618095358 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 197 seconds; is it possible that something is hung?
+1484257199.618114764 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 198 seconds; is it possible that something is hung?
+1484257200.618165156 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 199 seconds; is it possible that something is hung?
+1484257201.618184530 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 200 seconds; is it possible that something is hung?
+1484257202.618202715 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 201 seconds; is it possible that something is hung?
+1484257203.618221946 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 202 seconds; is it possible that something is hung?
+1484257204.618244647 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 203 seconds; is it possible that something is hung?
+1484257205.618267573 MasterService.cc:3300 in handleTimerEvent WARNING[5]: Inbound migrations have been running continuously for 204 seconds; is it possible that something is hung?
+1484257205.644335946 TimeTrace.cc:189 in printInternal NOTICE[8]: No time trace events to print
+1484257205.644712072 CacheTrace.cc:113 in printInternal NOTICE[8]: No cache trace events to print
