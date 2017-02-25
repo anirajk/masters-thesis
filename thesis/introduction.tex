@@ -2,23 +2,23 @@
 
 \chapter{Introduction}
 \label{chap:intro}
-For decades, the performance characteristics of storage devices have dominated
+For decades, the performance characteristics of storage devices have dominated \linebreak
  thinking in database design and implementation. From data layout to
-concurrency control, to recovery, to threading model, disks touch every aspect
-of database design. In-memory databases effectively eliminate disk Input/Output (I/O) as a
+concurrency \linebreak control, to recovery, to threading model, disks touch every aspect
+of database design. \linebreak In-memory databases effectively eliminate disk Input/Output (I/O) as a
 concern, and these systems now execute millions of operations per second,
-sometimes with near-microsecond latencies.  It is tempting to believe 
-database I/O is solved; however, another device now dictates
-performance: the Network Interface Card (NIC). As the primary I/O device in present-day databases,
-NIC should be a first class citizen in all phases of database design.
+sometimes with \linebreak near-microsecond latencies.  It is tempting to believe 
+database I/O is solved; however, \linebreak another device now dictates
+performance: the Network Interface Card (NIC). As the\linebreak primary I/O device in present-day databases,
+the NIC should be a first class citizen in all phases of database design.
 However, modern network cards have grown incredibly complex, partly in response
 to demands for high throughput and low latency.
 
 We set out to improve the efficiency of RAMCloud's~\cite{ramcloud} data migration mechanism. 
 RAMCloud is a storage system that keeps all data in DRAM at all times and provides low latency access by
-leveraging advancements like kernel bypass which are present in a modern NIC.
+leveraging advancements like kernel bypass which are present in a \linebreak modern NIC.
 To thoroughly understand the complexities involved in the NIC in doing huge
-transfers of data, we profiled a modern NIC with a focus on massive data transfers.
+transfers of data, we profiled a modern NIC with a focus on massive data \linebreak transfers.
  We made several discoveries that informed our design for RAMCloud,
  but they also generalize to other operations involving large transfers of data in a distributed in-memory database. 
 
@@ -28,11 +28,11 @@ It also outlines an overview of all the experiments and key contributions. Chapt
 our notion of \enquote{\textbf{Zero Copy}} and \enquote{\textbf{Copy Out}} and explains 
 the lessons we learned when we developed a microbenchmark to profile a modern NIC with kernel bypass and RDMA doing bulk transfers 
 of data. The chapter also provides a detailed study of the impact on the available system resources while we achieve 
-near the line rate of network transmission performance. Recommendations for a database designer are provided, and takeaways 
-from our experiments are explicitly listed. Chapter~\ref{chap:applications} enumerates a few scenarios where we can 
+near the line rate of network transmission performance. Where possible, \linebreak recommendations for a database designer are provided, and takeaways 
+from our \linebreak experiments are explicitly listed. Chapter~\ref{chap:applications} enumerates a few scenarios where we can 
 leverage our observations to improve server efficiency and network transmission using a client assisted design.
- We quantify the benefits of such an approach and discuss future directions on how this design will apply to column-oriented 
- databases. Chapter~\ref{chap:migration} discusses how the nuanced performance characteristics for the NIC can influence 
+ We quantify the benefits of such an approach and discuss \linebreak future directions on how this design will apply to column-oriented 
+ databases. \linebreak Chapter~\ref{chap:migration} discusses how the nuanced performance characteristics for the NIC can \linebreak influence 
 design for rapid reconfiguration in RAMCloud~\cite{ramcloud}. It discusses a breakdown of RAMCloud's existing migration mechanism to understand its bottlenecks
 and proposes the basics of a new design for migration that we believe will advance state of the art
 in the reconfiguration of distributed in-memory databases. Chapter~\ref{chap:relatedwork} discusses prior work that laid the 
@@ -43,12 +43,12 @@ While developing the microbenchmark to analyze a NIC, one thing was becoming inc
 Modern network cards have grown incredibly complex, partly in response to
 demands for high throughput and low latency. One key advancement these NICs made 
 is the presence of some form of kernel bypass where NIC Direct Memory Access (DMA) engine can be 
-controlled by the application and the network card can access application memory without invoking the CPU. 
-This development led to the Remote Direct Memory Access (RDMA)~\cite{rdmapatent} paradigm. 
-The modern NIC with its complex architecture makes understanding its characteristics difficult, 
-and it makes designing software to take advantage of them even harder. 
-Database designers will encounter many trade-offs when trying to use the NIC effectively. 
-This thesis helps navigate the complex trade-off space with concrete suggestions backed by measurements.
+controlled by the application and the network card can \linebreak access application memory without invoking the CPU. 
+This development led to the \linebreak Remote Direct Memory Access (RDMA)~\cite{rdmapatent} paradigm. 
+The modern NIC with its \linebreak complex architecture makes understanding its characteristics difficult, 
+and it makes \linebreak designing software to take advantage of them even harder. 
+Database designers will \linebreak encounter many trade-offs when trying to use the NIC effectively. 
+This thesis helps \linebreak navigate the complex trade-off space with concrete suggestions backed by measurements.
 
 Our mission was to come up with a migration protocol that advances state of the art for in-memory storage systems.
 We realized the importance of the making data transfer NIC friendly and set out to measure what variables impact the 
@@ -93,7 +93,7 @@ benchmarks to better leverage the effects of DDIO~\cite{ddio} which are explaine
 We also measured memory bandwidth and a few other metrics with the help of Intel\textregistered's Performance Monitoring Unit (PMU).
 
 Another operational burden while using these newer in-memory storage systems is to find a way to 
-provide effective reconfiguration. Our results from the benchmark highlighted the importance of 
+provide effective reconfiguration. Our results from the benchmark \linebreak highlighted the importance of 
 hardware considerations in data migration. State of the art systems like RAMCloud have around 1000$\times$
 lower latency than traditional storage systems, and these tight Service Level Agreements (SLA) make it harder to do migrations
 without interfering with regular requests. The need for rapid reconfiguration with minimal system 
@@ -106,8 +106,8 @@ efficiency since indexes~\cite{slik} and transactions~\cite{ramcloudtx} benefit 
 This is tricky to implement and RAMCloud is designed with no locality within a 
 server to provide high memory utilization~\cite{ramcloudfast} via efficient log compaction.
 The more interesting engineering detail is RAMCloud’s exceedingly tight SLAs (median
-access time of 5\textmu~s and 99.9\% of reads within 10\textmu~s). It would be great if we can saturate the
-available NIC bandwidth which is 8-12GB/s~\cite{cx3,cx4} while state of the art 
+access time of 5~\textmu s and 99.9\% of reads within 10~\textmu s). It would be great if we can saturate the
+available NIC bandwidth which is 8-12GB/s~\cite{cx3,cx4} but state of the art 
 transfer mechanisms offers many orders of magnitudes lower than that at ~10~MB/s 
 throughput while operating at latencies that are 1000-10000$\times$ higher than that of RAMCloud~\cite{ramcloud}.
 We wanted our protocol to strike a balance between fast operation and minimal disruption without drastically affecting
@@ -117,11 +117,11 @@ efficient migration for RAMCloud:
 \item{\textbf{High Throughput}}: State of the art systems do migrations at 5~-~10 MB/s. Our proposed protocol
 should result in 100-1000x faster data migrations. We aspire to have rapid reconfiguration that will 
 help with enable frequent reconfiguration on live clusters.
-\item{\textbf{Low Impact on latency}}: RAMCloud has 99.9 percentile read latency at $<$10\textmu~s and write latency
-at $<$100\textmu~s. Our proposed protocol will be of minimal impact to the normal case operation, still keeping
-up with SLAs that are 100x tighter than other systems~\cite{squall}.
-\item{\textbf{Judicious use of system resources}}: In an in-memory store, the significance of resources such as DRAM capacity and
-memory bandwidth are paramount. Our protocol should make the most efficient use of these resources.
+\item{\textbf{Low Impact on latency}}: RAMCloud has 99.9 percentile read latency at $<$~10~\textmu s \linebreak and write latency
+at $<$~100~\textmu s. We propose a protocol that will introduce only a minimal impact to the normal case operation, still keeping
+SLAs that are 100x tighter \linebreak than other systems~\cite{squall}.
+\item{\textbf{Judicious use of system resources}}: In an in-memory store, the significance of \linebreak resources such as DRAM capacity and
+memory bandwidth are paramount. Our \linebreak protocol should make the most efficient use of these resources.
 \item{\textbf{Late-partitioning}}: RAMCloud promises uniform access latency regardless of the level of data locality.
 RAMCloud also doesn't need to pre-partition data for normal operations. Most other systems diverge from this 
 approach to make data movement faster. An ideal solution should provide uniform access latency and high DRAM utilisation 
@@ -143,15 +143,15 @@ each one.
 
 \section{Contributions}
 \label{sec:contributions}
-\textbf{\enquote{Scale-out in-memory stores are optimized for small requests
+``Scale-out in-memory stores are optimized for small requests
 under tight SLAs, and bulk data movement, for rebalancing and range queries, interfere;
-The thesis argues carefully leveraging data layout and advancements in modern NICs
-will yield to gains in performance and efficiency for large transfers in these systems
-without disrupting their primary obligations.}}
+The thesis argues \linebreak carefully leveraging data layout and advancements in modern NICs
+will yield gains in performance and efficiency for large transfers in these systems
+without disrupting their primary obligations.''
  
 We have shown that careful co-design of data layout, concurrency control
-and networking can lead up to 95\% reduction of CPU overhead. 25\% absolute CPU savings and a 
-50\% reduction in consumed bandwidth all the while getting a throughput
+and \linebreak networking can lead to 95\% reduction of CPU overhead (25\% absolute CPU savings) and a 
+50\% reduction in consumed memory bandwidth all the while getting a throughput
 boost of 1.6$\times$ compared to blindly using the kernel bypass available
 in the NICs. We also profiled the bottlenecks in the way data migration is set up
 in RAMCloud and in conjunction with the benchmarks. Though there were efforts to 
@@ -173,16 +173,16 @@ evidence for the thesis statement in the beginning of this section.
    the overhead of concurrency management and difficulty of implementation.
    \begin{itemize}
 
-    \item Developed a microbenchmark to assess performance of Infiniband verbs
+    \item Developed a microbenchmark to assess performance of Infiniband verbs.
 
     \item Measured transmission throughput and CPU overhead in the face of varying
-    data layouts
+    data layouts.
 
-    \item Compared the performance of Zero Copy and Copy Out mechanisms of 
+    \item Compared the performance of Zero Copy and Copy Out mechanisms of \linebreak
     transmitting data from an RDMA capable modern NIC.
    \end{itemize} 
 
-    \item{\textbf{The design of client assisted responses for better transmit performance}}: Our measurements inform a new design for migration in RAMCloud, but it also has impacts on other database operations.
+    \item{\textbf{Design for client assisted materialisation for better transmit performance}}: Our measurements inform a new design for migration in RAMCloud, but it also has impacts on other database operations.
      While evaluating the results, we saw that there are certain structures and circumstances that can uniquely take advantage of the hardware limited scatter gather entries of a modern NIC.
      Chapter~\ref{chap:applications} explores ways in which a modern B-tree index can exploit NIC hardware.
      Through the benchmark, we show 60\% improvement in throughput using such a design with a 30$\times$ reduction in CPU overhead.
@@ -193,8 +193,8 @@ evidence for the thesis statement in the beginning of this section.
      in-depth analysis of server impact using uncore events for large data transmissions near line rate in a kernel bypass capable modern NIC.
      \begin{itemize}
      \item Profiled the number of cache lines read and written (including the pre-fetcher effect) to measure consumed memory bandwidth.
-     \item Profiled the number of DRAM accesses from Last Level Cache(LLC) that results from DDIO.
-     \item Profiled the number of DRAM accesses from Last Level Cache(LLC) that results from PCIe errors.
+     \item Profiled the number of DRAM accesses from Last Level Cache (LLC) that results from DDIO.
+     \item Profiled the number of DRAM accesses from Last Level Cache (LLC) that results from PCIe errors.
      \end{itemize}
 
 
@@ -205,8 +205,8 @@ evidence for the thesis statement in the beginning of this section.
    Our experiments call for fast and efficient migration protocol especially suited for an In-memory database system with a decentralized log structured data model such as RAMCloud.
 
   \item{\textbf{Preliminary design for a migration protocol}}: After careful analysis of the current migration protocol
-   we discovered the critical bottlenecks in the current design that makes it infeasible for fast and efficient migration.
-   We propose the basics of a migration protocol that will effectively eliminate these bottlenecks and pave the way
+   we discovered the critical bottlenecks in the current design that make it infeasible for fast and efficient migration.
+   We propose the basics of a \linebreak migration protocol that will effectively eliminate these bottlenecks and pave the way
    forward for fast and efficient transfer of huge chunks of data.
 
 \end{itemize}
