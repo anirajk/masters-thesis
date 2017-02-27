@@ -14,35 +14,36 @@
 
 source('common.R')
 
-tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/*membw-out.log")
-membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/filtered-*membw.csv")
-ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_ddiobw_profiles/filtered-*ddiobw.csv")
-pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_pciebw_profiles/filtered-*pciebw.csv")
-deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/*membw-out.log")
-deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/filtered-*membw.csv")
-extendedtputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_extended_copyout_points/*membw-out.log")
-extendedmembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_extended_copyout_points/filtered-*membw.csv")
+tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/*membw-out.log")
+membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/filtered-*membw.csv")
+ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_ddiobw_profiles/filtered-*ddiobw.csv")
+pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_pciebw_profiles/filtered-*pciebw.csv")
+deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/deltas/*membw-out.log")
+deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/deltas/filtered-*membw.csv")
+extendedtputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_extended_copyout_points/*membw-out.log")
+extendedmembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_extended_copyout_points/filtered-*membw.csv")
 
 
 
-loadRDMAModes <- function(file="/Users/aniraj/development/thesis/working-copy/data/rdmammodes/1000B_all_modes.csv"){
+loadRDMAModes <- function(file="/Users/aniraj/development/thesis/thesis/data/rdmammodes/1000B_all_modes.csv"){
   d <- read.csv(file, header=T)
   d
 }
 
 plotRDMAModes <- function(size=""){
-  outputfilename = paste("~/development/thesis/working-copy/figures/fig-",size,"-RDMAverbs.pdf",sep="")
-  inputfilename = paste("/Users/aniraj/development/thesis/working-copy/data/rdmammodes/",size,"_all_modes.csv",sep="")
+  outputfilename = paste("~/development/thesis/thesis/figures/fig-",size,"-RDMAverbs.pdf",sep="")
+  inputfilename = paste("/Users/aniraj/development/thesis/thesis/data/rdmammodes/",size,"_all_modes.csv",sep="")
   d <- loadRDMAModes(inputfilename)
   d$mode <- factor(d$mode)
-  d["bytesperop"]<- d$sglength * 1000
+  d["bytesperop"]<- d$sglength * 200
   p <- ggplot(d, aes(x=bytesperop, y=txrate,
                      color=mode)) +
     geom_line() +
     geom_point(size=1) +
     scale_x_continuous(name='Bytes per Op',
                        trans=log2_trans(),
-                       breaks=c(1000, 2000, 4000, 8000, 16000, 32000))+
+                       #breaks=c(1000, 2000, 4000, 8000, 16000, 32000))+
+                       breaks=c(200, 400, 800, 1600, 3200, 6400))+
     scale_y_continuous(name='Transfer Rate (MB/s)',
                        breaks=c(0,2000,4000,6000,8000)) +
     
@@ -54,14 +55,14 @@ plotRDMAModes <- function(size=""){
                        values=brewer.pal(6, 'Set1')) +
     
     myTheme+
-    coord_cartesian(xlim=c(1000,32000),ylim=c(0,8000))+
+    coord_cartesian(xlim=c(200,6400),ylim=c(0,8000))+
     geom_hline(yintercept=c(6051, 7*1024),color="black",linetype="longdash")+
     annotate("text", x=4000, y=7168, label="7168 MB/s (Theoretical line rate) ", size=2.5, color = "black",vjust=-1)+
     annotate("text", x=4000, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
   
   p
-   #ggsave(plot=p, filename=outputfilename,
-  #       width=5, height=2, units='in')
+   ggsave(plot=p, filename=outputfilename,
+         width=5, height=2, units='in')
    p
   
 }
@@ -117,7 +118,7 @@ loadMergedDeltas <- function (i=1,extratitle='') {
 
 
 
-load <- function (filename='/Users/aniraj/development/thesis/working-copy/data/cx3_noperf/cx3_after_15clients_tlocal_extended_data_20161118.log') {
+load <- function (filename='/Users/aniraj/development/thesis/thesis/data/cx3_noperf/cx3_after_15clients_tlocal_extended_data_20161118.log') {
   d <- read.table(filename
                   , header=T)
   d$bytesPerMessage <- d$chunkSize * d$chunksPerMessage
@@ -411,7 +412,7 @@ makeZeroCopyTputFigure <- function () {
     annotate("text", x=1024, y=6051, label="6051 MB/s (Measured peak B/W) ", size=2.5, color = "black",vjust=-1)
   
     p 
-  ggsave(plot=p, filename='/Users/aniraj/development/thesis/working-copy/figures/fig-zero-copy-tput.pdf',
+  ggsave(plot=p, filename='/Users/aniraj/development/thesis/thesis/figures/fig-zero-copy-tput.pdf',
           width=5, height=2, units='in')
   p
 }
@@ -470,7 +471,7 @@ makeOverheadsFigure <- function () {
   p <- plotBreakdown(d) +
     coord_cartesian(ylim=c(0, 0.3))
   p
-    ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-overheads.pdf',
+    ggsave(plot=p, filename='~/development/thesis/thesis/figures/fig-overheads.pdf',
          width=5, height=5, units='in')
   p
 }
@@ -480,7 +481,7 @@ makeCyclesFigure <- function () {
   d <- d[d$chunkSize %in% c(128,1024),]
   p <- plotCyclesPerRecord(d)
   p
-  ggsave(plot=p, filename='~/development/thesis/working-copy/figures/fig-cycles.pdf',
+  ggsave(plot=p, filename='~/development/thesis/thesis/figures/fig-cycles.pdf',
          width=5, height=2, units='in')
   p
 }
@@ -490,12 +491,12 @@ makeDeltasFigure <- function () {
   d <- d[d$chunkSize == 16384,]
   p1 <- plotDeltas(d)
   p2 <- plotDeltasMemBW(d)
-  ggsave(plot=p1, filename='~/development/thesis/working-copy/figures/fig-deltas-tput.pdf',width=5, height=2, units='in')
-  ggsave(plot=p2, filename='~/development/thesis/working-copy/figures/fig-deltas-membw.pdf', width=5, height=2, units='in')
+  ggsave(plot=p1, filename='~/development/thesis/thesis/figures/fig-deltas-tput.pdf',width=5, height=2, units='in')
+  ggsave(plot=p2, filename='~/development/thesis/thesis/figures/fig-deltas-membw.pdf', width=5, height=2, units='in')
   
   p <- multiplot(p1,p2)
  p
-   ggsave(plot=p, filename='~/development/thesis/working-copy/figures//cx3_noperf/fig-deltas.pdf',
+   ggsave(plot=p, filename='~/development/thesis/thesis/figures//cx3_noperf/fig-deltas.pdf',
          width=5, height=1.5, units='in')
 }
 

@@ -1,11 +1,11 @@
 source('common.R')
 
-tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/*membw-out.log")
-membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/filtered-*membw.csv")
-ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_ddiobw_profiles/filtered-*ddiobw.csv")
-pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_pciebw_profiles/filtered-*pciebw.csv")
-deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/*membw-out.log")
-deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/working-copy/data/seededrandom_filtered_100ms_membw_profiles/deltas/filtered-*membw.csv")
+tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/*membw-out.log")
+membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/filtered-*membw.csv")
+ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_ddiobw_profiles/filtered-*ddiobw.csv")
+pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_pciebw_profiles/filtered-*pciebw.csv")
+deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/deltas/*membw-out.log")
+deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/deltas/filtered-*membw.csv")
 
 
 mergealltputfiles <- function(){
@@ -33,7 +33,7 @@ makeZeroCopyTputFigure <- function (filename='',extratitle='') {
     coord_cartesian(ylim=c(0, 8000), xlim=c(128, 16 * 1024))+
   ggtitle(paste(substr(file_path_sans_ext(basename(filename)),14,45),extratitle,sep="\n"))
   p
-  #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
+  #ggsave(plot=p, filename='~/development/thesis/thesis/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
   #       width=5, height=2, units='in')
 }
 
@@ -92,7 +92,7 @@ aggregateClients <- function (d) {
 }
 
 
-tputload <- function (filename='/Users/aniraj/development/thesis/working-copy/data/singledatapoints/cx3/pcieddioimc/201612172047-15-clients-128B-32chunks-r320-out.log') {
+tputload <- function (filename='/Users/aniraj/development/thesis/thesis/data/singledatapoints/cx3/pcieddioimc/201612172047-15-clients-128B-32chunks-r320-out.log') {
   d <- read.table(filename
                   , header=T)
   d <- d[complete.cases(d),]
@@ -164,7 +164,7 @@ for (membwfile in membwfilenames){
   p<-makeMemoryBWFigure(membwfile,"warmup5s-run30s")
   p
   print(paste("done - ", substr(file_path_sans_ext(basename(membwfile)),14,45)))
-  outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/randomised_run_60s/",basename(file_path_sans_ext(membwfile)),".pdf",sep="")
+  outputfilename<-paste("/Users/aniraj/development/thesis/thesis/figures/singledatapoints/membwandtput/randomised_run_60s/",basename(file_path_sans_ext(membwfile)),".pdf",sep="")
   #ggsave(outputfilename,width=12,height=8,units='in')
   },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
 }
@@ -173,7 +173,7 @@ for (membwfile in membwfilenames){
 makealltputfigures<-function(){
   for (tputfile in tputfilenames){
     p<-makeZeroCopyTputFigure(tputfile)
-    outputfilename<-paste("/Users/aniraj/development/thesis/working-copy/figures/singledatapoints/membwandtput/randomised_30s_warmup5s/",basename(file_path_sans_ext(tputfile)),"-tput.pdf",sep="")
+    outputfilename<-paste("/Users/aniraj/development/thesis/thesis/figures/singledatapoints/membwandtput/randomised_30s_warmup5s/",basename(file_path_sans_ext(tputfile)),"-tput.pdf",sep="")
     ggsave(outputfilename,width=4,height=4,units='in')
   }
 }
@@ -208,7 +208,7 @@ makeMergedFigure <- function (i=1,extratitle='') {
   print(head(merged,2))
   tp <- mergeplot(merged)
   tp
-  #ggsave(plot=p, filename='~/development/thesis/working-copy/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
+  #ggsave(plot=p, filename='~/development/thesis/thesis/figures/cx3_noperf/20161109180229-15clients/fig-zero-copy-tput.pdf',
   #       width=5, height=2, units='in')
 }
 
@@ -305,13 +305,13 @@ mergedeltaplots <- function (d, xlim=c(128, 16 * 1024)) {
     #ggsave("ddiobw.pdf",p3,width=5,height=2,units='in')  
     #ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
   #ggsave("membw-ratio.pdf",p5,width=5,height=2,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-tput.pdf",p1,width=5,height=2,units='in')
-  #ggsave("~/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=6,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
-  ggsave("~/development/thesis/working-copy/figures/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
-  ggsave("~/development/thesis/working-copy/figures/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/thesis/figures/fig-tput.pdf",p1,width=5,height=2,units='in')
+  #ggsave("~/development/thesis/thesis/figures/fig-membw.pdf",p2,width=5,height=6,units='in')  
+  #ggsave("~/development/thesis/thesis/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/thesis/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/thesis/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
+  ggsave("~/development/thesis/thesis/figures/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
+  ggsave("~/development/thesis/thesis/figures/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
   
   p7
   
@@ -540,13 +540,13 @@ mergeplot <- function (d, xlim=c(128, 16 * 1024)) {
   #ggsave("ddiobw.pdf",p3,width=5,height=2,units='in')  
   #ggsave("pciebw.pdf",p4,width=5,height=2,units='in')  
   #ggsave("membw-ratio.pdf",p5,width=5,height=2,units='in')  
-  #ggsave("~/development/thesis/working-copy/figures/tlocalseededrandom/tlocalseededrandom-fig-tput.pdf",p1,width=5,height=2,units='in')
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-membw.pdf",p2,width=5,height=6,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/seededrandom_filtered_100ms/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
-  ggsave("/Users/aniraj/development/thesis/working-copy/figures/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
+  #ggsave("~/development/thesis/thesis/figures/tlocalseededrandom/tlocalseededrandom-fig-tput.pdf",p1,width=5,height=2,units='in')
+  ggsave("/Users/aniraj/development/thesis/thesis/figures/fig-membw.pdf",p2,width=5,height=6,units='in')  
+  ggsave("/Users/aniraj/development/thesis/thesis/figures/fig-ddiobw.pdf",p3,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/thesis/figures/fig-pciebw.pdf",p4,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/thesis/figures/fig-membw-ratio.pdf",p5,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/thesis/figures/seededrandom_filtered_100ms/fig-ddiobw-percent.pdf",p6,width=5,height=2,units='in')  
+  ggsave("/Users/aniraj/development/thesis/thesis/figures/fig-pciebw-ratio.pdf",p7,width=5,height=2,units='in')  
   
   p1
 
