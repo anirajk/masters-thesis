@@ -1,32 +1,32 @@
 %%% -*-LaTeX-*-
 \chapter{Drawing Lessons from Modern NICs}
 \label{chap:modernnics}
-Network Interface Cards have grown complex and present opportunities and challenges as part of a modern distributed system.
+Network Interface Cards have grown complex and present opportunities and \linebreak challenges as part of a modern distributed system.
  It is imperative that today’s database system designer considers the network in design decisions.
- Previous research for optimising databases were focussed more on processing time spent on a database query~\cite{dbmsproctime},
-  but today, most of the end-to-end latency while processing a query is spent the networking stack~\cite{ramcloudosr}.
+ Previous research for \linebreak optimising databases were focussed more on processing time spent on a database query~\cite{dbmsproctime},
+  but today, most of the end-to-end latency while processing a query is spent in the \linebreak networking stack~\cite{ramcloudosr}.
 Since in-memory databases became popular and datasets started to fit in memory, the spinning disks 
 which were the primary I/O bottlenecks before aren't anymore. The bulk of I/O overhead in a distributed storage system today is in network transmission.
 Adding this to the fact that the modern NIC allows us to offload CPU from the data transfer path,
 the saved memory bandwidth and CPU cycles could be doing useful work.
 
 Hardware overheads have thinned over time, and system researchers had to minimize CPU interrupts and come up with forms of kernel by-pass networking to extract more performance.
- Network cards have had Transmission Control Protocol(TCP) offloading baked in as TCP Offload Engine for some time now. They helped reduce TCP protocol burden from main CPU by moving that processing to network adapters.
- However the ability to bypass copies were dependent on the TCP Offload Engine(TOE) design and in may cases didn't support non-copying for incoming data streams~\cite{tcpoffload}. 
- RDMA~\cite{rdmapatent,rdmacase,rdma} capable NICs support non-copying of incoming data streams over a wider variety of applications where TCP offloading was just one among the benefits involved.
- Development of advanced host-device interconnects such as PCI Express~\cite{pcie}  made it possible to develop highly performant network devices offering throughputs and latencies orders of magnitude better than what was possible before.
+ Network cards have had Transmission Control Protocol (TCP) offloading baked in as TCP Offload Engine for some time now. They helped reduce TCP protocol burden from main CPU by moving that processing to network adapters.
+ However the ability to bypass copies was dependent on the TCP Offload Engine (TOE) design and in \linebreak  many cases didn't support non-copying for incoming data streams~\cite{tcpoffload}. 
+ \linebreak RDMA~\cite{rdmapatent,rdmacase,rdma} capable NICs support non-copying of incoming data streams over a wider variety of applications where TCP offloading was just one among the benefits \linebreak involved.
+ Development of advanced host-device  interconnects such as PCI Express~\cite{pcie}  made it possible to develop highly performant network devices offering throughputs and latencies orders of magnitude better than what was possible before.
 
- The key consideration we explore in this chapter is how a database server can make the best use of the NIC’s ability to receive and transmit data directly at the application level, especially for the
+ The key consideration we explore in this chapter is how a database server can make the best use of the NIC's ability to receive and transmit data directly at the application level, especially for the
 cases when the system must move large chunks of data. We evaluated
 the use of various RDMA primitives for benchmarking large transfers and explored the various
  trade-offs and design choices while using advanced NIC features and drew lessons from our evaluation of those choices with the help of a microbenchmark. 
 
 \section{Zero Copy and Copy Out}
 The key benefit of a modern NIC in contrast with earlier hardware is the ability to manipulate control structures of the NIC from userspace applications. 
-Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path. Literature defines kernel-bypass as communication that doesn't 
-involve kernel in the critical path~\cite{unetkernelbypass}. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
-where the NIC can receive and transmit directly from application vectors. The Mellanox Infiniband ConnectX\textregistered-3
-NIC that we profiled can collect scattered chunks of data in memory via Direct Memory Access(DMA).
+Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path.\linebreak  Literature defines kernel-bypass as communication that doesn't 
+involve kernel in the \linebreak critical path~\cite{unetkernelbypass}. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
+where the NIC can receive and transmit directly from \linebreak application vectors. The Mellanox Infiniband ConnectX\textregistered-3
+NIC that we profiled can \linebreak collect scattered chunks of data in memory via Direct Memory Access (DMA).
 
 Before kernel bypass became commonplace, the steps for copying data over the network using socket programming 
 required the host CPU to make additional copies of transmitted data.
