@@ -132,8 +132,8 @@ bandwidth, and is pure overhead.
 One conflating factor in understanding the benefits of Zero Copy is Data Direct I/O (DDIO)~\cite{ddio}.
  DDIO is a performance-oriented enhancement to the DMA mechanism which was introduced in Intel\textregistered Xeon E5 processors with Sandy Bridge-EP micro-architecture.
  With DDIO, CPU caches are used as the primary source and destination for I/O, 
-allowing network interface controllers (NICs) to talk directly to the last level caches of local CPUs
-and avoid costly fetching of the I/O data from system RAM. As a result, if we have enough locality of data to exploit,
+allowing NICs to talk directly to the last level caches of local CPUs
+and avoiding costly fetching of the I/O data from system RAM. As a result, if we have enough locality of data to exploit,
 DDIO reduces the overall I/O processing latency, allows processing of the I/O 
 to be performed entirely in cache and prevents the available memory bandwidth from becoming a performance bottleneck.
 We fully investigate the effects of DDIO in Section~\ref{sec:impact} to conclude the impact of 
@@ -213,6 +213,7 @@ our experiments, the reach of the NIC's virtual-to-physical mapping is
 sufficient, and hugepages have no impact on the results. To err on the side of caution, 
 we did enable 1~GB hugepages and registered those with the NIC to make sure we 
 avoid as many TLB misses as possible.
+\newpage
 \input{config}
 \input{fig-setup}
 
@@ -248,7 +249,7 @@ using 200~B records as shown in Figure~\ref{fig:1000B_transrate}.
 
 \subsection{Record Sizes}
 In the world of In-memory databases, there is an argument to be made that record sizes will get smaller.
-The decreased access latency of in-memory databases makes them well-suited to smaller, finer-grained records
+The decreased access latency of in-memory databases makes them well suited to smaller, finer-grained records
 than were previously common. One expectation is that this will drive databases
 toward more aggressively normalized layouts with small records. This
 seems to be increasingly the case as records of a few hundred bytes or less
@@ -302,7 +303,7 @@ Figure~\ref{fig:zero-copy-tput} shows how each of these configurations impacts
 transmission throughput. For larger 1024~B records, using the NIC's DMA engine
 for Zero Copy shows clear benefits even when you are transmitting less number of 
 records. This is in addition to the CPU and memory bandwidth savings, which 
-we explore in Section~\ref{sec:overhead}). The database server can come close to
+we explore in Section~\ref{sec:overhead}. The database server can come close to
 saturating the network with Zero Copy as long as it can post 2 or more
 records per transmit operation to the NIC (that is, if it sends 2~KB or larger
 messages at a time). For the Copy Out approach, you get roughly the same transmission 
@@ -351,6 +352,7 @@ on-the-fly can significantly outperform Zero Copy transmission when there are
 enough results (more than 16 records in our NIC which is capable of transmitting 32 at once) 
 in a response. In fact, Copy Out can saturate the network with small records, and it
 performs identical to Zero Copy with larger 1024~B records.
+\newline
 \input{takeaway-tput}
 
 \section{System Impact}
@@ -359,7 +361,7 @@ performs identical to Zero Copy with larger 1024~B records.
 We saw how the Zero Copy promises enhanced savings and performance 
 in the previous section. To put things in the context of resource utilization and
  to quantify performance gains, we profiled our benchmark code for CPU utilization, memory bandwidth 
- and some other metrics such as memory pressure due to Last Level Cache(LLC) misses from DDIO and PCIe.
+ and some other metrics such as memory bandwidth utilisation due to Last Level Cache(LLC) misses from DDIO and PCIe.
 We used cycle counters present in the original RAMCloud~\cite{ramcloud} code base for non-intrusive profiling 
 of CPU time. We wanted to make sure our profiling code shouldn't interfere with the timing of our highly performant 
  benchmark which churns out millions of operations per second and microsecond latencies. 
@@ -407,6 +409,7 @@ accounts for about 45\% of the available memory bandwidth for the server that we
 using Zero Copy or Copy Out, the NIC must copy data from main memory, across the PCIe bus, to its own buffers, which
 could end up using another 6~GB/s of memory bandwidth. With these estimates in mind, we extensively profiled
  our benchmark with Intel's PMU module and the details of that is given in Section~\ref{sec:membw-savings}.
+\newline
 \input{takeaway-cpu-overhead}
 
 
@@ -530,6 +533,7 @@ degradation we saw while observing transmission throughput in Figure~\ref{fig:ze
 where you transmit 16 or more 128~B records where Zero Copy offers better transmission performance, the memory bandwidth consumption by Zero Copy 
 is reduced, and Copy Out starts to appear more expensive in terms of memory bandwidth. These anomalies are better explained in Section~\ref{sec:anomaly} but we 
 can conclude from this figure that there is a linear correlation between transmit performance and consumed memory bandwidth for Zero Copy.
+\newline
 \input{takeaway-impact-membw}
 
 \subsection{Memory Bandwidth and Transmission throughput}
@@ -539,7 +543,7 @@ Zero Copy mode of transmitting here. For Zero Copy, We can see that the system i
 copying descriptors other than DMAing the data onto the NIC. The cost of the descriptors is evident from the fact that 128~B records show 
 a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultuous across varying number of records, 
  but still shows Zero Copy as the clear winner. It is interesting to note that transmitting a single record via Copy Out, 
- introducing an unnecessary copy makes your transmission 3x less efficient in terms of memory utilisation.
+ introducing an unnecessary copy makes your transmission 3x less efficient in terms of memory bandwidth utilisation.
   If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
  2X memory bandwidth cost on copying out 1024~B records. Like in the case of smaller records, the additional copy reduces the 
  transmission efficiency more in the case of small number of records.
@@ -566,6 +570,7 @@ Since our data sets are limited in size and do not cause much of cache pollution
 memory reads due to misses in DDIO is only. For transmissions using Zero Copy, 
 the read requests to memory happen because of misses from the DDIO region and account for 
 most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:ddiobw-savings} explains this in detail.
+\newline
 \input{takeaway-impact-ddiobw}
 \input{fig-ddiobw}
 
@@ -589,13 +594,17 @@ While evaluating performance and efficiency of Zero Copy in previous sections, w
 on increasing the transmission size. If you refer back to Figure~\ref{fig:zero-copy-tput}, throughput trends upward until we reach 1024~B(8 records), the transmission throughput remains consistent for about 8-16 records and 
 then the performance tapers off. There is a huge dip in transmission throughput going from 15 to 16 records and even though the performance gradually recovers, it doesn't quite 
 catch up with Copy Out until we get to the maximum number of records possible and even at that point Copy Out edges Zero Copy performance by a bit. After some investigation, we discovered 
-that LLC bytes read from memory due to misses due to PCIe jumps to the peak measured reads and then saturates and the anomaly corresponds to these data points. 
+that LLC bytes read from memory due to misses due to PCIe jumps to the peak measured reads and then saturates and the anomaly corresponds to these data points. It's also interesting to note 
+that this is phenomenon is completely specific to the NIC. In Figure~\ref{fig:overheads}, the cycles spent posting transmissions to the NIC drops suddenly corresponding to this region.
 
 Figure~\ref{fig:pciebw} shows the read requests issued by LLC because of misses from PCIe traffic. For 128~B records, we can clearly see that after 8 records, this metric is 
 nearly saturated and at 16 records, the number of bytes read peaks causing the dip in transmit performance. The memory reads due to PCIe traffic is saturated at this point and 
 we can see a similar trend for 1024~B records too. Since larger records packs more data per record, the dip in transmit performance is not evident in that case. The other interesting 
 thing to realise is that for Copy Out, the amount of memory traffic induced by PCIe errors follows a similar trend as transmission throughput which is expected since 
-NIC itself is connected via PCIe interface.
+NIC itself is connected via PCIe interface. Our intuition is that either the prefetcher mispredicts or the maximum possible size of a PCIe transaction (256~B) causes the jump 
+and the overhead is compensated by more and more data transmitted as we get to bigger and bigger transmissions. Since 1024~B records also show a slight dip in transmission performance 
+around 16 records, the DMA overhead is less evident there since we are already operating at a higher throughput owing to large record sizes.
+
 \input{fig-pciebw}
 
 \subsection{PCIe induced DRAM accesses and Throughput}

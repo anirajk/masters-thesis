@@ -25,6 +25,14 @@ new hardware.
 
 
 \section{State of the art}
+% Squall 10.a 5~MB/s calculation
+% 10 GB database, divided over 4 nodes; that’s 2.5 GB per node
+% Now scale down from 4 to 3, that’s 2.5 GB / 3 per node
+% So 833 MB of data coming in
+% Takes (220 - 30) = 190 s
+% 833 MB / 190 S
+
+
 Fast reconfiguration of In-memory data is something that has been overlooked largerly
 by the research community. There has been novel techniques for live migration of 
 key value stores such as Albatross~\cite{albatross} which provides unavailability windows 
@@ -33,7 +41,7 @@ pushes to minimize failed transactions and unavailability for migration while op
 at transactional latencies of 50~ms. Squall~\cite{squall} went further with fine grained 
 partitioning with optimisations such as pre-fetching. Squall also offers minimal overhead 
 to their transactional latencies which are of the order of tens of milliseconds and migrates 
-data overall at the rate of around 5~MB/s. While these efforts offer reconfiguration speeds 
+data overall at the rate of around 5~MB/s (Refer Squall paper, Figure 10 a). While these efforts offer reconfiguration speeds 
 better than other systems and minimal addition to their millisecond latencies, that is far 
 from what a modern NIC is capable of delivering. From our benchmark, we knew that the NIC 
 can deliver transmission throughputs of around 5~GB/s while operating at microsecond latencies. 
@@ -49,7 +57,7 @@ per second per server. RAMCloud~\cite{ramcloud} is a prime example of such a sys
 of 5\textmu~s and responds to workloads upto a million operations per second. These characteristics result from the fact that 
 these systems were designed from ground up keeping low latencies in mind and any significant disruption to their operating 
 latencies might deem them less useful. RAMCloud has a migration protocol which offers around 100MB/s data transfer speeds albeit 
-synchronous and unpipelined. While this is better by leaps and bounds than other systems, we believe that carefully leveraging the NIC, 
+synchronous and unpipelined. While this is faster than other systems, we believe that carefully leveraging the NIC, 
 we can attain better throughput without compromising on latency.
 
 \subsection{Current Protocol}
@@ -57,14 +65,14 @@ Figure ~\ref{fig:migration-current} shows the steps involved in the existing pro
 most of the steps involved are synchronous and blocking. The current protocol could make use of Zero Copy since migration usually involves 
 large amount of data and sets of large data and the presence of \cpp{safeVersion}~\cite{ramcloudtx} makes Zero Copy an interesting proposition 
 for migration in RAMCloud. While doing migrations, we found that the migration throughput that RAMCloud's existing protocol provides to 
-be around 150MegaBytes per second (MB/s). While this is at least ten times better than the state of the art, there is definitely room for improvement in the protocol.
+be around 150 MegaBytes per second (MB/s). While this is at least ten times better than the state of the art, there is definitely room for improvement in the protocol.
 We profiled the time spent in migration doing each of the steps mentioned in Figure~\ref{fig:migration-current}.
 
 \input{fig-migration-current}
 
 Figure~\ref{fig:bottlenecks} shows an analysis of how each of the bottlenecks affect RAMCloud's migration performance. We made versions of migration 
-protocol bypassing each of the bottlenecks and measured RAMCloud's migration performance in each of those scenarios. We migrated a table of one million 
-records with record sizes of 100~Bytes which comes close to 150~MB including the key and metadata.
+protocol bypassing each of the bottlenecks and measured RAMCloud's migration performance in each of those scenarios. We migrated a table of a hundred million 
+records with record sizes of 100~Bytes which comes close to 9~GB including the key and metadata.
 
 The first bottleneck we bypassed was the re-replication of data to the backups. This is a configurable parameter and removing this we observed a speedup from around 150~MB/s to around 
 200~MB/s. This explains that while disk bandwidth was indeed a bottleneck, avoiding it does not give significant performance boost while migrating a small data set.
@@ -84,7 +92,7 @@ it is safe to assume that use of Zero Copy while transmitting dat from source wi
 \input{fig-bottlenecks}
 
 \subsection{Locality in RAMCloud}
-RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5\textmu~s~\cite{ramcloud}. RAMCloud doesn't have a strong notion of collocating data across servers. 
+RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5\textmu s~\cite{ramcloud}. RAMCloud doesn't have a strong notion of collocating data across servers. 
 It is known that transactions~\cite{ramcloudtx} and secondary indices~\cite{slik} can benefit with collocation of data. RAMCloud's data is hash partitioned and within a server, the in-memory log is organised 
 in a temporal order. We might be tempted to think that storing data in contigous memory location in some order based on primary or secondary keys or even some other pre-determined order will give better NIC performance. 
 The key obstruction to doing this is RAMCloud's log cleaning mechanism~\cite{ramcloudfast}. RAMCloud's design philosophy rightly highlights the importance of DRAM utilisation when all data is in memory. 
@@ -96,7 +104,7 @@ We set up an experiment to demonstrate the effect of collocating data in RAMClou
 and had ten clients issue ``multiget'' requests to the servers which return values for multiple keys in one operation. The operations were done on a table of 10 keys which were placed in various servers in different 
 configurations. 
 
-Figure~\ref{fig:colocation} shows the results of this experiment. When we had all 10 keys in one server, the whole cluster is expected to produce a throughput of 100 million objects read per second.
+Figure~\ref{fig:colocation} shows the results of this experiment. When we had all 10 keys pert table localised in each of the servers, the whole cluster is expected to produce a throughput of 100 million objects read per second.
 Owing to the overhead of multiget, we observe around 45 million combined operations on the server. The dotted line shows the throughput of the server if we were to use a regular ``get'' request to extract keys one by one.
 We see a great benefit in the total throughput when all keys are collocated in a single server for all tables. The x-axis indicates the server spread. When we move along the x-axis, the second point indicates a configuration where for every table, 9 keys belong in one server and 
 another belongs to a different server. The right most point is the configuration where each server hosts one key of all the 10 tables across the server. The bottom half explains what fraction of total CPU burned was spent 
