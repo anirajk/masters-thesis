@@ -18,8 +18,8 @@ tputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededra
 membwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/filtered-*membw.csv")
 ddiobwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_ddiobw_profiles/filtered-*ddiobw.csv")
 pciebwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_pciebw_profiles/filtered-*pciebw.csv")
-deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/deltas/*membw-out.log")
-deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_membw_profiles/deltas/filtered-*membw.csv")
+deltatputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_deltas_membw_profiles/*membw-out.log")
+deltamembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_deltas_membw_profiles/filtered-*membw.csv")
 extendedtputfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_extended_copyout_points/*membw-out.log")
 extendedmembwfilenames <- Sys.glob("/Users/aniraj/development/thesis/thesis/data/seededrandom_filtered_100ms_extended_copyout_points/filtered-*membw.csv")
 
@@ -104,7 +104,7 @@ loadMergedDeltas <- function (i=1,extratitle='') {
     t <- tputload(filename=deltatputfilenames[i])
     #t <- t[t$chunkSize %in% c(128,1024),]
     m <- perfload(filename=deltamembwfilenames[i])
-    m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)
+    m["membw"]<-(m$iMC0.MEM_BW_TOTAL+m$iMC1.MEM_BW_TOTAL+m$iMC2.MEM_BW_TOTAL)*10
     membw<-rep(unname(quantile(m$membw,0.5,na.rm=TRUE)),nrow(t))
     curr<-data.frame(membw=membw,t)
     if(i==1){
@@ -496,8 +496,8 @@ makeDeltasFigure <- function () {
   
   p <- multiplot(p1,p2)
  p
-   ggsave(plot=p, filename='~/development/thesis/thesis/figures//cx3_noperf/fig-deltas.pdf',
-         width=5, height=1.5, units='in')
+   #ggsave(plot=p, filename='~/development/thesis/thesis/figures//cx3_noperf/fig-deltas.pdf',
+  #       width=5, height=1.5, units='in')
 }
 
 makeAllFigures <- function () {
