@@ -8,7 +8,7 @@ compares to using Copy Out to transmit data over the network. The difference
 in throughput is explicitly seen for smaller 128~B records, where owing to the descriptor overhead and anomalies discussed 
 in Chapter~\ref{chap:modernnics}, Copy Out gives better throughput performance especially when the transmissions get larger.
 We have already established that 128~B records show a more realistic depiction of record sizes in the future
-and that seems to be the growing consensus in the community~\cite{fb-memcache,fb-workload,inmemoryworkload}. 
+and that seems to be the growing consensus in the community~\cite{fb-memcache,fb-workload}. 
 
 At first, the throughput results from comparing Zero Copy and Copy Out for 128~B 
 records might tempt us to think that it's always better to use a Copy Out get maximum throughput with smaller records.
