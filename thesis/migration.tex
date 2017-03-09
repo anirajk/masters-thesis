@@ -22,8 +22,7 @@ performance, does an analysis of the existing migration protocol in RAMCloud,
 and armed with the lessons learned by profiling a modern NIC, we make concrete 
 suggestions on how a new protocol might be well poised to take advantage of the 
 new hardware.
-
-
+\newpage
 \section{State of the art}
 % Squall 10.a 5~MB/s calculation
 % 10 GB database, divided over 4 nodes; that’s 2.5 GB per node
@@ -68,8 +67,6 @@ for migration in RAMCloud. While doing migrations, we found that the migration t
 be around 150 MegaBytes per second (MB/s). While this is at least ten times better than the state of the art, there is definitely room for improvement in the protocol.
 We profiled the time spent in migration doing each of the steps mentioned in Figure~\ref{fig:migration-current}.
 
-\input{fig-migration-current}
-
 Figure~\ref{fig:bottlenecks} shows an analysis of how each of the bottlenecks affect RAMCloud's migration performance. We made versions of migration 
 protocol bypassing each of the bottlenecks and measured RAMCloud's migration performance in each of those scenarios. We migrated a table of a hundred million 
 records with record sizes of 100~Bytes which comes close to 9~GB including the key and metadata.
@@ -89,7 +86,6 @@ The final step is the most interesting with respect to the lessons we have learn
 
 The analysis tells us that there is clearly room for improvement in migration performance in RAMCloud. While sequential replay of migrated segments of data seems to give the most benefits, 
 it is safe to assume that use of Zero Copy while transmitting dat from source will enhance network transmission throughput without hurting the available memory bandwidth.
-\input{fig-bottlenecks}
 
 \subsection{Locality in RAMCloud}
 RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5\textmu s~\cite{ramcloud}. RAMCloud doesn't have a strong notion of collocating data across servers. 
@@ -113,9 +109,6 @@ We can clearly see that the amount of useful work done takes a great hit while t
 even if each server in the cluster had to do one cross-machine extraction of data. Adding this to the fact that if all the keys were evenly spread across the cluster, the ``multiget'' request does more harm than good and getting the 
 keys one by one would've resulted in better aggregate throughput of the cluster, we can conclude that the effect of locality of data is paramount, and any movement of data to achieve better locality of data between servers will yield 
 great performance later.
-
-\input{fig-colocation}
-\clearpage
 \section{Design Guidelines for a new protocol}
 Based on the analysis of the bottlenecks in the current protocol and the motivation that comes from having data localized to servers, some guidelines for developing a protocol for migration in RAMCloud
 is given below which has ties to the lessons we learned from benchmarking a modern NIC.
@@ -145,3 +138,6 @@ able to parallelise the transfer of data as well as replaying at the receiver in
 
 \end{itemize}
 
+\input{fig-migration-current}
+\input{fig-bottlenecks}
+\input{fig-colocation}
