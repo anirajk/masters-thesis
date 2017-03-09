@@ -1,10 +1,9 @@
 %%% -*-LaTeX-*-
 \chapter{Drawing Lessons from Modern NICs}
 \label{chap:modernnics}
-Network Interface Cards have grown complex and present opportunities and \linebreak challenges as part of a modern distributed system.
- It is imperative that today’s database system designer considers the network in design decisions.
- Previous research for \linebreak optimising databases were focussed more on processing time spent on a database query~\cite{dbmsproctime},
-  but today, most of the end-to-end latency while processing a query is spent in the \linebreak networking stack~\cite{ramcloudosr}.
+Network Interface Cards have grown complex and present opportunities and  challenges as part of a modern distributed system.
+ It is imperative that today’s database system designer considers the network in design decisions. Previous research for optimising databases were focussed more on processing time spent on a database query~\cite{dbmsproctime},
+  but today, most of the end-to-end latency while processing a query is spent in the  networking stack~\cite{ramcloudosr}.
 Since in-memory databases became popular and datasets started to fit in memory, the spinning disks 
 which were the primary I/O bottlenecks before aren't anymore. The bulk of I/O overhead in a distributed storage system today is in network transmission.
 Adding this to the fact that the modern NIC allows us to offload CPU from the data transfer path,
@@ -12,8 +11,8 @@ the saved memory bandwidth and CPU cycles could be doing useful work.
 
 Hardware overheads have thinned over time, and system researchers had to minimize CPU interrupts and come up with forms of kernel by-pass networking to extract more performance.
  Network cards have had Transmission Control Protocol (TCP) offloading baked in as TCP Offload Engine for some time now. They helped reduce TCP protocol burden from main CPU by moving that processing to network adapters.
- However the ability to bypass copies was dependent on the TCP Offload Engine (TOE) design and in \linebreak  many cases didn't support non-copying for incoming data streams~\cite{tcpoffload}. 
- \linebreak RDMA~\cite{rdmapatent,rdmacase,rdma} capable NICs support non-copying of incoming data streams over a wider variety of applications where TCP offloading was just one among the benefits \linebreak involved.
+ However the ability to bypass copies was dependent on the TCP Offload Engine (TOE) design and in   many cases didn't support non-copying for incoming data streams~\cite{tcpoffload}. 
+  RDMA~\cite{rdmapatent,rdmacase,rdma} capable NICs support non-copying of incoming data streams over a wider variety of applications where TCP offloading was just one among the benefits  involved.
  Development of advanced host-device  interconnects such as PCI Express~\cite{pcie}  made it possible to develop highly performant network devices offering throughputs and latencies orders of magnitude better than what was possible before.
 
  The key consideration we explore in this chapter is how a database server can make the best use of the NIC's ability to receive and transmit data directly at the application level, especially for the
@@ -23,10 +22,10 @@ the use of various RDMA primitives for benchmarking large transfers and explored
 
 \section{Zero Copy and Copy Out}
 The key benefit of a modern NIC in contrast with earlier hardware is the ability to manipulate control structures of the NIC from userspace applications. 
-Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path.\linebreak  Literature defines kernel-bypass as communication that doesn't 
-involve kernel in the \linebreak critical path~\cite{unetkernelbypass}. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
-where the NIC can receive and transmit directly from \linebreak application vectors. The Mellanox Infiniband ConnectX\textregistered-3
-NIC that we profiled can \linebreak collect scattered chunks of data in memory via Direct Memory Access (DMA).
+Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path.  Literature defines kernel-bypass as communication that doesn't 
+involve kernel in the  critical path~\cite{unetkernelbypass}. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
+where the NIC can receive and transmit directly from  application vectors. The Mellanox Infiniband ConnectX\textregistered-3
+NIC that we profiled can  collect scattered chunks of data in memory via Direct Memory Access (DMA).
 
 Before kernel bypass became commonplace, the steps for copying data over the network using socket programming 
 required the host CPU to make additional copies of transmitted data.
@@ -83,7 +82,6 @@ since the OS is not involved during transmission and the application has no
 access to its page tables. Registration is done when the beginning of the benchmark and is often
 done with physical memory backed by 1~GB hugepages to minimize on-NIC address
 translation costs.
-\input{fig-mem-regions}
 
 
 The second key structure is the descriptor that a thread must construct to
@@ -107,7 +105,7 @@ listed in the descriptor. The PCIe messages are posted writes, which means they
 are asynchronous from the CPU's perspective. Even though PCIe latencies are much
 higher than DRAM access, the CPU does not stall when posting descriptors, so the
 exchange is very low overhead.
-
+\newpage
 \subsection{Structural differences in Zero Copy and Copy Out}
 The key difference between Zero Copy and Copy Out is shown with the wide, red
 arrows in Figure~\ref{fig:mem-regions}. Copy Out works much like conventional
@@ -214,8 +212,6 @@ sufficient, and hugepages have no impact on the results. To err on the side of c
 we did enable 1~GB hugepages and registered those with the NIC to make sure we 
 avoid as many TLB misses as possible.
 \newpage
-\input{config}
-\input{fig-setup}
 
 \subsection{Comparing RDMA modes for transmission}
 We started out by getting measurements of transmission speeds using RDMA verbs.  
@@ -244,7 +240,6 @@ the performance for RDMA READ which is also unfair since RDMA READ can only tran
 The blue dot shows RDMA write performance using a full scatter/gather list. This tells us that WRITE and SEND will offer 
 similar performance. Transmission using larger data sizes such as 1000~B recoreds showed a clearer benefit of using \cpp{SEND} than 
 using 200~B records as shown in Figure~\ref{fig:1000B_transrate}.
-\input{fig-rdmamodes}
 \input{takeaway-verbs}
 
 \subsection{Record Sizes}
@@ -314,7 +309,6 @@ of up to 82\% over Copy Out while transmitting a single 1024~B record. For small
 records, the biggest improvement of 67\% comes while transmitting 6 records. It's also interesting 
 to note that if range scans return even just 16 scattered, small(128~B) records per query, the
 benefits of Zero Copy purely from the perspective of transmission throughput is almost eliminated.
-\input{fig-zero-copy-tput}
 
 % [1] "128 B item pct improvement in tput for ZC"
 %  [1]  11.028650  11.592911  20.786107  41.404516  56.840692  67.254500  67.200293
@@ -398,7 +392,6 @@ small records, and they are copied twice. The gather list
 is first staged on the thread's stack and passed to the user level NIC driver. Next,
 the driver makes a posted PCIe write by copying the descriptor (including the
 gather entry) into a memory-mapped device buffer.
-\input{fig-overheads}
 We will see later in Section~\ref{sec:membw-savings} that memory bandwidth savings for Zero Copy are more substantial.
 Figure~\ref{fig:zero-copy-tput} shows that Copy Out transmit performance nearly
 matches Zero Copy (5.6~GB/s versus 5.8~GB/s) for larger records at larger transmissions. Copy Out introduces exactly one
@@ -461,8 +454,7 @@ First, it shows that, though the absolute savings in total CPU cycles is small
 for Zero Copy, it does reduce CPU overhead due to transmission by up to 95\% for 
 larger records and around 72\% for smaller records. If you were to transmit at least 
 two small records, Zero Copy becomes more CPU efficient.
-\input{fig-cycles}
-
+\newline
 \input{takeaway-cpu-cycles}
 
 % LMBench 3.0 Memory Results from our Machines
@@ -525,7 +517,6 @@ larger record sizes is beneficial. The savings are highlighted along largest tra
  designer since this is a pure overhead and the wasted memory bandwidth could be used for data manipulation or other useful work in the database 
  server. This is even more interesting considering that the modern day In-memory stores are not tuned for large responses.
   When the DRAM latency and accesses go up, the performance of the whole system could degrade to the point at which the system might become unusable.
-\input{fig-membw}
 For smaller data sizes, it's even more interesting. Zero Copy shows less memory utilisation until we get to the point where it's transmit performance 
 drops below that of Copy out. This would imply that there are times when Copy out outperforms Zero Copy in terms of transmit performance and 
 memory bandwidth utilisation. It is interesting to note that these data points overlap the anomalous transmit performance 
@@ -547,7 +538,6 @@ a bigger multiplier on transmission throughput than 1024~B records. For 128~B re
   If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
  2X memory bandwidth cost on copying out 1024~B records. Like in the case of smaller records, the additional copy reduces the 
  transmission efficiency more in the case of small number of records.
-\input{fig-membw-ratio}
 
 \input{takeaway-impact-membw-ratio}
 
@@ -572,7 +562,6 @@ the read requests to memory happen because of misses from the DDIO region and ac
 most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:ddiobw-savings} explains this in detail.
 \newline
 \input{takeaway-impact-ddiobw}
-\input{fig-ddiobw}
 
 
 \subsection{DDIO savings in Copy Out}
@@ -585,7 +574,7 @@ memory bandwidth results from misses from the DDIO region. It tells us that whil
 we pay the price of \memcpy~ to bring data to the LLC, it helps in limiting further DRAM access while transmitting 
 from the region reserved for DDIO. If not for this effect, both Copy Out and Zero Copy 
 might have added Memory Bandwidth consumption in bringing data from DRAM for transmission. 
-\input{fig-ddiobw-percent}
+
 \input{takeaway-impact-ddiobw-savings}
 
 \section{Anomaly in Transmission Throughput}
@@ -605,21 +594,33 @@ NIC itself is connected via PCIe interface. Our intuition is that either the pre
 and the overhead is compensated by more and more data transmitted as we get to bigger and bigger transmissions. Since 1024~B records also show a slight dip in transmission performance 
 around 16 records, the DMA overhead is less evident there since we are already operating at a higher throughput owing to large record sizes.
 
-\input{fig-pciebw}
 
 \subsection{PCIe induced DRAM accesses and Throughput}
 Figure ~\ref{fig:pciebw-ratio} shows the ratio of DRAM accesses induced by PCIe traffic to the obtained transmission throughput for various data points. When we transmit 16 smal records (2048~B),
 the PCIe effectiveness goes down and the ratio peaks. This is strictly in line with transmission throughput shown in Figure~\ref{fig:zero-copy-tput} where at 2048~B, we see a sharp drop in transmission 
 throughput which it slowly recovers from as we increase the number of S/G entries per transmission. There is an inverse correlation between the ratio of PCIe induced DRAM accesses and transmission throughput.
-\input{fig-pciebw-ratio}
-
+\newline
 \input{takeaway-impact-pciebw}
 
 \section{Conclusions}
 \begin{itemize}
+\setlength\itemsep{0.5em}
 \item For large sets of small records, Copy Out offers better performance; if your record sizes are larger, use Zero Copy.
 \item Zero Copying larger records will give you good memory bandwidth utilisation.
-\item DDIO compensates for some of the memory bandwidth cost to Copy Out data if transmissions are smaller; this is irrelevant in the bigger scheme of things.
-\item Careful tuning of parameters is required if you were to only use Zero Copy; PCIe induced memory accesses maybe the reason Copy Out outperforms Zero Copy for certain parameters. 
+\item DDIO compensates for some of the memory bandwidth cost to Copy Out data.
+\item Careful tuning of parameters is required if you were to use Zero Copy; PCIe induced memory accesses may explain the anomalous throughput increase for Copy Out. 
 \end{itemize}
 
+\input{fig-mem-regions}
+\input{config}
+\input{fig-setup}
+\input{fig-rdmamodes}
+\input{fig-zero-copy-tput}
+\input{fig-overheads}
+\input{fig-cycles}
+\input{fig-membw}
+\input{fig-membw-ratio}
+\input{fig-ddiobw}
+\input{fig-ddiobw-percent}
+\input{fig-pciebw}
+\input{fig-pciebw-ratio}
