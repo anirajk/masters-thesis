@@ -22,7 +22,6 @@ performance, does an analysis of the existing migration protocol in RAMCloud,
 and armed with the lessons learned by profiling a modern NIC, we make concrete 
 suggestions on how a new protocol might be well poised to take advantage of the 
 new hardware.
-\newpage
 \section{State of the art}
 % Squall 10.a 5~MB/s calculation
 % 10 GB database, divided over 4 nodes; that’s 2.5 GB per node
@@ -83,7 +82,6 @@ only went up from 600~MB/s to 700~MB/s.
 
 The final step is the most interesting with respect to the lessons we have learned by analysing the NIC. Skipping the copying step before transmission took us from 700~MB/s to 
 1150~MB/s. This underlines our earlier observation that any extra copy involved in a transmission is pure overhead and significantly affects performance. 
-
 The analysis tells us that there is clearly room for improvement in migration performance in RAMCloud. While sequential replay of migrated segments of data seems to give the most benefits, 
 it is safe to assume that use of Zero Copy while transmitting dat from source will enhance network transmission throughput without hurting the available memory bandwidth.
 
@@ -113,7 +111,7 @@ great performance later.
 Based on the analysis of the bottlenecks in the current protocol and the motivation that comes from having data localized to servers, some guidelines for developing a protocol for migration in RAMCloud
 is given below which has ties to the lessons we learned from benchmarking a modern NIC.
 
-\begin{itemize}
+\begin{myitemize}
 \item Make use of {\em Zero Copy}; RAMCloud supports a slew of network transport protocols including TCP and Infiniband. Since kernel by-pass is essential in the design philosophy which calls for minimal 
 interrupts, more popular packet processing oriented transports like DPDK~\cite{dpdk} is also supported. No matter what protocol is used, We have seen from our previous chapters that 
 using Zero Copy yields superior performance and efficient utilisation of resources. The new protocol should minimise the number of copies involved before transmission.
@@ -136,7 +134,8 @@ of data within the server before migration unless significant changes are made t
 \item {\em Parallelise or pipeline} steps in migration; We saw from our analysis that the sequential nature of the migration is detrimental to it's performance. A new protocol should be 
 able to parallelise the transfer of data as well as replaying at the receiver in order to attain maximum performance. 
 
-\end{itemize}
+\end{myitemize}
+\newpage
 
 \input{fig-migration-current}
 \input{fig-bottlenecks}

@@ -105,7 +105,6 @@ listed in the descriptor. The PCIe messages are posted writes, which means they
 are asynchronous from the CPU's perspective. Even though PCIe latencies are much
 higher than DRAM access, the CPU does not stall when posting descriptors, so the
 exchange is very low overhead.
-\newpage
 \subsection{Structural differences in Zero Copy and Copy Out}
 The key difference between Zero Copy and Copy Out is shown with the wide, red
 arrows in Figure~\ref{fig:mem-regions}. Copy Out works much like conventional
@@ -165,19 +164,21 @@ The measurements in this thesis only include data collected after the optimisati
 % Should we put the tx buffers in huge pages?
 % Knowing measured peak mem bw of our machines would be good, but it looks like
 %   not all channels are populated?
+We ran numerous experiments profiling a modern NIC to expose it's performance characteristics. 
 We wanted to show the impact of NIC features on large databases which often have to 
-transmit significant amounts of data while responding to range scans or reconfiguring clusters. 
+transmit significant amounts of data while responding to range scans or reconfiguring clusters.
+We set up our experiments that mimic the data transmitting module of an in-memory database. 
 We evaluated various choices in the design space that a database designer encouters while developing 
 a database that is NIC friendly. We set up the following experiments and found compelling 
 evidence that will aid in co-designing databases for new hardware.
-\begin{itemize}
+\begin{myitemize}
 \item Comparison of various RDMA primitives over Mellanox Infiniband verbs library; we find that \cpp{SEND} is best suited for returning scattered records.
 \item Comparison of different arrangements of small 128~B records to evaluate how to best exploit S/G DMA; we find Zero Copy, {\em when carefully tuned} offers better throughput and efficency. We outline precisely when Copy Out can be faster 
 and more efficient than Zero Copy which could be exploited for small gains.
 \item Similar comparison on larger 1024~B records; we observe Zero Copy is a clear winner in terms of throughput and efficiency across the board.
 \item Comparison of CPU cycles spent per transmitted byte; overheads at transmissions $<$384~B makes Copy Out more efficient while Zero Copy is a clear winner for larger transmissions and larger records.
 \item A breakdown of CPU overhead in transmission; we see that the additional \memcpy ~dominates CPU overheads to the tune of 95~\%, transmission overhead for smaller transmissions are conspicous.
-\end{itemize}
+\end{myitemize}
 
 
 
@@ -211,8 +212,6 @@ our experiments, the reach of the NIC's virtual-to-physical mapping is
 sufficient, and hugepages have no impact on the results. To err on the side of caution, 
 we did enable 1~GB hugepages and registered those with the NIC to make sure we 
 avoid as many TLB misses as possible.
-\newpage
-
 \subsection{Comparing RDMA modes for transmission}
 We started out by getting measurements of transmission speeds using RDMA verbs.  
 READ and WRITE are the most commonly employed RDMA verbs because they are one sided
@@ -227,6 +226,7 @@ One issue we uncovered was that one-sided RDMA verbs are not well positioned to
 take advantage of the Zero Copy paradigm since it only supports a remote read 
 from a registered location from the other side. READ also requires a secondary notification mechanism 
 to work in practice negating the advantage of being one sided.
+
 Others have argued for the use of one-sided RDMA for key-value stores~\cite{pilaf} and even for accelerating 
 range queries~\cite{zerocopyrangequery}. We estimate that these would be suitable for large transmissions only when there is a strong 
 correlation of queries with resulting values that are contigous in memory. In the general case, the receiver 
@@ -237,9 +237,15 @@ Figure~\ref{fig:200B_transrate} shows a comparison of transmission
 performance of different verbs transmitting 200 Bytes(B) records varying the number of records
 that could be transmitted at a time for various operations. The green dot shows
 the performance for RDMA READ which is also unfair since RDMA READ can only transmit from a single remote virtual address at a time.
-The blue dot shows RDMA write performance using a full scatter/gather list. This tells us that WRITE and SEND will offer 
+
+The blue dot in Figure~\ref{fig:200B_transrate} shows RDMA write performance using a full scatter/gather list. This tells us that WRITE and SEND will offer 
 similar performance. Transmission using larger data sizes such as 1000~B recoreds showed a clearer benefit of using \cpp{SEND} than 
-using 200~B records as shown in Figure~\ref{fig:1000B_transrate}.
+using 200~B records as shown in Figure~\ref{fig:1000B_transrate}. 
+
+These figures which compare the performance of RDMA verbs implemented 
+on top of ibverbs library draws interesting conclusions about use of RDMA for transmitting small and scattered records in memory. 
+It is interesting to note that the library could provide RDMA READ could leverage scatter gather entries retaining all the benefits 
+of a one-sided operation in theory.
 \input{takeaway-verbs}
 
 \subsection{Record Sizes}
@@ -603,13 +609,13 @@ throughput which it slowly recovers from as we increase the number of S/G entrie
 \input{takeaway-impact-pciebw}
 
 \section{Conclusions}
-\begin{itemize}
+\begin{myitemize}
 \setlength\itemsep{0.5em}
 \item For large sets of small records, Copy Out offers better performance; if your record sizes are larger, use Zero Copy.
 \item Zero Copying larger records will give you good memory bandwidth utilisation.
 \item DDIO compensates for some of the memory bandwidth cost to Copy Out data.
 \item Careful tuning of parameters is required if you were to use Zero Copy; PCIe induced memory accesses may explain the anomalous throughput increase for Copy Out. 
-\end{itemize}
+\end{myitemize}
 
 \input{fig-mem-regions}
 \input{config}

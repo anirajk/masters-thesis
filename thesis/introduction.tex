@@ -55,7 +55,7 @@ We realized the importance of the making data transfer NIC friendly and set out 
 transmission performance and system stability. We wanted to enumerate and underline the challenges in designing keeping NIC as a first class citizen.
 We specifically looked at five factors that make it especially challenging to design NIC-friendly
 database engines:
-\begin{itemize}
+\begin{myitemize}
   \item {\em Zero Copy} DMA engines reduce server load for transferring large data
     blocks, but large, static blocks are uncommon for in-memory databases,
     where records can be small, and update rates can be high.
@@ -76,7 +76,7 @@ database engines:
   \item {\em Direct Cache Access}, now rephrased as Intel\textregistered Data Direct I/O~\cite{ddio},
       provide direct access to last level cache from an I/O device. This effect
       impacts the consumed memory bandwidth significantly.
-\end{itemize}
+\end{myitemize}
 
 
 These factors make advanced NIC DMA difficult to use effectively. We set out to explore data 
@@ -113,7 +113,7 @@ throughput while operating at latencies that are 1000-10000$\times$ higher than 
 We wanted our protocol to strike a balance between fast operation and minimal disruption without drastically affecting
 the latency and throughput available for the system. The following key principles guide our design for fast and 
 efficient migration for RAMCloud:
-\begin{itemize}
+\begin{myitemize}
 \item{\textbf{High Throughput}}: State of the art systems do migrations at 5~-~10 MB/s. Our proposed protocol
 should result in 100-1000x faster data migrations. We aspire to have rapid reconfiguration that will 
 help with enable frequent reconfiguration on live clusters.
@@ -126,20 +126,20 @@ memory bandwidth are paramount. Our \linebreak protocol should make the most eff
 RAMCloud also doesn't need to pre-partition data for normal operations. Most other systems diverge from this 
 approach to make data movement faster. An ideal solution should provide uniform access latency and high DRAM utilisation 
 without needing early partitioning decisions.
-\end{itemize}
+\end{myitemize}
 
 We evaluate the current state of the art approaches to migration in RAMCloud storage system.
 We lay out some experiments that highlight issues with current approaches and motivates our new 
 fast and efficient migration protocol. To motivate and demonstrate our approach, we explore
 the following experiments:
-\begin{itemize}
+\begin{myitemize}
 \item Measuring impacts of {\em locality of data} in RAMCloud; we set up an experiment to show how 
 the locality of data affects the collective load and throughput on the system.
 \item {\em Factor analysis of migration bottlenecks}; RAMCloud's current migration protocol, while orders 
 of magnitude faster than existing state of the art protocols, leaves more to be desired of in terms of achievable perforamnce.
 We analyse the various bottlenecks in the current protocol and the performance benefit we gain by enumerating savings on avoiding 
 each one.
-\end{itemize} 
+\end{myitemize} 
 
 \section{Contributions}
 \label{sec:contributions}
@@ -163,7 +163,7 @@ until now. In the light of our discoveries, we make concrete suggestions on how
 The following are the main contributions from this work which supports and provides
 evidence for the thesis statement in the beginning of this section.
 
-\begin{itemize}
+\begin{myitemize}
 
   \item{\textbf{Evaluation of Influence of Modern NICs on data layout}}: To our knowledge,
    this is the first published research exploring the scatter gather DMA engine of the NIC 
@@ -171,7 +171,7 @@ evidence for the thesis statement in the beginning of this section.
    We profiled the transmit performance of a modern NIC in depth to show the influence of NICs on data layout. 
    We have found a few arguments against the blind use of the new kernel bypass approach considering
    the overhead of concurrency management and difficulty of implementation.
-   \begin{itemize}
+   \begin{myitemize}
 
     \item Developed a microbenchmark to assess performance of Infiniband verbs.
 
@@ -180,7 +180,7 @@ evidence for the thesis statement in the beginning of this section.
 
     \item Compared the performance of Zero Copy and Copy Out mechanisms of \linebreak
     transmitting data from an RDMA capable modern NIC.
-   \end{itemize} 
+   \end{myitemize} 
 
     \item{\textbf{Design for client assisted materialisation for better transmit performance}}: Our measurements inform a new design for migration in RAMCloud, but it also has impacts on other database operations.
      While evaluating the results, we saw that there are certain structures and circumstances that can uniquely take advantage of the hardware limited scatter gather entries of a modern NIC.
@@ -191,11 +191,11 @@ evidence for the thesis statement in the beginning of this section.
     \item{\textbf{Evaluation of server impact during transmission}}: We measure performance counters outside of CPU cores that reveal the impact on memory bandwidth,
      DDIO traffic and Peripheral Component Interconnect Express (PCIe) traffic in a system that's churning out heavy responses. This is the first study to our knowledge that does an 
      in-depth analysis of server impact using uncore events for large data transmissions near line rate in a kernel bypass capable modern NIC.
-     \begin{itemize}
+     \begin{myitemize}
      \item Profiled the number of cache lines read and written (including the pre-fetcher effect) to measure consumed memory bandwidth.
      \item Profiled the number of DRAM accesses from Last Level Cache (LLC) that results from DDIO.
      \item Profiled the number of DRAM accesses from Last Level Cache (LLC) that results from PCIe errors.
-     \end{itemize}
+     \end{myitemize}
 
 
   \item{\textbf{Experiments to motivate fast and efficient reconfiguration}}: This is the first assessment of data migration on SLAs for a high performance,
@@ -209,5 +209,5 @@ evidence for the thesis statement in the beginning of this section.
    We propose the basics of a \linebreak migration protocol that will effectively eliminate these bottlenecks and pave the way
    forward for fast and efficient transfer of huge chunks of data.
 
-\end{itemize}
+\end{myitemize}
 

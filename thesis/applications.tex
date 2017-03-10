@@ -85,8 +85,6 @@ All references to pages are translated through a mapping table that maps page
 numbers to virtual addresses. This allows pages to be relocated in memory, and
 it allows the contents of a page to swapped with a single atomic
 compare-and-swap (CAS) operation.
-\newpage
-
 \section{Delta Records}
 \label{sec:deltarecords}
 One of the key innovations of the Bw-Tree is its use of {\em delta records},
@@ -147,9 +145,8 @@ our evalutation that highly discontinuous data can slow
 transmission throughput but that aggressive consolidation is inefficient; delta
 records can dramatically reduce consolidation overheads while keeping records
 sufficiently contiguous to make the NIC more efficient.
-
 Overall, we seek to answer these key questions:
-\begin{itemize}
+\begin{myitemize}
 \item
 When should records be transmitted directly from a Bw-Tree? Are there cases
 where explicitly copying records into a transmit buffer is preferable to Zero Copy?
@@ -159,7 +156,7 @@ clients and to minimize database server load?
 \item
 How does Zero Copy impact state reclamation in the Bw-Tree? Might long transmit
 times hinder performance by delaying garbage collection of stale records?
-\end{itemize}
+\end{myitemize}
 
 
 
@@ -206,10 +203,9 @@ client. That is, the server collects and transmits the precise set of records
 in the correct order, either via Copy Out or Zero Copy. Another option is to
 transmit base pages along with their deltas and have clients merge the results.
 This approach is attractive because it organically fits with the design of the
-Bw-Tree and it suits the DMA engine of the NIC well.  The NIC can transmit the
+Bw-Tree and it suits the NIC's DMA engine well.  The NIC can transmit the
 large contiguous base pages (16~KB, for example) with little CPU overhead.
-It also eliminates Copy Out for small records but avoids the transmission
-throughput ceiling longer gather lists suffer. %(\ref{Chnics-sec:zero-copy-tput}).
+It also eliminates Copy Out for small records avoiding the ceiling of transmission throughput. %(\ref{Chnics-sec:zero-copy-tput}).
 Merging records on the client side is cheap; the server can even append them to
 the response in a sort order that matches the record order in the base page for
 efficient $O(n)$ iteration over the records that requires no copies or sorting.
@@ -412,7 +408,7 @@ this approach would work even for hybrid layouts~\cite{hyrise-hybridstores} whic
 column oriented formats varying the width of columns according to the type of workload. Figure ~\ref{fig:rowstore-colstore}
 shows how row stores and column stores could transmit data using Zero Copy using a client assisted design.
 In practice, there are numerous challenges associated with this design:
-\begin{itemize}
+\begin{myitemize}
 \item {\em Client co-operation}; this scheme of transmitting results would need smart clients which are 
 capable of materialising data given the encoding scheme and the columns. We assume that the client 
 has enough resources to spend in finessing the results.
@@ -421,17 +417,17 @@ from Zero Copy. We also know that the compression schemes in column stores can l
 As a result, queries with low selectivity are a natural fit for Zero Copy.
 \item {\em Compressed metadata}; the client assisted design would need the encoding to be transmitted
 along with the results, this would need efficient compression and lean data structures for metadata.
-\end{itemize}
+\end{myitemize}
 There needs to be further evaluation of how we can extract maximum performance and efficiency from 
 a server equipped with a modern NIC.
-
+\newline
 \input{takeaway-bwtrees}
 
 \section{Conclusion}
 Zero Copy and Copy Out provides different optimisations for scattered, small records. A hybrid approach 
 which leverages the high throughput that we obtain as a result of pre-assembling scattered records and 
 using Zero Copy to transmit will yield good transmission throughput without consuming a lot of memory bandwidth.
-\begin{itemize}
+\begin{myitemize}
 \item With the assumption of {\em co-operative clients} and queries with low selectivity, we can continue 
 to use Zero Copy and get better results while dealing with small, scattered records which are common in in-memory databases.
 \item Advanced structures such as the Bw-Tree which allows no update in place and complete lock and latch freedom 
@@ -439,9 +435,8 @@ can be exploited for it's suitability with the NICs. Further evaluation is requi
 \item Column stores could also benefit from the hybrid approach; materialising results in row-order makes Zero Copy 
 more complicated in modern NICs and one possibility is to send the encoding metadata along with the results with client assisted 
 materialisation.
-\end{itemize}
-
-
+\end{myitemize}
+\newpage
 \input{fig-bw-tree}
 \input{fig-deltas-tput}
 \input{fig-deltas-membw}

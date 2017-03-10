@@ -52,4 +52,9 @@
 \tolerance=2000 
 \emergencystretch=10pt
 
-
+\newenvironment{myitemize}
+{ \begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}     }
+{ \end{itemize}                  } 
