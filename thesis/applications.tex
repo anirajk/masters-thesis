@@ -11,12 +11,12 @@ We have already established that 128~B records show a more realistic depiction o
 and that seems to be the growing consensus in the community~\cite{fb-memcache,fb-workload}. 
 
 At first, the throughput results from comparing Zero Copy and Copy Out for 128~B 
-records might tempt us to think that it's always better to use a Copy Out get maximum throughput with smaller records.
+records might tempt us to think that it is always better to use a Copy Out get maximum throughput with smaller records.
 The complications of implementation and the cost of overheads are also rampant when using small records with Zero Copy.
-The bigger problem with Copy Out might get overlooked in the face of all these issues sorrounding Zero Copy.
+The bigger problem with Copy Out might get overlooked in the face of all these issues surrounding Zero Copy.
 While transmitting at around 5.9~GB/s(near line rate for the Connect-X3\textregistered NIC),
 we saw that the memory pressure on the system is close to 12~GB/s which is half of what we evaluated our server's total available memory bandwidth. 
-This implies that network transmission will bottlenecks available memory bandwidth for doing useful work such as processing data in a hybrid or analytical workload.
+This implies that network transmission will bottleneck available memory bandwidth for doing useful work such as processing data in a hybrid or analytical workload.
 
 On-Line Analytical Processing (OLAP) and hybrid workloads composed of transactional and analytical queries have fuelled a renewed interest in column stores~\cite{cstore,cstorevsrowstore} in recent years. 
 Column stores are uniquely positioned to take advantage of the NIC because of their layout and compression benefits.
@@ -45,8 +45,8 @@ the Bw-Tree~\cite{bw-tree} which is their primary indexing structure for SQL Ser
 Bw-Tree is a highly performant, ordered index employing lock and latch free concurrency and effective utilization of caches in 
 modern multi-core processors. In the following sections, we explore how a client assisted design involving a no-update-in-place 
 structure such as Bw-Trees can take advantage of Zero Copy and gain maximum throughput 
-without much system impact. We discuss how it's lock freedom and delta records makes it 
-particulary suitable to exploit Zero Copy in the following sections. We then present
+without much system impact. We discuss how it's lock freedom and delta records make it 
+particularly suitable to exploit Zero Copy in the following sections. We then present
 our evaluation of transmissions involving small records tacked on to bigger base records
 to show the gains in throughput without consuming more memory bandwidth. 
 
@@ -116,14 +116,14 @@ The global epoch is periodically incremented. Memory for an unlinked object can 
 recycled when no thread belongs to its epoch or any earlier epoch.
 The epoch mechanism gives operations consistent reads of the
 tree, even while concurrent updates are ongoing. However, there is a
-cost; if operations take a long time they remain active within their epoch and
+cost; if operations take a long time, they remain active within their epoch and
 prevent reclamation of memory that has been unlinked from the data structure.
 
 
 \section{NIC Implications for Bw-Tree}
 Lock-freedom has major implications on the in-memory layout of the
 Bw-Tree. Most importantly, readers (such as the NIC DMA engine) can collect a
-consistent view of the tree without interference from writers, and holding that
+consistent view of the tree without interference from writers, and hold that
 view consistent cannot stall concurrent readers or writers to the tree.  This
 natural record stability fits with the Zero Copy capabilities of modern NICs;
 because the NIC's DMA engine is oblivious to any locks in the database engine,
@@ -141,7 +141,7 @@ small delta records that are scattered throughout memory.
 A database might save CPU and memory bandwidth by more
 aggressively deferring or even eliminating consolidation of records into
 contiguous regions of memory or pages. We show in
-our evalutation that highly discontinuous data can slow
+our evaluation that highly discontinuous data can slow
 transmission throughput but that aggressive consolidation is inefficient; delta
 records can dramatically reduce consolidation overheads while keeping records
 sufficiently contiguous to make the NIC more efficient.
@@ -350,7 +350,7 @@ efficiency of Zero Copy with the performance of Copy Out.
 % Copy out max: 11596
 % Delta max: 6226
 Figure ~\ref{fig:deltas-membw} shows the total consumed memory bandwidth while 
-transmitting records. It's interesting to note that regardless of the variation in 
+transmitting records. It is interesting to note that regardless of the variation in 
 delta record sizes, Memory bandwidth stays roughly the same. Comparing Copy Out 
 transmissions of similar size, we get a 46\% reduction in the consumption of 
 Memory bandwidth in the system. Another interesting factor is that if the transmission 
@@ -364,7 +364,7 @@ transmitting large amounts of data in a modern NIC.
 \subsection{Impact on Garbage Collection}
 
 Using Zero Copy tightly couples the higher-level database engine's record
-allocation and deallocation, since records submitted must remain stable until
+allocation and deallocation since records submitted must remain stable until
 transmission completes. Fortunately, existing mechanisms in systems that avoid
 update-in-place accommodate this well, like Bw-Tree's epoch mechanism described
 in Section~\ref{sec:bwtree-intro}. Normally, the Bw-Tree copies-out returned records.
@@ -393,7 +393,7 @@ to use Run-Length Encoding, Dictionary Encoding, Bit-Vector Encoding, and heavie
 like Lempel-Ziv Encoding for yielding better compression which is one of the many value 
 propositions of using a column-oriented layout. 
 
-We observed in the previous  sections, Zero Copy offers promising performance if 
+We observed in the previous  sections that Zero Copy offers promising performance if 
 we had stable entries and used Zero Copy to transmit the results while responding to a range query. 
 However, the fundamental problem lies in the fact that end-users expect query processing and analytics on data 
 to materialize results in row-order. It has been argued before that early materialization of data
@@ -410,7 +410,7 @@ shows how row stores and column stores could transmit data using Zero Copy using
 In practice, there are numerous challenges associated with this design:
 \begin{myitemize}
 \item {\em Client co-operation}; this scheme of transmitting results would need smart clients which are 
-capable of materialising data given the encoding scheme and the columns. We assume that the client 
+capable of materializing data given the encoding scheme and the columns. We assume that the client 
 has enough resources to spend in finessing the results.
 \item {\em Low selectivity in queries}; we have seen packing more data yields more savings and performance 
 from Zero Copy. We also know that the compression schemes in column stores can limit transfer sizes. 
@@ -424,7 +424,7 @@ a server equipped with a modern NIC.
 \input{takeaway-bwtrees}
 
 \section{Conclusion}
-Zero Copy and Copy Out provides different optimisations for scattered, small records. A hybrid approach 
+Zero Copy and Copy Out provides different optimizations for scattered, small records. A hybrid approach 
 which leverages the high throughput that we obtain as a result of pre-assembling scattered records and 
 using Zero Copy to transmit will yield good transmission throughput without consuming a lot of memory bandwidth.
 \begin{myitemize}
@@ -432,9 +432,9 @@ using Zero Copy to transmit will yield good transmission throughput without cons
 to use Zero Copy and get better results while dealing with small, scattered records which are common in in-memory databases.
 \item Advanced structures such as the Bw-Tree which allows no update in place and complete lock and latch freedom 
 can be exploited for it's suitability with the NICs. Further evaluation is required for these to work in practice.
-\item Column stores could also benefit from the hybrid approach; materialising results in row-order makes Zero Copy 
+\item Column stores could also benefit from the hybrid approach; materializing results in row-order makes Zero Copy 
 more complicated in modern NICs and one possibility is to send the encoding metadata along with the results with client assisted 
-materialisation.
+materialization.
 \end{myitemize}
 \newpage
 \input{fig-bw-tree}
