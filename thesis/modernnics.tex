@@ -538,22 +538,22 @@ can conclude from this figure that there is a linear correlation between transmi
 Figure~\ref{fig:membw-ratio} shows the ratio of Memory pressure exerted per bytes transmitted. We can clearly see the value proposition of 
 Zero Copy mode of transmitting here. For Zero Copy, We can see that the system is consistent and predictable and only incurs a small overhead of 
 copying descriptors other than DMAing the data onto the NIC. The cost of the descriptors is evident from the fact that 128~B records show 
-a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultuous across varying number of records, 
- but still shows Zero Copy as the clear winner. It is interesting to note that transmitting a single record via Copy Out, 
+a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultuous across varying number of records 
+ but, still shows Zero Copy as the clear winner. It is interesting to note that transmitting a single record via Copy Out, 
  introducing an unnecessary copy makes your transmission 3x less efficient in terms of memory bandwidth utilization.
   If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
  2X memory bandwidth cost on copying out 1024~B records. Like in the case of smaller records, the additional copy reduces the 
- transmission efficiency more in the case of small number of records.
+ transmission efficiency more in the case of a small number of records.
 
 \input{takeaway-impact-membw-ratio}
 
 \subsection{DDIO traffic}
 Newer generation of Intel Processor's have a portion of their Last Level Cache dedicated for I/O. This was initially called Direct Cache Access 
 and more recently named DDIO. This changes our perception of memory consumption quite a bit. Network transmission occurs at this part of the Last Level Cache 
-and even the destination for a packet over the network becomes this dedicated portion of LLC. This has significant impact in the number of LLC misses the system 
+and even the destination for a packet over the network becomes this dedicated portion of LLC. This has a significant impact in the number of LLC misses the system 
 has to take while dealing with network traffic. The key limitation to DDIO is that usually it's allocated as only 10\% of LLC which is around 2~MB in a modern system. 
-But as long as a single transmission doesn't surpass this size, we can expect higher efficiency in transmission due to DDIO. In all of our experiments, we were doing transmission of 
-at most 32 records of 1~KB each and hence the effect of DDIO will be visible in our benchmarks. To measure the 
+However, as long as a single transmission doesn't surpass this size, we can expect higher efficiency in transmission due to DDIO. In all of our experiments, we were doing transmission of 
+at most 32 records of 1~KB each, and hence the effect of DDIO will be visible in our benchmarks. To measure the 
 effect of DDIO, we measured the number of bytes read from memory by LLC due to misses from the DDIO marked region. 
 
 Figure~\ref{fig:ddiobw} shows the reads issued to the memory controller from LLC due to misses from the  DDIO region. We can clearly see that when we use Copy out 
@@ -594,15 +594,15 @@ that this is phenomenon is completely specific to the NIC. In Figure~\ref{fig:ov
 
 Figure~\ref{fig:pciebw} shows the read requests issued by LLC because of misses from PCIe traffic. For 128~B records, we can clearly see that after 8 records, this metric is 
 nearly saturated and at 16 records, the number of bytes read peaks causing the dip in transmit performance. The memory reads due to PCIe traffic is saturated at this point and 
-we can see a similar trend for 1024~B records too. Since larger records packs more data per record, the dip in transmit performance is not evident in that case. The other interesting 
-thing to realise is that for Copy Out, the amount of memory traffic induced by PCIe errors follows a similar trend as transmission throughput which is expected since 
+we can see a similar trend for 1024~B records too. Since larger records pack more data per record, the dip in transmit performance is not evident in that case. The other interesting 
+thing to realize is that for Copy Out, the amount of memory traffic induced by PCIe errors follows a similar trend as transmission throughput which is expected since 
 NIC itself is connected via PCIe interface. Our intuition is that either the prefetcher mispredicts or the maximum possible size of a PCIe transaction (256~B) causes the jump 
 and the overhead is compensated by more and more data transmitted as we get to bigger and bigger transmissions. Since 1024~B records also show a slight dip in transmission performance 
 around 16 records, the DMA overhead is less evident there since we are already operating at a higher throughput owing to large record sizes.
 
 
 \subsection{PCIe induced DRAM accesses and Throughput}
-Figure ~\ref{fig:pciebw-ratio} shows the ratio of DRAM accesses induced by PCIe traffic to the obtained transmission throughput for various data points. When we transmit 16 smal records (2048~B),
+Figure ~\ref{fig:pciebw-ratio} shows the ratio of DRAM accesses induced by PCIe traffic to the obtained transmission throughput for various data points. When we transmit 16 small records (2048~B),
 the PCIe effectiveness goes down and the ratio peaks. This is strictly in line with transmission throughput shown in Figure~\ref{fig:zero-copy-tput} where at 2048~B, we see a sharp drop in transmission 
 throughput which it slowly recovers from as we increase the number of S/G entries per transmission. There is an inverse correlation between the ratio of PCIe induced DRAM accesses and transmission throughput.
 \newline
