@@ -2,7 +2,7 @@
 \chapter{Drawing Lessons from Modern NICs}
 \label{chap:modernnics}
 Network Interface Cards have grown complex and present opportunities and  challenges as part of a modern distributed system.
- It is imperative that today's database system designer considers the network in design decisions. Previous research for optimising databases were focussed more on processing time spent on a database query~\cite{dbmsproctime},
+ It is imperative that today's database system designer considers the network in design decisions. Previous research for optimizing databases were focussed more on processing time spent on a database query~\cite{dbmsproctime},
   but today, most of the end-to-end latency while processing a query is spent in the  networking stack~\cite{ramcloudosr}.
 Since in-memory databases became popular and datasets started to fit in memory, the spinning disks 
 which were the primary I/O bottlenecks before aren't anymore. The bulk of I/O overhead in a distributed storage system today is in network transmission.

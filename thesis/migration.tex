@@ -3,18 +3,18 @@
 \chapter{NIC Aware Reconfiguration}
 \label{chap:migration}
 We have seen that the current generation of NICs are capable of transferring Gigabytes of 
-data per second in latencies of the order of a few microseconds and we have reasons to believe 
+data per second in latencies of the order of a few microseconds. We have reasons to believe 
 that the next generation of networking hardware will have the ability to process 
 hundreds of millions of messages per second at bandwidth of the order of tens of Gigabytes per 
-second and sub microsecond latencies\cite{cx6}.
+second and sub-microsecond latencies\cite{cx6}.
 We saw from the previous chapters how the nuanced performance characteristics of 
 a modern NIC will influence overall transmit performance and server resource utilization 
-for large data transfers such as responses to range scans. Yet another pressing 
+for large data transfers such as responses to range scans. Another pressing 
 concern for a modern In-memory database operating at scale is quick reconfiguration. 
 Since DRAM is the most expensive resource in a modern cluster, efficient rebalancing 
 involves fast reconfiguration that is frugal on resources and keeps the impact on their 
 SLAs minimal. Informed with our lessons about the NIC, it is reasonable to assume that protocols for reconfiguration 
-today can benefit from these optimisations and armed with the changes for proposed protocol, data migration might come 
+today can benefit from these optimizations and armed with the changes for proposed protocol, data migration might come 
 closer to what the hardware is capable of doing today.
 
 In this Chapter, we discuss the state of the art migration protocols and their 
@@ -37,7 +37,7 @@ key value stores such as Albatross~\cite{albatross} which provides unavailabilit
 as short as 300ms, Zephyr~\cite{zephyr} which does on-demand pulls and asynchronous data 
 pushes to minimize failed transactions and unavailability for migration while operating 
 at transactional latencies of 50~ms. Squall~\cite{squall} went further with fine grained 
-partitioning with optimisations such as pre-fetching. Squall also offers minimal overhead 
+partitioning with optimizations such as pre-fetching. Squall also offers minimal overhead 
 to their transactional latencies which are of the order of tens of milliseconds and migrates 
 data overall at the rate of around 5~MB/s (Refer Squall paper, Figure 10 a). While these efforts offer reconfiguration speeds 
 better than other systems and minimal addition to their millisecond latencies, that is far 
@@ -50,7 +50,7 @@ storage servers cannot offer migration performance order of magnitudes better th
 \section{Migration in RAMCloud}
 We saw from previous section what the latest reconfiguration protocols are capable of doing and how they can only 
 offer 1000$\times$ less throughput than the latestoperating under millisecond latencies. There is a different class of systems~\cite{ramcloud,farm,rdmabillion,herd} that 
-were developed recently which optimises for end-to-end latency and has the ability to perform millions of operations 
+were developed recently which optimizes for end-to-end latency and has the ability to perform millions of operations 
 per second per server. RAMCloud~\cite{ramcloud} is a prime example of such a system which promises median read latencies 
 of 5\textmu~s and responds to workloads upto a million operations per second. These characteristics result from the fact that 
 these systems were designed from ground up keeping low latencies in mind and any significant disruption to their operating 
