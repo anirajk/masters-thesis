@@ -12,19 +12,19 @@ without disrupting their primary obligations.''
  
 
 We have found conclusive evidence for this statement by evaluating the transmit performance 
-of a NIC and the resource utilization of a server while transfering large amounts of data. We 
+of a NIC and the resource utilization of a server while transferring large amounts of data. We 
 made numerous recommendations and observations from benchmarking the NIC. We presented a client-assisted 
-approach which will get better throughput without compromising resources. We analysed the effect of collocating
+approach which will get better throughput without compromising resources. We analyzed the effect of collocating
 data in RAMCloud and benchmarked the key bottlenecks in the current migration protocol. We also proposed a set of design 
 guidelines for a new migration protocol for RAMCloud drawing lessons from observing the NIC closely while it was 
 transferring gigabytes of data. 
 
 While evaluating the various RDMA primitives, we found that one-sided RDMA verbs, though they offload destination CPU, 
-require additional acknowledgement mechanisms. We also found that client initiated \cpp{READ}s cannot use the 
+require additional acknowledgment mechanisms. We also found that client initiated \cpp{READ}s cannot use the 
 scatter gather DMA engine effectively. We arrived at the conclusion that \cpp{SEND} primitives 
 are the most suited for returning scattered set of records.
 
-We analysed the transmission throughput of Zero Copy and Copy Out for 128~B records and found that Bigger records can saturate the NIC.
+We analyzed the transmission throughput of Zero Copy and Copy Out for 128~B records and found that Bigger records can saturate the NIC.
 Zero Copy is significantly faster for bigger chunks. Zero Copy is also limited by the length of S/G list for small 128~B records.
 We also found that Copy Out can perform better if you have more records. We arrived at the following conclusion that 
 unless your records are small and scattered, always use Zero Copy, for small and scattered records, you might need to tune your layout 
@@ -41,12 +41,12 @@ records, the pressure on the memory controller is approximately 2X the transmiss
 the server consumed half of all available memory bandwidth. If memory bandwidth is not an expendable resource, we ascertain that the designer should 
 always use Zero Copy.
   
-Intel\textregistered's recent micro-architectures has support for DDIO which treats LLC as the source and destination for I/O transfers. This has significant impact on 
+Intel\textregistered's recent micro-architectures have support for DDIO which treats LLC as the source and destination for I/O transfers. This has a significant impact on 
 the memory pressure exerted to the system, especially for Copy Out. DDIO paints a slightly different picture favoring Copy Out since the cost of pre-fetching the data is 
 paid up front, we don't incur additional misses from DDIO. This is less relevant in the bigger scheme of things and Zero Copy still wins in terms of total 
 consumed memory bandwidth in the server
   
-The transmission throughput anomaly where throughput of Zero Copy is limited while transferring a large set of small scattered records is best explained to 
+The transmission throughput anomaly where the throughput of Zero Copy is limited while transferring a large set of small scattered records is best explained to 
 our knowledge with PCIe errors tapering off with 16 records per transmission.
  
 We argued for a client assisted design with no-update-in-place records that can gain the benefits of Zero Copy while retaining the transmission throughput of larger records. 
@@ -65,20 +65,20 @@ with a full implementation of such a structure. It should also be mentioned that
 performance characteristics.
 \item Evaluate impact on column stores;we discuss the possible impact of column stores and how the row-oriented result format might cause problems doing Zero Copy. We need 
 to actually measure the transmit performance and resource impact for a complete implementation of a column oriented, in-memory database.
-\item Analyse throughput anomaly for small records in depth;while DRAM traffic resulting from PCIe errors correlates with the performance dip observed in Zero Copy, 
+\item Analyze throughput anomaly for small records in depth; while DRAM traffic resulting from PCIe errors correlates with the performance dip observed in Zero Copy, 
 they don't explain why this happens for exactly when we transmit 2048~B (16 records). There needs to be a more detailed analysis around this dimension.
-\item Build an actual migration protocol for RAMCloud;the set of guidelines provided in the thesis only serves as a reference point, there would be significant challenges 
-in actual implementation of a migration protocol for a complex system such as RAMCloud where we may also need to generalise the protocol for older network hardware for backward 
+\item Build an actual migration protocol for RAMCloud; the set of guidelines provided in the thesis only serves as a reference point, there would be significant challenges 
+in the actual implementation of a migration protocol for a complex system such as RAMCloud where we may also need to generalize the protocol for older network hardware for backward 
 compatibility.
 \item Evaluation of a wider variety of NICs; we based all of our experiments on Mellanox Infiniband ConnectX-3\textregistered NICs, At the time of writing, Mellanox has already 
 released plans of releasing NICs that offer 4$\times$ maximum throughput and latencies of a few hundred nanoseconds. The scatter gather length of 32 was an important constant in 
-all our observations, it would be interesting to note how the behaviour of the system will change with a scatter-gather list of a different length. We also need to draw parallel 
-conclusions for other advanced NICs which may not explicitly support S/G DMA like the mellanox hardware.
+all our observations, it would be interesting to note how the behavior of the system will change with a scatter-gather list of a different length. We also need to draw parallel 
+conclusions for other advanced NICs which may not explicitly support S/G DMA like the Mellanox hardware.
 \end{enumerate}
 
 \section{Lessons Learned}
 We started out to measure the impact of data layout and pre-aggregation on network transmit performance. 
-It was rewarding to explore the complexities of handling kernel by-pass over the infiniband library and 
+It was rewarding to explore the complexities of handling kernel by-pass over the InfiniBand library and 
 scoreboarding in a multi threaded environment to arrive at the right measurements for transmission.
 It was also challenging to profile the code for additional metrics reflecting system resource consumption 
 without disrupting the actual transmissions. 
@@ -87,14 +87,14 @@ I learned a lot while developing many portions of this benchmark. My most import
 is the virtue of having truly repeatable experiments. Having hardware environments which are set up to encourage 
 repeatable research and the seemingly disproportionate amount of time spent on developing the tooling of the 
 framework certainly helped in this regard, especially for comparing results after code modifications and root-cause analysis.
-I got first hand experience in concurrent programming, use of Infiniband verbs, RDMA and accurate cycle counting 
+I got first-hand experience in concurrent programming, use of InfiniBand verbs, RDMA and accurate cycle counting 
 for profiling wall time. I have significantly improved my scripting and documentation skills over the course of this work. 
-I have also learned valuable lessons on team work and collaboration and received a lot of help from my 
+I have also learned valuable lessons on teamwork and collaboration and received a lot of help from my 
 advisor and peers over the course of the work. I believe the guidelines that we drew from this work will 
 enable researchers of the future with better performing in memory databases for large transfers. 
 
 \section{Parting thoughts}
-Today's database designer has to navigate a complex, multi-dimensional space of trade offs and network transmission 
+Today's database designer has to navigate a complex, multi-dimensional space of trade-offs and network transmission 
 is a critical aspect of performance for the distributed, scale out stores of tomorrow. Smart layout of data and  
 co-designing for hardware are paramount in extracting maximum network performance without consuming 
 unnecessary system resources. The use of Zero Copy offers better transmission throughput and memory bandwidth utilization for 
