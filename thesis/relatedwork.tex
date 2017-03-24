@@ -89,14 +89,14 @@ a decoupled server I/O architecture using Programmable I/O (PIO) and re-architec
 memory systems for network transfers~\cite{hicamp}. Key value stores
 such as HERD~\cite{herd} and MICA~\cite{mica} and systems that provide more complex
 data models such as RAMCloud~\cite{ramcloud} use RDMA effectively and there have been 
-published guidelines to maximise performance for dispatch heavy workloads~\cite{rdma}.
+published guidelines to maximize performance for dispatch heavy workloads~\cite{rdma}.
 
 \section{Data Migration}
 Research efforts focussing on reconfiguration for in-memory databases has seen a lot of 
 interest lately. Albatross~\cite{albatross} offered live reconfiguration with unavailability windows as low as 
 300ms. Zephyr~\cite{zephyr} focuses on mitigating violations to Service Level Agreements (SLAs) and limits 
 change in average latency to 10-20\% but like Albatross, operates on latencies of the order of tens of milliseconds.  
-Squall~\cite{squall} employs reactive pulls and pre partitioning
+Squall~\cite{squall} employs reactive pulls and pre-partitioning
 of data for fast migrations and is the state of the art for low impact migrations which specifically works well for 
 heavily skewed workloads. Like others, Squall also operates on platforms with throughput and latencies orders of 
 magnitude less than what is possible with today's hardware. The key challenge in implementing migration in a system 
@@ -109,7 +109,7 @@ This thesis argues heavily in favor of that fact. Several efforts in the past ha
 user level NIC access as well as RDMA for highly performant distributed database systems~\cite{ramcloud,farm,farmtx,drtm,hyper}
 as well as block I/O for file systems~\cite{rdmagfs}. The closest analysis that we have found on 
 range queries and in-memory databases~\cite{zerocopyrangequery} argues for use of RDMA reads and 
-multi socket parallelistaion of copying of datra. Our analysis is more detailed and quantifies the 
+multi socket parallelisation of copying of data. Our analysis is more detailed and quantifies the 
 results with memory bandwidth and effects of DDIO.
 Our findings should also complement other efforts such as transactional key value stores~\cite{deuteronomy} 
 and shared-data databases~\cite{tell}. Small, fixed-size request/response cycles have been optimized in
@@ -118,7 +118,9 @@ transmission of larger responses like range query results or data
 migrations has been less well studied. Studies focused on large transmissions
 have so far been limited to relatively static block-oriented data.
 Our work focuses on optimizing transmission of large and complex query
-results, which differs from these two categories. A complementary study by Kalia, Kaminsky, and Andersen~\cite{rdma} provides a
+results, which differs from these two categories. 
+
+A complementary study by Kalia, Kaminsky, and Andersen~\cite{rdma} provides a
 different analysis of host interaction with Mellanox Infiniband network adapters,
 and they extract rules of thumb to help developers get the best performance from the hardware.
 The low-level nature of their analysis is especially suited for
@@ -126,11 +128,11 @@ optimizing dispatch-heavy workloads with a high-volume of small
 request-response operations. While most of RDMA research prefers one-sided RDMA verbs, more recent efforts have shown 
 the benefits of two-sided RDMA and datagram RPCs~\cite{fasst}. We believe that 
 two-sided RDMA and RPC semantics are the most promising in today's architecture. In the future, 
-richer semantics that allow  gathering of remote data might prove beneficial for one-sided RDMA verbs.
+richer semantics that allows the gathering of remote data might prove beneficial for one-sided RDMA verbs.
 
 
 \section{Summary}
-Our work is built on the premises of these research ideas and it's unique take on
+Our work is built on the premises of a lot of research ideas and it's unique take on
 heavy transfers in the presence of tight SLAs (latencies of the order of 10s of microseconds)
 make it stand out among the related work. Until now, mixing workloads such as range scans 
 and data migration, especially in the context of modern networks has not been well
