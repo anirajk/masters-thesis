@@ -7,18 +7,18 @@ In-memory databases and low latency networks are very heavily researched areas
 these days. Our work borrows concepts from numerous efforts both current and 
 prior from the databases, networking and operating systems research communities.
 RAMCloud~\cite{ramcloud} itself was a research product built on top of other 
-work on log-structured file systems and kernel by-pass networking, and it gave the 
+work on log-structured file systems and kernel by-pass networking. RAMCloud gave the 
 world a distributed fast crash recovery, scalable log structured DRAM storage, and a new consensus 
 algorithm~\cite{ryan-thesis,ongaro2011fast,ramcloudfast,raft} in addition to many other 
-functionality that makes it one of the most feature complete low latency storage systems 
+functionalities that makes it one of the most feature complete low latency storage systems 
 to come out of research.
 
 \section{In-memory Databases}
 In-memory databases sparked a new wave of systems research in the 
 networking and database communities. For a long time while developing storage
-systems, researchers didn't diverge from the  tried and tested model for
+systems, researchers didn't diverge from the  tried and tested model for the 
 locality of reference. Conventional ``secondary storage" devices
-such as disks were the final resting place of evergrowing amounts of managed data. With the 
+such as disks were the final resting place of ever growing amounts of managed data. With the 
 enhanced requirements of scale by the popularization of Web 2.0 in the early 2000s, 
 database designers created a caching layer of RAM in front of disks
 to combat abysmal disk access times that were dragging down performance at scale. Memcached~\cite{memcached-orig}
@@ -36,30 +36,30 @@ data center networks. and kernel by-pass networking was made ubiquitous by packe
 frameworks such as DPDK~\cite{dpdk}, which enabled them to operate over universally accepted protocols
 such as Ethernet. These developments have led to a deluge of storage systems research~\cite{mmdbmstutorial} 
 exploring multiple verticals. Among the particularly notable ones are RAMCloud~\cite{ramcloud},
-FaRM~\cite{farm} and H-Store~\cite{hstore} (Scale out memory stores) and
+FaRM~\cite{farm} and H-Store~\cite{hstore} (Scale-out memory stores) and
 MICA~\cite{mica}, HyPer~\cite{hyper} and HERD~\cite{herd} (Focused on single node performance).
-While each of these systems have been driven by different dimensions 
+While each of these systems has been driven by different dimensions 
 of research, they all share the same concerns of In-memory storage systems 
-operating on high speed networks.
+operating on high-speed networks.
 
 Today's main memory database systems offer a plethora of features that are at par with traditional
 database systems including structured storage and indexing, concurrency control and transactions,
  durability and recovery techniques, query processing and compilation, support for high availability and 
 ability to support hybrid transactional and analytics workloads~\cite{mmdbmstutorial}.
-FaRM~\cite{farm} is an In-memory, distributed computing platform that leverage lock free reads over RDMA~\cite{rdma},
+FaRM~\cite{farm} is an In-memory, distributed computing platform that leverage lock-free reads over RDMA~\cite{rdma},
 collocating objects and function shipping to provide performance characteristics of the 
 highest order for an In-memory database. FaRM scales distributed transactions to
 hundreds of millions of operations with recovery times of the order of milliseconds by relying on 
-full replication in DRAM. There are other systems such as Silo~\cite{silo} which effectively utilizes multi core CPUs.
+full replication in DRAM. There are other systems such as Silo~\cite{silo} which effectively utilizes multi-core CPUs.
 
 \subsection{Column Stores}
-Column oriented databases have generated interest in recent years owing to the growing 
+Column-oriented databases have generated interest in recent years owing to the growing 
 need of running complex analytical queries over a large amount of data. Most enterprise 
 database solutions today ship with the column stores. This new focus has resulted 
-in advanced materialisation strategies and compression schemes~\cite{cstore,cstorevsrowstore,cstore-material,cstorecompression}.
+in advanced materialization strategies and compression schemes~\cite{cstore,cstorevsrowstore,cstore-material,cstorecompression}.
 In-memory databases with hybrid layouts~\cite{hybridinmemorycolstore} and other recent work on in-memory column stores~\cite{inmemorycracking} 
 focus a lot on analytical workloads and techniques like database cracking~\cite{databasecracking} for adaptive indexing. 
-MonetDB~\cite{monetdb} made significant milestones in OLAP processing of in memory column stores. HyPer~\cite{hyperhybrid} 
+MonetDB~\cite{monetdb} made significant milestones in OLAP processing of in-memory column stores. HyPer~\cite{hyperhybrid} 
 is an example of a system that underlines the importance of RDMA in the context of a column store.
 
 
@@ -67,9 +67,9 @@ is an example of a system that underlines the importance of RDMA in the context 
 Lock freedom is important for Zero Copy and RDMA since the NIC also introduce contention 
 since records are transmitted directly from their original memory location without an 
 additional copy. Lock and latch freedom are 
-design philosophies perfected on previous work on fine grained concurrency 
-primitives~\cite{finegrained} and lock free hash tables ~\cite{lockfreeht}. Lock freedom is commonly
-used in databases these days~\cite{htm} since they gained practicality by common use of
+design philosophies perfected on previous work on fine-grained concurrency 
+primitives~\cite{finegrained} and lock-free hash tables ~\cite{lockfreeht}. Lock freedom is commonly
+used in databases these days~\cite{htm} since they gained practicality by the common use of
 epochs~\cite{lockfreedom} based reclamation. 
 More recent iterations of SQL engines such as Hekaton~\cite{hekaton} are 
 examples for In-memory optimized  database engines. Bw-Tree~\cite{bw-tree}, a 
