@@ -81,7 +81,7 @@ database engines:
 
 These factors make advanced NIC DMA difficult to use effectively. We set out to explore data 
 transmission purely from the perspective of a modern NIC. We profiled a cluster of machines with
-Infiniband ConnectX\textregistered-3, a modern kernel-bypass capable NIC
+Infiniband ConnectX\textregistered-3, a modern kernel bypass capable NIC
 with RDMA capabilities, with specific attention to large transfers and query responses.
 We published our findings and made some concrete suggestions around how NICs might
 influence data layout and concurrency control in a modern in-memory 
@@ -199,7 +199,7 @@ evidence for the thesis statement in the beginning of this section.
 
 
   \item{\textbf{Experiments to motivate fast and efficient reconfiguration}}: This is the first assessment of data migration on SLAs for a high-performance,
-    in-memory store that leverages high throughput, kernel-bypass networking fabrics. 
+    in-memory store that leverages high throughput, kernel bypass networking fabrics. 
    We laid out experiments that show how even the state-of-the-art systems for cluster reconfiguration becomes suboptimal with its locality constraints and overall slowness. 
    RAMCloud assumes uniform access cost to all nodes. We quantify the gains from explicitly colocating records.
    Our experiments call for fast and efficient migration protocol especially suited for an in-memory database system with a decentralized log structured data model such as RAMCloud.

@@ -2,16 +2,16 @@
 \chapter{Drawing Lessons from Modern NICs}
 \label{chap:modernnics}
 Network Interface Cards have grown complex and present opportunities and  challenges as part of a modern distributed system.
- It is imperative that today's database system designer considers the network in design decisions. Previous research for optimizing databases were focussed more on processing time spent on a database query~\cite{dbmsproctime},
+ It is imperative that today's database system designer considers the network in design decisions. Previous research for optimizing databases was focussed more on processing time spent on a database query~\cite{dbmsproctime},
   but today, most of the end-to-end latency while processing a query is spent in the  networking stack~\cite{ramcloudosr}.
 Since in-memory databases became popular and datasets started to fit in memory, the spinning disks 
-which were the primary I/O bottlenecks before aren't anymore. The bulk of I/O overhead in a distributed storage system today is in network transmission.
+that were the primary I/O bottlenecks before are not anymore. The bulk of I/O overhead in a distributed storage system today is in network transmission.
 Adding this to the fact that the modern NIC allows us to offload CPU from the data transfer path,
 the saved memory bandwidth and CPU cycles could be doing useful work.
 
 Hardware overheads have thinned over time, and system researchers had to minimize CPU interrupts and come up with forms of kernel by-pass networking to extract more performance.
- Network cards have had Transmission Control Protocol (TCP) offloading baked in as TCP Offload Engine for some time now. They helped reduce TCP protocol burden from the main CPU by moving that processing to network adapters.
- However, the ability to bypass copies was dependent on the TCP Offload Engine (TOE) design and in   many cases didn't support non-copying for incoming data streams~\cite{tcpoffload}. 
+ Network cards have had Transmission Control Protocol (TCP) offloading baked in as a TCP Offload Engine for some time now. They helped reduce TCP protocol burden from the main CPU by moving that processing to network adapters.
+ However, the ability to bypass copies was dependent on the TCP Offload Engine (TOE) design and in   many cases did not support non-copying for incoming data streams~\cite{tcpoffload}. 
   RDMA~\cite{rdmapatent,rdmacase,rdma} capable NICs support non-copying of incoming data streams over a wider variety of applications where TCP offloading was just one among the benefits  involved.
  Development of advanced host-device  interconnects such as PCI Express~\cite{pcie}  made it possible to develop highly performant network devices offering throughputs and latencies orders of magnitude better than what was possible before.
 
@@ -22,8 +22,8 @@ the use of various RDMA primitives for benchmarking large transfers and explored
 
 \section{Zero Copy and Copy Out}
 The key benefit of a modern NIC in contrast with earlier hardware is the ability to manipulate control structures of the NIC from userspace applications. 
-Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path.  Literature defines kernel-bypass as communication that does not 
-involve kernel in the  critical path~\cite{unetkernelbypass}. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
+Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path.  Literature defines kernel bypass as communication that does not 
+involve the kernel in the  critical path~\cite{unetkernelbypass}. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
 where the NIC can receive and transmit directly from  application vectors. The Mellanox Infiniband ConnectX\textregistered-3
 NIC that we profiled can  collect scattered chunks of data in memory via Direct Memory Access (DMA).
 
@@ -32,16 +32,16 @@ required the host CPU to make additional copies of transmitted data.
 The application calls a send function in a socket library and the data for sending is assembled 
 in a transmit buffer, this transmit buffer is copied on to the on-NIC buffers, and the data is 
 sent over the wire. We could employ the same technique in the kernel bypass capable NIC as well.
-If we exploit the scatter/gather list to transmit data directly from where they live in memory, 
+If we exploit the scatter/gather list to transmit data directly from where it lives in memory, 
 we could reduce the number of times data is copied within the host before transmission. 
-This style of transmitting data which minimizes the number of copies is what we will refer as \enquote{\textbf{Zero Copy}} from now on.
+This style of transmitting data which minimizes the number of copies is what we will refer to as \enquote{\textbf{Zero Copy}} from now on.
 Instead of employing a multi-entry scatter/gather list, the data to be transmitted, which could be discontiguous in memory, could be assembled 
 onto a temporary buffer and this buffer could be treated as a single entry scatter/gather list
 and then transmitted over the network. We will be calling this technique \enquote{\textbf{Copy Out}} for the remainder of the thesis. 
 
 
-Zero copy DMA facilitates a scatter gather list of buffer descriptors
-which could be mapped to discontiguous locations in memory on demand. These provide
+Zero Copy DMA facilitates a scatter gather list of buffer descriptors
+that could be mapped to discontiguous locations in memory on demand. These provide
 the added benefit that network headers do not need to exist along with data and help bring more flexibility 
 in deciding the transport layer. One subtle thing to note here is that Zero Copy only implies the absence 
 of a copy of the records to a buffer. The data still needs to be copied to the on-NIC buffers before 
@@ -107,7 +107,7 @@ higher than DRAM access, the CPU does not stall when posting descriptors, so the
 exchange is very low overhead.
 \subsection{Structural Differences in Zero Copy and Copy Out}
 The key difference between Zero Copy and Copy Out is shown with the wide, red
-arrows in Figure~\ref{fig:mem-regions}. Copy Out works much like conventional
+arrows in Figure~\ref{fig:mem-regions}. Copy Out works much like a conventional
 kernel-based networking stack: chunks of data are first copied into a single
 transmit buffer in host memory, usually by a \memcpy ~call to copy from the record's 
 virtual address to the transmit buffer. Then, a simple, single-entry descriptor is
@@ -127,14 +127,14 @@ bandwidth, and is pure overhead.
 
 \section{DDIO}
 One conflating factor in understanding the benefits of Zero Copy is Data Direct I/O (DDIO)~\cite{ddio}.
- DDIO is a performance-oriented enhancement to the DMA mechanism which was introduced in Intel\textregistered Xeon E5 processors with Sandy Bridge-EP micro-architecture.
+ DDIO is a performance-oriented enhancement to the DMA mechanism, which was introduced in Intel\textregistered Xeon E5 processors with Sandy Bridge-EP micro-architecture.
  With DDIO, CPU caches are used as the primary source and destination for I/O, 
 allowing NICs to talk directly to the last level caches of local CPUs
 and avoiding costly fetching of the I/O data from system RAM. As a result, if we have enough locality of data to exploit,
 DDIO reduces the overall I/O processing latency, allows processing of the I/O 
-to be performed entirely in cache and prevents the available memory bandwidth from becoming a performance bottleneck.
+to be performed entirely in cache, and prevents the available memory bandwidth from becoming a performance bottleneck.
 We fully investigate the effects of DDIO in Section~\ref{sec:impact} to conclude the impact of 
-Copy Out mechanism.
+the Copy Out mechanism.
 
 
 \section{Inlining}
@@ -164,8 +164,8 @@ The measurements in this thesis only include data collected after the optimizati
 % Should we put the tx buffers in huge pages?
 % Knowing measured peak mem bw of our machines would be good, but it looks like
 %   not all channels are populated?
-We ran numerous experiments profiling a modern NIC to expose it's performance characteristics. 
-We wanted to show the impact of NIC features on large databases which often have to 
+We ran numerous experiments profiling a modern NIC to expose its performance characteristics. 
+We wanted to show the impact of NIC features on large databases, which often have to 
 transmit significant amounts of data while responding to range scans or reconfiguring clusters.
 We set up our experiments that mimic the data transmitting module of an in-memory database. 
 We evaluated various choices in the design space that a database designer encounters while developing 
@@ -173,10 +173,10 @@ a database that is NIC friendly. We set up the following experiments and found c
 evidence that will aid in co-designing databases for new hardware.
 \begin{myitemize}
 \item Comparison of various RDMA primitives over Mellanox Infiniband verbs library; we find that \cpp{SEND} is best suited for returning scattered records.
-\item Comparison of different arrangements of small 128~B records to evaluate how to best exploit S/G DMA; we find Zero Copy, {\em when carefully tuned} offers better throughput and efficiency. We outline precisely when Copy Out can be faster 
-and more efficient than Zero Copy which could be exploited for small gains.
+\item Comparison of different arrangements of small 128~B records to evaluate how to best exploit S/G DMA; we find Zero Copy, {\em when carefully tuned,} offers better throughput and efficiency. We outline precisely when Copy Out can be faster 
+and more efficient than Zero Copy ,which could be exploited for small gains.
 \item Similar comparison of larger 1024~B records; we observe Zero Copy is a clear winner in terms of throughput and efficiency across the board.
-\item Comparison of CPU cycles spent per transmitted byte; overheads at transmissions $<$384~B makes Copy Out more efficient while Zero Copy is a clear winner for larger transmissions and larger records.
+\item Comparison of CPU cycles spent per transmitted byte; overheads at transmissions $<$384~B make Copy Out more efficient while Zero Copy is a clear winner for larger transmissions and larger records.
 \item A breakdown of CPU overhead in transmission; we see that the additional \memcpy ~dominates CPU overheads to the tune of 95~\%, transmission overhead for smaller transmissions are conspicuous.
 \end{myitemize}
 
@@ -214,18 +214,18 @@ we did enable 1~GB hugepages and registered those with the NIC to make sure we
 avoid as many TLB misses as possible.
 \subsection{Comparing RDMA Modes for Transmission}
 We started out by getting measurements of the transmission speeds using RDMA verbs.  
-READ and WRITE are the most commonly employed RDMA verbs because they are one sided
-and does not require both ends to be active in theory. RDMA read has the additional incentive 
+READ and WRITE are the most commonly employed RDMA verbs because they are one-sided
+and do not require both ends to be active in theory. RDMA read has the additional incentive 
 that it is client initiated. SEND/RECEIVE primitives, on the other hand, are two-sided and 
-server initiated.  We evaluated the performance of each of this using Infiniband verbs library. We implemented 
-RDMA reads and write as op codes on the \cpp{ibv_send_wr} request which 
+server initiated.  We evaluated the performance of each of these using Infiniband verbs library. We implemented 
+RDMA reads and writes as op codes on the \cpp{ibv_send_wr} request that 
 transmit data via \cpp{ibv_post_send} and measured the transmit 
 performance while enabling Zero Copy using \cpp{IBV_WR_SEND} as the opcode.
 \cpp{SEND} operations can transmit multiple entries in the S/G list.
 One issue we uncovered was that one-sided RDMA verbs are not well positioned to 
 take advantage of the Zero Copy paradigm since it only supports a remote read 
 from a registered location from the other side. READ also requires a secondary notification mechanism 
-to work in practice negating the advantage of being one sided.
+to work in practice negating the advantage of being one-sided.
 
 Others have argued for the use of one-sided RDMA for key-value stores~\cite{pilaf} and even for accelerating 
 range queries~\cite{zerocopyrangequery}. We estimate that these would be suitable for large transmissions only when there is a strong 
@@ -236,20 +236,20 @@ It could work better if we were to pipeline multiple requests, but we are losing
 Figure~\ref{fig:200B_transrate} shows a comparison of transmission
 performance of different verbs transmitting 200 Bytes(B) records varying the number of records
 that could be transmitted at a time for various operations. The green dot shows
-the performance for RDMA READ which is also unfair since RDMA READ can only transmit from a single remote virtual address at a time.
+the performance for RDMA READ, which is also unfair since RDMA READ can only transmit from a single remote virtual address at a time.
 
 The blue dot in Figure~\ref{fig:200B_transrate} shows RDMA write performance using a full scatter/gather list. This tells us that WRITE and SEND will offer 
 similar performance. Transmission using larger data sizes such as 1000~B records showed a clearer benefit of using \cpp{SEND} than 
-using 200~B records as shown in Figure~\ref{fig:1000B_transrate}. 
+using 200~B records, as shown in Figure~\ref{fig:1000B_transrate}. 
 
-These figures which compare the performance of RDMA verbs implemented 
-on top of ibverbs library draws interesting conclusions about use of RDMA for transmitting small and scattered records in memory. 
-It is interesting to note that the library could provide RDMA READ could leverage scatter gather entries retaining all the benefits 
+These figures that compare the performance of RDMA verbs implemented 
+on top of ibverbs library draw interesting conclusions about use of RDMA for transmitting small and scattered records in memory. 
+It is interesting to note that the library could provide RDMA READ and could leverage scatter gather entries retaining all the benefits 
 of a one-sided operation in theory.
 \input{takeaway-verbs}
 
 \subsection{Record Sizes}
-In the world of In-memory databases, there is an argument to be made that record sizes will get smaller.
+In the world of in-memory databases, there is an argument to be made that record sizes will get smaller.
 The decreased access latency of in-memory databases makes them well suited to smaller, fine-grained records
 than were previously common. One expectation is that this will drive databases
 toward more aggressively normalized layouts with small records. This
@@ -302,19 +302,19 @@ depend on the specific configuration and are explored below.
 
 Figure~\ref{fig:zero-copy-tput} shows how each of these configurations impacts
 transmission throughput. For larger 1024~B records, using the NIC's DMA engine
-for Zero Copy shows clear benefits even when you are transmitting less number of 
+for Zero Copy shows clear benefits even when you are transmitting a smaller number of 
 records. This is in addition to the CPU and memory bandwidth savings, which 
 we explore in Section~\ref{sec:overhead}. The database server can come close to
-saturating the network with Zero Copy as long as it can post 2 or more
+saturating the network with Zero Copy as long as it can post two or more
 records per transmit operation to the NIC (that is, if it sends 2~KB or larger
 messages at a time). For the Copy Out approach, you get roughly the same transmission 
 throughput as Zero Copy when your transmission sizes get bigger at around 16~KB. In 
-the impact study in Section~\ref{sec:impact} we explain why this is not a good value 
+the impact study in Section~\ref{sec:impact}, we explain why this is not a good value 
 proposition. We see that the DMA engine could provide a throughput boost
 of up to 82\% over Copy Out while transmitting a single 1024~B record. For small 
 records, the biggest improvement of 67\% comes while transmitting six records. It is also interesting 
 to note that if range scans return even just 16 scattered, small(128~B) records per query, the
-benefits of Zero Copy purely from the perspective of transmission throughput is almost eliminated.
+benefits of Zero Copy purely from the perspective of transmission throughput are almost eliminated.
 
 % [1] "128 B item pct improvement in tput for ZC"
 %  [1]  11.028650  11.592911  20.786107  41.404516  56.840692  67.254500  67.200293
@@ -340,16 +340,16 @@ provides little throughput benefit if you were only returning a few records
 at a time. Our NIC is limited to gather lists
 of 32~entries, which is insufficient to saturate the network with such a small
 record size. Transmission peaks at 3.8~GB/s. In fact, Zero Copy performs best when
-we transmit between 8-15 records or 1 to 2~KB per transmission above which the transmit performance 
+we transmit between 8-15 records or 1 to 2~KB per transmission, above which the transmit performance 
 tapers off. Zero Copy gives around 55\% improvement over Copy Out while dealing 
-with transmissions around 1~KB or 8 records. Throughput dips with 16 records per send operation and it gradually moves up as we 
+with transmissions around 1~KB or eight records. Throughput dips with sixteen records per send operation and it gradually moves up as we 
 increase the transmission sizes further but never gets back to the peak transmission. This calls 
 for careful attention to the length of S/G list in order for a database designer to get peak performance while using small record sizes and larger 
 transmissions. We dig deeper into this anomaly and find evidence as to why this happens with the 
 help of measuring traffic induced in the Memory controller due to LLC misses because of DDIO and 
 PCIe traffic in Section~\ref{sec:impact}. Owing to this aberration, copying 128~B records 
 on-the-fly can significantly outperform Zero Copy transmission when there are 
-enough results (more than 16 records in our NIC which is capable of transmitting 32 at once) 
+enough results (more than sixteen records in our NIC which is capable of transmitting thirty two at once) 
 in a response. In fact, Copy Out can saturate the network with small records, and it
 performs identical to Zero Copy with larger 1024~B records.
 \newline
@@ -360,17 +360,17 @@ performs identical to Zero Copy with larger 1024~B records.
 
 We saw how the Zero Copy promises enhanced savings and performance 
 in the previous section. To put things in the context of resource utilization and
- to quantify performance gains, we profiled our benchmark code for CPU utilization, memory bandwidth 
- and some other metrics such as memory bandwidth utilization due to Last Level Cache(LLC) misses from DDIO and PCIe.
-We used cycle counters present in the original RAMCloud~\cite{ramcloud} code base for non-intrusive profiling 
-of CPU time. We wanted to make sure our profiling code shouldn't interfere with the timing of our highly performant 
- benchmark which churns out millions of operations per second and microsecond latencies. 
- We searched for lightweight profiling methods which add minimal overheads.
+ to quantify performance gains, we profiled our benchmark code for CPU utilization, memory bandwidth, 
+ and some other metrics such as memory bandwidth utilization due to Last Level Cache (LLC) misses from DDIO and PCIe.
+We used cycle counters present in the original RAMCloud~\cite{ramcloud} code base for non intrusive profiling 
+of CPU time. We wanted to make sure our profiling code should not interfere with the timing of our highly performant 
+ benchmark, which churns out millions of operations per second and microsecond latencies. 
+ We searched for lightweight profiling methods that add minimal overheads.
  We ended up using Intel\textregistered's Performance Counter Monitoring module~\cite{intelpcm}. 
  An interesting thing about measuring the performance 
  of a modern CPU is that almost all of the metrics of significance exist outside of the cores. These measurements 
  are classified as uncore and offcore measurements in the Performance Monitoring Unit(PMU) moniker.
- The newer generation CPUs that we used had the Sandy Bridge microarchitecture which provides uncore performance 
+ The newer generation CPUs that we used had the Sandy Bridge microarchitecture that provides uncore performance 
  monitoring unit and we measured their performance counters to gauge impact accurately.
 
 
@@ -380,13 +380,13 @@ of CPU time. We wanted to make sure our profiling code shouldn't interfere with 
 While we just showed in Section~\ref{sec:zero-copy-tput} that judicious use of Zero Copy results 
 in enhanced transmission performance, the goal of zero-copy DMA is also to 
 mitigate the server-side CPU cost. Figure~\ref{fig:overheads} breaks down CPU time for 
-all the scenarios; small and large records using Zero Copy and Copy Out. In the case 
+all the scenarios: small and large records using Zero Copy and Copy Out. In the case 
 of Zero Copy, most of the server CPU time is spent idling waiting for the NIC 
 to complete transmissions at smaller record sizes.
 
- For 128~B records, smaller transmissions take up more fraction of CPU owing to the overhead of more descriptors
+ For 128~B records, smaller transmissions take up a larger fraction of CPU owing to the overhead of more descriptors
 per transmission. Zero Copy always reduces the CPU load on the server in all record sizes except for the cases where
-overheads for a small number of small records and, as expected, there is a bigger
+overheads dominate for a small number of small records and, as expected, there is a bigger
 benefit for larger record sizes. With 1024~B records, the \memcpy ~step of Copy Out uses a maximum of 19\% of all available
 CPU cycles. What's alarming is the fact that this constitutes ~98\% of all the time spent busy waiting.
 This is a pure overhead that we could eliminate by using Zero Copy.
@@ -407,7 +407,7 @@ by 2$\times$ the transmit rate of the NIC or 11.2~GB/s in the worst case. This
 accounts for about 45\% of the available memory bandwidth for the server that we used. Whether
 using Zero Copy or Copy Out, the NIC must copy data from main memory, across the PCIe bus, to its own buffers, which
 could end up using another 6~GB/s of memory bandwidth. With these estimates in mind, we extensively profiled
- our benchmark with Intel's PMU module and the details of that is given in Section~\ref{sec:membw-savings}.
+ our benchmark with Intel's PMU module and the details of that are given in Section~\ref{sec:membw-savings}.
 \newline
 \input{takeaway-cpu-overhead}
 
@@ -507,11 +507,11 @@ In a modern In-Memory Database server, DRAM utilization is the most precious res
  utilization and DRAM latencies and starvation. Since uncore events will give the most accurate measurements,
  we explored all uncore events that induce pressure on the memory controller. We found that 
 \texttt{LLC\_MISSES X 64} (cache line size) is an interesting metric, but there was a problem that it wouldn't account for prefetch 
- misses. We went for the more accurate \texttt{MEMORY\_BW\_READS} and \texttt{MEMORY\_BW\_WRITES} metrics which are derived from 
- \texttt{CAS\_COUNT.RD} and \texttt{CAS\_COUNT.WR} metrics which are the number of cache lines read and written in the sampling 
+ misses. We went for the more accurate \texttt{MEMORY\_BW\_READS} and \texttt{MEMORY\_BW\_WRITES} metrics that are derived from 
+ \texttt{CAS\_COUNT.RD} and \texttt{CAS\_COUNT.WR} metrics, which are the number of cache lines read and written in the sampling 
  interval. We used an interactive reporting tool written on top of perf with named mappings for these events
  to measure this metric. We profiled the total memory bandwidth consumed by the system while our benchmark 
- was running with fixed record sizes, a number of records and mode of copying (Zero Copy and Copy Out). We took the median of our measurements 
+ was running with fixed record sizes, a number of records, and modes of copying (Zero Copy and Copy Out). We took the median of our measurements 
  to account for consumption only while the system was transmitting data.
 
 
@@ -520,15 +520,15 @@ of copying varying record sizes and transmission sizes. We can see that using Ze
 larger record sizes is beneficial. The savings are highlighted along largest transmissions of 32 records of sizes 1~KB each. 
  We had measured that a userspace application could achieve a peak bandwidth of around 24~GB/s in our system. This would mean that Copy out 
  might take up a half of all available bandwidth in order to saturate the NIC while transmitting. This should raise alarms for a database 
- designer since this is a pure overhead and the wasted memory bandwidth could be used for data manipulation or other useful work in the database 
+ designer since this is pure overhead and the wasted memory bandwidth could be used for data manipulation or other useful work in the database 
  server. This is even more interesting considering that the modern-day in-memory stores are not tuned for large responses.
   When the DRAM latency and accesses go up, the performance of the whole system could degrade to the point at which the system might become unusable.
-For smaller data sizes, it's even more interesting. Zero Copy shows less memory utilization until we get to the point where it's transmit performance 
-drops below that of Copy out. This would imply that there are times when Copy out outperforms Zero Copy in terms of transmit performance and 
+For smaller data sizes, it is even more interesting. Zero Copy shows less memory utilization until we get to the point where its transmit performance 
+drops below that of Copy Out. This would imply that there are times when Copy Out outperforms Zero Copy in terms of transmit performance and 
 memory bandwidth utilization. It is interesting to note that these data points overlap the anomalous transmit performance 
 degradation we saw while observing transmission throughput in Figure~\ref{fig:zero-copy-tput}. Interestingly, after this region in the graph 
 where you transmit 16 or more 128~B records where Zero Copy offers better transmission performance, the memory bandwidth consumption by Zero Copy 
-is reduced, and Copy Out starts to appear more expensive in terms of memory bandwidth. These anomalies are better explained in Section~\ref{sec:anomaly} but we 
+is reduced, and Copy Out starts to appear more expensive in terms of memory bandwidth. These anomalies are better explained in Section~\ref{sec:anomaly}, but we 
 can conclude from this figure that there is a linear correlation between transmit performance and consumed memory bandwidth for Zero Copy.
 \newline
 \input{takeaway-impact-membw}
@@ -536,11 +536,11 @@ can conclude from this figure that there is a linear correlation between transmi
 \subsection{Memory Bandwidth and Transmission Throughput}
 \label{sec:membw-savings}
 Figure~\ref{fig:membw-ratio} shows the ratio of Memory pressure exerted per bytes transmitted. We can clearly see the value proposition of 
-Zero Copy mode of transmitting here. For Zero Copy, We can see that the system is consistent and predictable and only incurs a small overhead of 
+Zero Copy mode of transmitting here. For Zero Copy, we can see that the system is consistent and predictable and only incurs a small overhead of 
 copying descriptors other than DMAing the data onto the NIC. The cost of the descriptors is evident from the fact that 128~B records show 
-a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultuous across varying number of records 
- but, still shows Zero Copy as the clear winner. It is interesting to note that transmitting a single record via Copy Out, 
- introducing an unnecessary copy makes your transmission 3x less efficient in terms of memory bandwidth utilization.
+a bigger multiplier on transmission throughput than 1024~B records. For 128~B records, the ratio appears tumultuous across varying number of records, 
+ but still shows Zero Copy as the clear winner. It is interesting to note that transmitting a single record via Copy Out, 
+ introducing an unnecessary copy, makes your transmission 3x less efficient in terms of memory bandwidth utilization.
   If we were to compare larger 1~KB records across the two modes of copying, we can see that there is a 
  2X memory bandwidth cost on copying out 1024~B records. Like in the case of smaller records, the additional copy reduces the 
  transmission efficiency more in the case of a small number of records.
@@ -548,22 +548,22 @@ a bigger multiplier on transmission throughput than 1024~B records. For 128~B re
 \input{takeaway-impact-membw-ratio}
 
 \subsection{DDIO Traffic}
-Newer generation of Intel Processor's have a portion of their Last Level Cache dedicated for I/O. This was initially called Direct Cache Access 
+Newer generations of Intel Processor's have a portion of their Last Level Cache dedicated for I/O. This was initially called Direct Cache Access 
 and more recently named DDIO. This changes our perception of memory consumption quite a bit. Network transmission occurs at this part of the Last Level Cache 
 and even the destination for a packet over the network becomes this dedicated portion of LLC. This has a significant impact in the number of LLC misses the system 
-has to take while dealing with network traffic. The key limitation to DDIO is that usually it's allocated as only 10\% of LLC which is around 2~MB in a modern system. 
+has to take while dealing with network traffic. The key limitation to DDIO is that usually, it is allocated as only 10\% of LLC, which is around 2~MB in a modern system. 
 However, as long as a single transmission does not surpass this size, we can expect higher efficiency in transmission due to DDIO. In all of our experiments, we were doing transmission of 
-at most 32 records of 1~KB each, and hence the effect of DDIO will be visible in our benchmarks. To measure the 
+at most 32 records of 1~KB each, and hence, the effect of DDIO will be visible in our benchmarks. To measure the 
 effect of DDIO, we measured the number of bytes read from memory by LLC due to misses from the DDIO marked region. 
 
-Figure~\ref{fig:ddiobw} shows the reads issued to the memory controller from LLC due to misses from the  DDIO region. We can clearly see that when we use Copy out 
-method to transmit data, we don't see much traffic in this area. When we issue a \memcpy~ to copy data into the transmit buffer, it's already loaded in the LLC. 
+Figure~\ref{fig:ddiobw} shows the reads issued to the memory controller from LLC due to misses from the  DDIO region. We can clearly see that when we use Copy Out 
+method to transmit data, we do not see much traffic in this area. When we issue a \memcpy~ to copy data into the transmit buffer, it is already loaded in the LLC. 
 Unless that data is ejected from LLC, a miss from the DDIO region need not necessarily involve a read from DRAM. On the other hand, if we were employing Zero Copy technique, 
-and we were transmitting randomized chunks of data. Randomisation plays an important role in cache invalidation,
+and we were transmitting randomized chunks of data, DRAM is almost always involved. Randomisation plays an important role in cache invalidation,
  and we had to tune our benchmark so that it is always transmitting randomized data. 
 We can see that the DDIO misses are following the same trend as transmission throughput we showed in Figure~\ref{fig:zero-copy-tput}. 
-Since our data sets are limited in size and do not cause much of cache pollution, we see that the 
-memory reads due to misses in DDIO is only. For transmissions using Zero Copy, 
+Since our data sets are limited in size and do not cause much cache pollution, we see that the 
+memory reads are only due to misses in DDIO region. For transmissions using Zero Copy, 
 the read requests to memory happen because of misses from the DDIO region and account for 
 most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:ddiobw-savings} explains this in detail.
 \newline
@@ -586,16 +586,16 @@ might have added Memory Bandwidth consumption in bringing data from DRAM for tra
 \section{Anomaly in Transmission Throughput}
 \label{sec:anomaly}
 While evaluating performance and efficiency of Zero Copy in previous sections, we saw that for 128~B records, the transmission throughput does not linearly progress 
-on increasing the transmission size. If you refer back to Figure~\ref{fig:zero-copy-tput}, throughput trends upward until we reach 1024~B(8 records), the transmission throughput remains consistent for about 8-16 records and 
-then the performance tapers off. There is a huge dip in transmission throughput going from 15 to 16 records and even though the performance gradually recovers, it does not quite 
-catch up with Copy Out until we get to the maximum number of records possible and even at that point Copy Out edges Zero Copy performance by a bit. After some investigation, we discovered 
-that LLC bytes read from memory due to misses due to PCIe jumps to the peak measured reads and then saturates and the anomaly corresponds to these data points. It's also interesting to note 
-that this is phenomenon is completely specific to the NIC. In Figure~\ref{fig:overheads}, the cycles spent posting transmissions to the NIC drops suddenly corresponding to this region.
+on increasing the transmission size. If you refer back to Figure~\ref{fig:zero-copy-tput}, throughput trends upward until we reach 1024~B(8 records), the transmission throughput remains consistent for about eight to sixteen records and 
+then the performance tapers off. There is a huge dip in transmission throughput going from fifteen to sixteen records and even though the performance gradually recovers, it does not quite 
+catch up with Copy Out until we get to the maximum number of records possible and even at that point, Copy Out edges Zero Copy performance by a bit. After some investigation, we discovered 
+that LLC bytes read from memory due to misses due to PCIe jumps to the peak measured reads and then saturates and the anomaly corresponds to these data points. It is also interesting to note 
+that this phenomenon is completely specific to the NIC. In Figure~\ref{fig:overheads}, the cycles spent posting transmissions to the NIC drops suddenly corresponding to this region.
 
 Figure~\ref{fig:pciebw} shows the read requests issued by LLC because of misses from PCIe traffic. For 128~B records, we can clearly see that after 8 records, this metric is 
-nearly saturated and at 16 records, the number of bytes read peaks causing the dip in transmit performance. The memory reads due to PCIe traffic is saturated at this point and 
+nearly saturated and at 16 records, the number of bytes read peaks causing the dip in transmit performance. The memory reads due to PCIe traffic are saturated at this point and 
 we can see a similar trend for 1024~B records too. Since larger records pack more data per record, the dip in transmit performance is not evident in that case. The other interesting 
-thing to realize is that for Copy Out, the amount of memory traffic induced by PCIe errors follows a similar trend as transmission throughput which is expected since 
+thing to realize is that for Copy Out, the amount of memory traffic induced by PCIe errors follows a similar trend as transmission throughput, which is expected since 
 NIC itself is connected via PCIe interface. Our intuition is that either the prefetcher mispredicts or the maximum possible size of a PCIe transaction (256~B) causes the jump 
 and the overhead is compensated by more and more data transmitted as we get to bigger and bigger transmissions. Since 1024~B records also show a slight dip in transmission performance 
 around 16 records, the DMA overhead is less evident there since we are already operating at a higher throughput owing to large record sizes.
@@ -614,7 +614,7 @@ throughput which it slowly recovers from as we increase the number of S/G entrie
 \item For large sets of small records, Copy Out offers better performance; if your record sizes are larger, use Zero Copy.
 \item Zero Copying larger records will give you good memory bandwidth utilization.
 \item DDIO compensates for some of the memory bandwidth cost to Copy Out data.
-\item Careful tuning of parameters is required if you were to use Zero Copy; PCIe induced memory accesses may explain the anomalous throughput increase for Copy Out. 
+\item Careful tuning of parameters is required if you were to use Zero Copy; PCIe Induced memory accesses may explain the anomalous throughput increase for Copy Out. 
 \end{myitemize}
 
 \input{fig-mem-regions}

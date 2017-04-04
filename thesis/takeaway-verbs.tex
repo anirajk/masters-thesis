@@ -6,7 +6,7 @@
  \item \cpp{SEND} saturates NIC; can gather records and notify receiver when transmission completes.
  \item \cpp{WRITE} avoids invoking receiver; server must induce notifications some other way.
  \item \cpp{READ} is client initiated and avoids the server CPU in critical path; it's the lowest overhead on server,
-  but can only collect one contigous chunk per posted op limiting it's usefulness for returning complex responses.
+  but can collect one contigous chunk per posted op, limiting its usefulness for returning complex responses.
   \end{enumerate}
-  \textbf{Recommendation}: Use \cpp{SEND} primitives for returning scattered set of records \label{takeaway:verbs}
+  \textbf{Recommendation}: Use \cpp{SEND} primitives for returning scattered set of records. \label{takeaway:verbs}
  }}

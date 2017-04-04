@@ -6,5 +6,5 @@
   \item \memcpy ~dominates the CPU overheads in transmission; Zero Copy offers 8x savings for small records and 45x savings for larger records.
   \item Considerable CPU overhead means Copy Out is better at transmitting $<$384~B of data; For smaller records, overhead of adding and copying descriptors can't be ignored.
   \end{enumerate}
-  \textbf{Recommendation}: If CPU overhead is the likely concern, use Zero Copy; Adding an exception for this rule for transmissions $<$384~B might help minimising overheads. \label{takeaway:cpu-overhead}
+  \textbf{Recommendation}: If CPU overhead is the likely concern, use Zero Copy; adding an exception for this rule for transmissions $<$384~B might help minimising overheads. \label{takeaway:cpu-overhead}
  }}

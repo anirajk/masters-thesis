@@ -43,7 +43,7 @@ always use Zero Copy.
   
 Intel\textregistered's recent micro-architectures have support for DDIO which treats LLC as the source and destination for I/O transfers. This has a significant impact on 
 the memory pressure exerted to the system, especially for Copy Out. DDIO paints a slightly different picture favoring Copy Out since the cost of pre-fetching the data is 
-paid up front, we don't incur additional misses from DDIO. This is less relevant in the bigger scheme of things and Zero Copy still wins in terms of total 
+paid up front, we do not incur additional misses from DDIO. This is less relevant in the bigger scheme of things and Zero Copy still wins in terms of total 
 consumed memory bandwidth in the server
   
 The transmission throughput anomaly where the throughput of Zero Copy is limited while transferring a large set of small scattered records is best explained to 
@@ -66,7 +66,7 @@ performance characteristics.
 \item Evaluate impact on column stores;we discuss the possible impact of column stores and how the row-oriented result format might cause problems doing Zero Copy. We need 
 to actually measure the transmit performance and resource impact for a complete implementation of a column oriented, in-memory database.
 \item Analyze throughput anomaly for small records in depth; while DRAM traffic resulting from PCIe errors correlates with the performance dip observed in Zero Copy, 
-they don't explain why this happens for exactly when we transmit 2048~B (16 records). There needs to be a more detailed analysis around this dimension.
+they do not explain why this happens for exactly when we transmit 2048~B (16 records). There needs to be a more detailed analysis around this dimension.
 \item Build an actual migration protocol for RAMCloud; the set of guidelines provided in the thesis only serves as a reference point, there would be significant challenges 
 in the actual implementation of a migration protocol for a complex system such as RAMCloud where we may also need to generalize the protocol for older network hardware for backward 
 compatibility.
