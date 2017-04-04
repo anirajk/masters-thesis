@@ -22,7 +22,7 @@ the use of various RDMA primitives for benchmarking large transfers and explored
 
 \section{Zero Copy and Copy Out}
 The key benefit of a modern NIC in contrast with earlier hardware is the ability to manipulate control structures of the NIC from userspace applications. 
-Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path.  Literature defines kernel-bypass as communication that doesn't 
+Kernel bypass is a ubiquitous feature in the modern NIC that avoids CPU in the data transfer path.  Literature defines kernel-bypass as communication that does not 
 involve kernel in the  critical path~\cite{unetkernelbypass}. Newer network controllers also make use of vectored I/O, otherwise known as scatter/gather I/O
 where the NIC can receive and transmit directly from  application vectors. The Mellanox Infiniband ConnectX\textregistered-3
 NIC that we profiled can  collect scattered chunks of data in memory via Direct Memory Access (DMA).
@@ -552,7 +552,7 @@ Newer generation of Intel Processor's have a portion of their Last Level Cache d
 and more recently named DDIO. This changes our perception of memory consumption quite a bit. Network transmission occurs at this part of the Last Level Cache 
 and even the destination for a packet over the network becomes this dedicated portion of LLC. This has a significant impact in the number of LLC misses the system 
 has to take while dealing with network traffic. The key limitation to DDIO is that usually it's allocated as only 10\% of LLC which is around 2~MB in a modern system. 
-However, as long as a single transmission doesn't surpass this size, we can expect higher efficiency in transmission due to DDIO. In all of our experiments, we were doing transmission of 
+However, as long as a single transmission does not surpass this size, we can expect higher efficiency in transmission due to DDIO. In all of our experiments, we were doing transmission of 
 at most 32 records of 1~KB each, and hence the effect of DDIO will be visible in our benchmarks. To measure the 
 effect of DDIO, we measured the number of bytes read from memory by LLC due to misses from the DDIO marked region. 
 
@@ -585,9 +585,9 @@ might have added Memory Bandwidth consumption in bringing data from DRAM for tra
 
 \section{Anomaly in Transmission Throughput}
 \label{sec:anomaly}
-While evaluating performance and efficiency of Zero Copy in previous sections, we saw that for 128~B records, the transmission throughput doesn't linearly progress 
+While evaluating performance and efficiency of Zero Copy in previous sections, we saw that for 128~B records, the transmission throughput does not linearly progress 
 on increasing the transmission size. If you refer back to Figure~\ref{fig:zero-copy-tput}, throughput trends upward until we reach 1024~B(8 records), the transmission throughput remains consistent for about 8-16 records and 
-then the performance tapers off. There is a huge dip in transmission throughput going from 15 to 16 records and even though the performance gradually recovers, it doesn't quite 
+then the performance tapers off. There is a huge dip in transmission throughput going from 15 to 16 records and even though the performance gradually recovers, it does not quite 
 catch up with Copy Out until we get to the maximum number of records possible and even at that point Copy Out edges Zero Copy performance by a bit. After some investigation, we discovered 
 that LLC bytes read from memory due to misses due to PCIe jumps to the peak measured reads and then saturates and the anomaly corresponds to these data points. It's also interesting to note 
 that this is phenomenon is completely specific to the NIC. In Figure~\ref{fig:overheads}, the cycles spent posting transmissions to the NIC drops suddenly corresponding to this region.

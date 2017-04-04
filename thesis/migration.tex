@@ -86,7 +86,7 @@ The analysis tells us that there is clearly room for improvement in migration pe
 it is safe to assume that use of Zero Copy while transmitting dat from source will enhance network transmission throughput without hurting the available memory bandwidth.
 
 \subsection{Locality in RAMCloud}
-RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5\textmu s~\cite{ramcloud}. RAMCloud doesn't have a strong notion of collocating data across servers. 
+RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5\textmu s~\cite{ramcloud}. RAMCloud does not have a strong notion of collocating data across servers. 
 It is known that transactions~\cite{ramcloudtx} and secondary indices~\cite{slik} can benefit with collocation of data. RAMCloud's data is hash partitioned, and within a server, the in-memory log is organized 
 in a temporal order. We might be tempted to think that storing data in contiguous memory location in some order based on primary or secondary keys or even some other pre-determined order will give better NIC performance. 
 The key obstruction to doing this is RAMCloud's log cleaning mechanism~\cite{ramcloudfast}. RAMCloud's design philosophy rightly highlights the importance of DRAM utilization when all data is in memory. 
