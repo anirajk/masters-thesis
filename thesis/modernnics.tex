@@ -503,7 +503,7 @@ two small records, Zero Copy becomes more CPU efficient.
 
 \subsection{Memory Bandwidth}
 In a modern In-Memory Database server, DRAM utilization is the most precious resource~\cite{ramcloudfast}. 
- Available memory bandwidth is also at a premium since there is a direct correlation between Memory Bandwidth
+ Available memory bandwidth is also at a premium since there is a direct correlation between memory bandwidth
  utilization and DRAM latencies and starvation. Since uncore events will give the most accurate measurements,
  we explored all uncore events that induce pressure on the memory controller. We found that 
 \texttt{LLC\_MISSES X 64} (cache line size) is an interesting metric, but there was a problem that it wouldn't account for prefetch 
@@ -579,7 +579,7 @@ interesting side effect of the additional \memcpy. Figure ~\ref{fig:ddiobw-perce
 memory bandwidth results from misses from the DDIO region. It tells us that while 
 we pay the price of \memcpy~ to bring data to the LLC, it helps in limiting further DRAM access while transmitting 
 from the region reserved for DDIO. If not for this effect, both Copy Out and Zero Copy 
-might have added Memory Bandwidth consumption in bringing data from DRAM for transmission. 
+might have added memory bandwidth consumption in bringing data from DRAM for transmission. 
 
 \input{takeaway-impact-ddiobw-savings}
 
