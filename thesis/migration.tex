@@ -22,7 +22,7 @@ performance, does an analysis of the existing migration protocol in RAMCloud,
 and armed with the lessons learned by profiling a modern NIC, we make concrete 
 suggestions on how a new protocol might be well poised to take advantage of the 
 new hardware.
-\section{State of the art}
+\section{State of the Art}
 % Squall 10.a 5~MB/s calculation
 % 10 GB database, divided over 4 nodes; that’s 2.5 GB per node
 % Now scale down from 4 to 3, that’s 2.5 GB / 3 per node
@@ -107,7 +107,7 @@ We can clearly see that the amount of useful work done takes a great hit while t
 even if each server in the cluster had to do one cross-machine extraction of data. Adding this to the fact that if all the keys were evenly spread across the cluster, the ``multiget'' request does more harm than good and getting the 
 keys one by one would've resulted in better aggregate throughput of the cluster. We can conclude that the effect of locality of data is paramount, and any movement of data to achieve better locality of data between servers will yield 
 great performance later.
-\section{Design Guidelines for a new protocol}
+\section{Design Guidelines for a New Protocol}
 Based on the analysis of the bottlenecks in the current protocol and the motivation that comes from having data localized to servers, some guidelines for developing a protocol for migration in RAMCloud
 is given below which has ties to the lessons we learned from benchmarking a modern NIC.
 

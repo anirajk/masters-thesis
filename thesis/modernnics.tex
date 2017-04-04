@@ -63,7 +63,7 @@ the query response. Section~\ref{sec:impact} will fully discuss the impact on me
 is transmitting large amounts of data.
 
 
-\section{NIC structures in detail}
+\section{NIC Structures in Detail}
 Figure~\ref{fig:mem-regions} details how an application interacts with a Mellanox
 ConnectX-3\textregistered , a modern 56~Gbps NIC that uses kernel bypass. 
 With Zero Copy, transmit descriptors list several chunks of data for
@@ -105,7 +105,7 @@ listed in the descriptor. The PCIe messages are posted writes, which means they
 are asynchronous from the CPU's perspective. Even though PCIe latencies are much
 higher than DRAM access, the CPU does not stall when posting descriptors, so the
 exchange is very low overhead.
-\subsection{Structural differences in Zero Copy and Copy Out}
+\subsection{Structural Differences in Zero Copy and Copy Out}
 The key difference between Zero Copy and Copy Out is shown with the wide, red
 arrows in Figure~\ref{fig:mem-regions}. Copy Out works much like conventional
 kernel-based networking stack: chunks of data are first copied into a single
@@ -212,7 +212,7 @@ our experiments, the reach of the NIC's virtual-to-physical mapping is
 sufficient, and hugepages have no impact on the results. To err on the side of caution, 
 we did enable 1~GB hugepages and registered those with the NIC to make sure we 
 avoid as many TLB misses as possible.
-\subsection{Comparing RDMA modes for transmission}
+\subsection{Comparing RDMA Modes for Transmission}
 We started out by getting measurements of the transmission speeds using RDMA verbs.  
 READ and WRITE are the most commonly employed RDMA verbs because they are one sided
 and does not require both ends to be active in theory. RDMA read has the additional incentive 
@@ -374,7 +374,7 @@ of CPU time. We wanted to make sure our profiling code shouldn't interfere with 
  monitoring unit and we measured their performance counters to gauge impact accurately.
 
 
-\subsection{Breakdown of CPU costs}
+\subsection{Breakdown of CPU Costs}
 \label{sec:overhead}
 
 While we just showed in Section~\ref{sec:zero-copy-tput} that judicious use of Zero Copy results 
@@ -445,7 +445,7 @@ could end up using another 6~GB/s of memory bandwidth. With these estimates in m
 % [1] 95.08558
 
 
-\subsection {CPU Efficiency of transmission}
+\subsection {CPU Efficiency of Transmission}
 The results from the previous section break down where the CPU savings come from,
 but not all configurations result in the same transmit performance. For
 example, Figure~\ref{fig:zero-copy-tput} shows that when transmitting
@@ -521,7 +521,7 @@ larger record sizes is beneficial. The savings are highlighted along largest tra
  We had measured that a userspace application could achieve a peak bandwidth of around 24~GB/s in our system. This would mean that Copy out 
  might take up a half of all available bandwidth in order to saturate the NIC while transmitting. This should raise alarms for a database 
  designer since this is a pure overhead and the wasted memory bandwidth could be used for data manipulation or other useful work in the database 
- server. This is even more interesting considering that the modern day In-memory stores are not tuned for large responses.
+ server. This is even more interesting considering that the modern-day in-memory stores are not tuned for large responses.
   When the DRAM latency and accesses go up, the performance of the whole system could degrade to the point at which the system might become unusable.
 For smaller data sizes, it's even more interesting. Zero Copy shows less memory utilization until we get to the point where it's transmit performance 
 drops below that of Copy out. This would imply that there are times when Copy out outperforms Zero Copy in terms of transmit performance and 
@@ -533,7 +533,7 @@ can conclude from this figure that there is a linear correlation between transmi
 \newline
 \input{takeaway-impact-membw}
 
-\subsection{Memory Bandwidth and Transmission throughput}
+\subsection{Memory Bandwidth and Transmission Throughput}
 \label{sec:membw-savings}
 Figure~\ref{fig:membw-ratio} shows the ratio of Memory pressure exerted per bytes transmitted. We can clearly see the value proposition of 
 Zero Copy mode of transmitting here. For Zero Copy, We can see that the system is consistent and predictable and only incurs a small overhead of 
@@ -547,7 +547,7 @@ a bigger multiplier on transmission throughput than 1024~B records. For 128~B re
 
 \input{takeaway-impact-membw-ratio}
 
-\subsection{DDIO traffic}
+\subsection{DDIO Traffic}
 Newer generation of Intel Processor's have a portion of their Last Level Cache dedicated for I/O. This was initially called Direct Cache Access 
 and more recently named DDIO. This changes our perception of memory consumption quite a bit. Network transmission occurs at this part of the Last Level Cache 
 and even the destination for a packet over the network becomes this dedicated portion of LLC. This has a significant impact in the number of LLC misses the system 
@@ -570,7 +570,7 @@ most of the memory bandwidth when it is less so for Copy Out. Section~\ref{sec:d
 \input{takeaway-impact-ddiobw}
 
 
-\subsection{DDIO savings in Copy Out}
+\subsection{DDIO Savings in Copy Out}
 \label{sec:ddiobw-savings}
 The previous sections showed how Copy Out could be costly and degrade system performance 
 because of the consumed memory bandwidth. We also examined how DDIO traffic plays a big role 
@@ -601,7 +601,7 @@ and the overhead is compensated by more and more data transmitted as we get to b
 around 16 records, the DMA overhead is less evident there since we are already operating at a higher throughput owing to large record sizes.
 
 
-\subsection{PCIe induced DRAM accesses and Throughput}
+\subsection{PCIe Induced DRAM Accesses and Throughput}
 Figure ~\ref{fig:pciebw-ratio} shows the ratio of DRAM accesses induced by PCIe traffic to the obtained transmission throughput for various data points. When we transmit 16 small records (2048~B),
 the PCIe effectiveness goes down and the ratio peaks. This is strictly in line with transmission throughput shown in Figure~\ref{fig:zero-copy-tput} where at 2048~B, we see a sharp drop in transmission 
 throughput which it slowly recovers from as we increase the number of S/G entries per transmission. There is an inverse correlation between the ratio of PCIe induced DRAM accesses and transmission throughput.

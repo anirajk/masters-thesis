@@ -30,7 +30,7 @@ the lessons we learned when we developed a microbenchmark to profile a modern NI
 of data. The chapter also provides a detailed study of the impact on the available system resources while we achieve 
 near the line rate of network transmission performance. Where possible, \linebreak recommendations for a database designer are provided, and takeaways 
 from our \linebreak experiments are explicitly listed. Chapter~\ref{chap:applications} enumerates a few scenarios where we can 
-leverage our observations to improve server efficiency and network transmission using a client assisted design.
+leverage our observations to improve server efficiency and network transmission using a client-assisted design.
  We quantify the benefits of such an approach and discuss \linebreak future directions on how this design will apply to column-oriented 
  databases. \linebreak Chapter~\ref{chap:migration} discusses how the nuanced performance characteristics for the NIC can \linebreak influence 
 design for rapid reconfiguration in RAMCloud~\cite{ramcloud}. It discusses a breakdown of RAMCloud's existing migration mechanism to understand its bottlenecks
@@ -182,7 +182,7 @@ evidence for the thesis statement in the beginning of this section.
     transmitting data from an RDMA capable modern NIC.
    \end{myitemize} 
 
-    \item{\textbf{Design for client assisted materialization for better transmit performance}}: Our measurements inform a new design for migration in RAMCloud, but it also has impacts on other database operations.
+    \item{\textbf{Design for client-assisted materialization for better transmit performance}}: Our measurements inform a new design for migration in RAMCloud, but it also has impacts on other database operations.
      While evaluating the results, we saw that there are certain structures and circumstances that can uniquely take advantage of the hardware limited scatter gather entries of a modern NIC.
      Chapter~\ref{chap:applications} explores ways in which a modern B-tree index can exploit NIC hardware.
      Through the benchmark, we show 60\% improvement in throughput using such a design with a 30$\times$ reduction in CPU overhead.

@@ -49,7 +49,7 @@ consumed memory bandwidth in the server
 The transmission throughput anomaly where the throughput of Zero Copy is limited while transferring a large set of small scattered records is best explained to 
 our knowledge with PCIe errors tapering off with 16 records per transmission.
  
-We argued for a client assisted design with no-update-in-place records that can gain the benefits of Zero Copy while retaining the transmission throughput of larger records. 
+We argued for a client-assisted design with no-update-in-place records that can gain the benefits of Zero Copy while retaining the transmission throughput of larger records. 
 We get a 50\% reduction in memory bandwidth consumption using this approach without compromising transmission throughput. 
 No updates in place and latch and lock freedom makes this approach clearly favorable for the modern NIC. 
 
@@ -93,7 +93,7 @@ I have also learned valuable lessons on teamwork and collaboration and received 
 advisor and peers over the course of the work. I believe the guidelines that we drew from this work will 
 enable researchers of the future with better performing in memory databases for large transfers. 
 
-\section{Parting thoughts}
+\section{Parting Thoughts}
 Today's database designer has to navigate a complex, multi-dimensional space of trade-offs and network transmission 
 is a critical aspect of performance for the distributed, scale out stores of tomorrow. Smart layout of data and  
 co-designing for hardware are paramount in extracting maximum network performance without consuming 

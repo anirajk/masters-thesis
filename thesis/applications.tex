@@ -22,7 +22,7 @@ On-Line Analytical Processing (OLAP) and hybrid workloads composed of transactio
 Column stores are uniquely positioned to take advantage of the NIC because of their layout and compression benefits.
  The impact of modern NIC while designing column stores should also be discussed for completeness. 
 
-This chapter introduces a client assisted design with bounded-disorder for using Zero Copy with no-update-in-place row stores as well as column stores. 
+This chapter introduces a client-assisted design with bounded-disorder for using Zero Copy with no-update-in-place row stores as well as column stores. 
 We evaluate the improvement in throughput and efficiency to provide evidence to back this approach.
 We also make informed opinions on how Zero Copy might perform on column store designs 
 for in-memory databases with co-operation from clients for materializing data.
@@ -43,7 +43,7 @@ stable throughout the transmission.
 Microsoft\textregistered Research came up with a modern B-tree structure called 
 the Bw-Tree~\cite{bw-tree} which is their primary indexing structure for SQL Server Hekaton~\cite{hekaton}.
 Bw-Tree is a highly performant, ordered index employing lock and latch free concurrency and effective utilization of caches in 
-modern multi-core processors. In the following sections, we explore how a client assisted design involving a no-update-in-place 
+modern multi-core processors. In the following sections, we explore how a client-assisted design involving a no-update-in-place 
 structure such as Bw-Trees can take advantage of Zero Copy and gain maximum throughput 
 without much system impact. We discuss how it's lock freedom and delta records make it 
 particularly suitable to exploit Zero Copy in the following sections. We then present
@@ -406,7 +406,7 @@ clients. If the database server were to sent filtered columns and required metad
 dictionary encoding as scatter gather entries, we could leverage Zero Copy's performance. We believe 
 this approach would work even for hybrid layouts~\cite{hyrise-hybridstores} which use row oriented or 
 column oriented formats varying the width of columns according to the type of workload. Figure ~\ref{fig:rowstore-colstore}
-shows how row stores and column stores could transmit data using Zero Copy using a client assisted design.
+shows how row stores and column stores could transmit data using Zero Copy using a client-assisted design.
 In practice, there are numerous challenges associated with this design:
 \begin{myitemize}
 \item {\em Client co-operation}; this scheme of transmitting results would need smart clients which are 
@@ -415,7 +415,7 @@ has enough resources to spend in finessing the results.
 \item {\em Low selectivity in queries}; we have seen packing more data yields more savings and performance 
 from Zero Copy. We also know that the compression schemes in column stores can limit transfer sizes. 
 As a result, queries with low selectivity are a natural fit for Zero Copy.
-\item {\em Compressed metadata}; the client assisted design would need the encoding to be transmitted
+\item {\em Compressed metadata}; the client-assisted design would need the encoding to be transmitted
 along with the results, this would need efficient compression and lean data structures for metadata.
 \end{myitemize}
 There needs to be further evaluation of how we can extract maximum performance and efficiency from 
@@ -433,7 +433,7 @@ to use Zero Copy and get better results while dealing with small, scattered reco
 \item Advanced structures such as the Bw-Tree which allows no update in place and complete lock and latch freedom 
 can be exploited for it's suitability with the NICs. Further evaluation is required for these to work in practice.
 \item Column stores could also benefit from the hybrid approach; materializing results in row-order makes Zero Copy 
-more complicated in modern NICs and one possibility is to send the encoding metadata along with the results with client assisted 
+more complicated in modern NICs and one possibility is to send the encoding metadata along with the results with client-assisted 
 materialization.
 \end{myitemize}
 \newpage
