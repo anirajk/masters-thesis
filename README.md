@@ -21,7 +21,7 @@ These systems were designed with On-Line Transactional Processing (OLTP) work- l
 
 This thesis analyzes the effects of large transfers on scale-out systems through the lens of a modern Network Interface Card (NIC). The present-day NIC offers new and exciting opportunities and challenges for large transfers, but using them efficiently requires smart data layout and concurrency control.
 
-We evaluated the impact of modern NICs in designing data layout by measuring transmit performance and full system impact by observing the effects of Direct Memory Access (DMA), Remote Direct Memory Access (RDMA) and caching improvements such as In- tel®Data Direct I/O (DDIO).
+We evaluated the impact of modern NICs in designing data layout by measuring transmit performance and full system impact by observing the effects of Direct Memory Access (DMA), Remote Direct Memory Access (RDMA) and caching improvements such as Intel®Data Direct I/O (DDIO).
 
 We discovered that use of techniques such as Zero Copy yield around 25% savings in CPU cycles and a 50% reduction in the memory pressure on the server by using a client-assisted design with records that are not updated in place.
 
