@@ -6,7 +6,9 @@
 Advisor: Ryan Stutsman
 
 Defended: Thursday, February 23, 2017, 10 AM at MEB 3147, LCR
+
 [Video Part I](https://youtu.be/yEV2hBRPjn8?t=2s)
+
 [Video Part II](https://youtu.be/4DqUesOAcM0?t=2s)
 
 ## Abstract:
