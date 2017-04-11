@@ -174,7 +174,7 @@ evidence that will aid in co-designing databases for new hardware.
 \begin{myitemize}
 \item Comparison of various RDMA primitives over Mellanox Infiniband verbs library; we find that \cpp{SEND} is best suited for returning scattered records.
 \item Comparison of different arrangements of small 128~B records to evaluate how to best exploit S/G DMA; we find Zero Copy, {\em when carefully tuned,} offers better throughput and efficiency. We outline precisely when Copy Out can be faster 
-and more efficient than Zero Copy ,which could be exploited for small gains.
+and more efficient than Zero Copy, which could be exploited for small gains.
 \item Similar comparison of larger 1024~B records; we observe Zero Copy is a clear winner in terms of throughput and efficiency across the board.
 \item Comparison of CPU cycles spent per transmitted byte; overheads at transmissions $<$384~B make Copy Out more efficient while Zero Copy is a clear winner for larger transmissions and larger records.
 \item A breakdown of CPU overhead in transmission; we see that the additional \memcpy ~dominates CPU overheads to the tune of 95~\%, transmission overhead for smaller transmissions are conspicuous.
@@ -349,7 +349,7 @@ transmissions. We dig deeper into this anomaly and find evidence as to why this 
 help of measuring traffic induced in the Memory controller due to LLC misses because of DDIO and 
 PCIe traffic in Section~\ref{sec:impact}. Owing to this aberration, copying 128~B records 
 on-the-fly can significantly outperform Zero Copy transmission when there are 
-enough results (more than sixteen records in our NIC which is capable of transmitting thirty two at once) 
+enough results (more than sixteen records in our NIC, which is capable of transmitting thirty two at once) 
 in a response. In fact, Copy Out can saturate the network with small records, and it
 performs identical to Zero Copy with larger 1024~B records.
 \newline
@@ -362,14 +362,14 @@ We saw how the Zero Copy promises enhanced savings and performance
 in the previous section. To put things in the context of resource utilization and
  to quantify performance gains, we profiled our benchmark code for CPU utilization, memory bandwidth, 
  and some other metrics such as memory bandwidth utilization due to Last Level Cache (LLC) misses from DDIO and PCIe.
-We used cycle counters present in the original RAMCloud~\cite{ramcloud} code base for non intrusive profiling 
+We used cycle counters present in the original RAMCloud~\cite{ramcloud} code base for nonintrusive profiling 
 of CPU time. We wanted to make sure our profiling code should not interfere with the timing of our highly performant 
  benchmark, which churns out millions of operations per second and microsecond latencies. 
  We searched for lightweight profiling methods that add minimal overheads.
  We ended up using Intel\textregistered's Performance Counter Monitoring module~\cite{intelpcm}. 
  An interesting thing about measuring the performance 
  of a modern CPU is that almost all of the metrics of significance exist outside of the cores. These measurements 
- are classified as uncore and offcore measurements in the Performance Monitoring Unit(PMU) moniker.
+ are classified as uncore and offcore measurements in the Performance Monitoring Unit (PMU) moniker.
  The newer generation CPUs that we used had the Sandy Bridge microarchitecture that provides uncore performance 
  monitoring unit and we measured their performance counters to gauge impact accurately.
 
@@ -586,7 +586,7 @@ might have added memory bandwidth consumption in bringing data from DRAM for tra
 \section{Anomaly in Transmission Throughput}
 \label{sec:anomaly}
 While evaluating performance and efficiency of Zero Copy in previous sections, we saw that for 128~B records, the transmission throughput does not linearly progress 
-on increasing the transmission size. If you refer back to Figure~\ref{fig:zero-copy-tput}, throughput trends upward until we reach 1024~B(8 records), the transmission throughput remains consistent for about eight to sixteen records and 
+on increasing the transmission size. If you refer back to Figure~\ref{fig:zero-copy-tput}, throughput trends upward until we reach 1024~B (eight records), the transmission throughput remains consistent for about eight to sixteen records, and 
 then the performance tapers off. There is a huge dip in transmission throughput going from fifteen to sixteen records and even though the performance gradually recovers, it does not quite 
 catch up with Copy Out until we get to the maximum number of records possible and even at that point, Copy Out edges Zero Copy performance by a bit. After some investigation, we discovered 
 that LLC bytes read from memory due to misses due to PCIe jumps to the peak measured reads and then saturates and the anomaly corresponds to these data points. It is also interesting to note 
@@ -604,7 +604,7 @@ around 16 records, the DMA overhead is less evident there since we are already o
 \subsection{PCIe Induced DRAM Accesses and Throughput}
 Figure ~\ref{fig:pciebw-ratio} shows the ratio of DRAM accesses induced by PCIe traffic to the obtained transmission throughput for various data points. When we transmit 16 small records (2048~B),
 the PCIe effectiveness goes down and the ratio peaks. This is strictly in line with transmission throughput shown in Figure~\ref{fig:zero-copy-tput} where at 2048~B, we see a sharp drop in transmission 
-throughput which it slowly recovers from as we increase the number of S/G entries per transmission. There is an inverse correlation between the ratio of PCIe induced DRAM accesses and transmission throughput.
+throughput from which it slowly recovers as we increase the number of S/G entries per transmission. There is an inverse correlation between the ratio of PCIe-induced DRAM accesses and transmission throughput.
 \newline
 \input{takeaway-impact-pciebw}
 
@@ -614,7 +614,7 @@ throughput which it slowly recovers from as we increase the number of S/G entrie
 \item For large sets of small records, Copy Out offers better performance; if your record sizes are larger, use Zero Copy.
 \item Zero Copying larger records will give you good memory bandwidth utilization.
 \item DDIO compensates for some of the memory bandwidth cost to Copy Out data.
-\item Careful tuning of parameters is required if you were to use Zero Copy; PCIe Induced memory accesses may explain the anomalous throughput increase for Copy Out. 
+\item Careful tuning of parameters is required if you were to use Zero Copy; PCIe-induced memory accesses may explain the anomalous throughput increase for Copy Out. 
 \end{myitemize}
 
 \input{fig-mem-regions}

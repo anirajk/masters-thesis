@@ -10,7 +10,7 @@ second and sub-microsecond latencies~\cite{cx6}.
 We saw from the previous chapters how the nuanced performance characteristics of 
 a modern NIC will influence overall transmit performance and server resource utilization 
 for large data transfers such as responses to range scans. Another pressing 
-concern for a modern In-memory database operating at scale is quick reconfiguration. 
+concern for a modern in-memory database operating at scale is quick reconfiguration. 
 Since DRAM is the most expensive resource in a modern cluster, efficient rebalancing 
 involves fast reconfiguration that is frugal on resources and keeps the impact on their 
 SLAs minimal. Informed with our lessons about the NIC, it is reasonable to assume that protocols for reconfiguration 
@@ -22,7 +22,7 @@ performance, do an analysis of the existing migration protocol in RAMCloud,
 and armed with the lessons learned by profiling a modern NIC, we make concrete 
 suggestions on how a new protocol might be well poised to take advantage of the 
 new hardware.
-\section{State of the Art}
+\section{State-of-the-Art}
 % Squall 10.a 5~MB/s calculation
 % 10 GB database, divided over 4 nodes; that’s 2.5 GB per node
 % Now scale down from 4 to 3, that’s 2.5 GB / 3 per node
@@ -38,7 +38,7 @@ as short as 300ms, Zephyr~\cite{zephyr} that does on-demand pulls, and asynchron
 pushes to minimize failed transactions and unavailability for migration while operating 
 at transactional latencies of 50~ms. Squall~\cite{squall} went further with fine-grained 
 partitioning with optimizations such as prefetching. Squall also offers minimal overhead 
-to their transactional latencies, which are of the order of tens of milliseconds and migrates 
+to their transactional latencies, which are of the order of tens of milliseconds and migrate 
 data overall at the rate of around 5~MB/s (Refer to Squall paper, Figure 10 a). While these efforts offer reconfiguration speeds 
 better than other systems and minimal addition to their millisecond latencies, that is far 
 from what a modern NIC is capable of delivering. From our benchmark, we knew that the NIC 
@@ -74,7 +74,7 @@ The first bottleneck we bypassed was the re-replication of data to the backups. 
 200~MB/s. This explains that while disk bandwidth was indeed a bottleneck, avoiding it does not give significant performance boost while migrating a small data set.
 
 The second bottleneck we tried to avoid was to skip replaying the migrated segments on the receiver. From here on, the safety of the protocol is heavily compromised even under 
- non failures. Since the point of the experiment was to show how much each step contributes to overall performance, we discard safety. Skipping replaying segments took us from 
+ nonfailures. Since the point of the experiment was to show how much each step contributes to overall performance, we discard safety. Skipping replaying segments took us from 
  200~MB/s to 600~MB/s. 
 
 Since we exhausted all steps involved in the receiver during migration, we skipped the actual transmission of data from source to destination and not surprisingly, the throughput 
@@ -88,7 +88,7 @@ it is safe to assume that use of Zero Copy while transmitting data from the sour
 \subsection{Locality in RAMCloud}
 RAMCloud's take on data locality is unique. RAMCloud promises uniform median latency of around 5\textmu s~\cite{ramcloud}. RAMCloud does not have a strong notion of collocating data across servers. 
 It is known that transactions~\cite{ramcloudtx} and secondary indices~\cite{slik} can benefit with collocation of data. RAMCloud's data is hash partitioned, and within a server, the in-memory log is organized 
-in a temporal order. We might be tempted to think that storing data in contiguous memory location in some order based on primary or secondary keys or even some other pre determined order will give better NIC performance. 
+in a temporal order. We might be tempted to think that storing data in contiguous memory location in some order based on primary or secondary keys or even some other predetermined order will give better NIC performance. 
 The key obstruction to doing this is RAMCloud's log cleaning mechanism~\cite{ramcloudfast}. RAMCloud's design philosophy rightly highlights the importance of DRAM utilization when all data is in memory. 
 As a result, the log cleaner is designed in such a way that after cleaning, the log is reorganized so that records that are accessed in the same frequency are placed together; this makes sure that the records in the same 
 segment get garbage collected together freeing up more space than otherwise. To keep this property intact, we cannot force a deterministic order of data in RAMCloud and this might turn out to be a problem if 

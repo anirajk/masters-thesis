@@ -107,17 +107,17 @@ This is tricky to implement, and RAMCloud is designed with no locality within a
 server to provide high memory utilization~\cite{ramcloudfast} via efficient log compaction.
 The more interesting engineering detail is RAMCloud's exceedingly tight SLAs (median
 access time of 5~\textmu s and 99.9\% of reads within 10~\textmu s). It would be great if we can saturate the
-available NIC bandwidth which is 8-12GB/s~\cite{cx3,cx4} but the state-of-the-art 
+available NIC bandwidth which is 8-12GB/s~\cite{cx3,cx4}, but the state-of-the-art 
 transfer mechanism offers many orders of magnitudes lower than that at ~10~MB/s 
 throughput while operating at latencies that are 1000-10000$\times$ higher than that of RAMCloud~\cite{ramcloud}.
 We wanted our protocol to strike a balance between fast operation and minimal disruption without drastically affecting
 the latency and throughput available for the system. The following key principles guide our design for fast and 
 efficient migration for RAMCloud:
 \begin{myitemize}
-\item{\textbf{High throughput}}: State of the art systems do migrations at 5~-~10 MB/s. Our proposed protocol
+\item{\textbf{High throughput}}: State-of-the-art systems do migrations at 5~-~10 MB/s. Our proposed protocol
 should result in 100-1000x faster data migrations. We aspire to have rapid reconfiguration that will 
 help with enabling frequent reconfiguration on live clusters.
-\item{\textbf{Low ompact on latency}}: RAMCloud has 99.9 percentile read latency at $<$~10~\textmu s \linebreak and write latency
+\item{\textbf{Low impact on latency}}: RAMCloud has 99.9 percentile read latency at $<$~10~\textmu s \linebreak and write latency
 at $<$~100~\textmu s. We propose a protocol that will introduce only a minimal impact on the normal case operation, still keeping
 SLAs that are 100x tighter \linebreak than other systems~\cite{squall}.
 \item{\textbf{Judicious use of system resources}}: In an in-memory store, the significance of \linebreak resources such as DRAM capacity and
