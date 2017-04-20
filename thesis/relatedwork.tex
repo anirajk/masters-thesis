@@ -75,7 +75,7 @@ More recent iterations of SQL engines such as Hekaton~\cite{hekaton} are
 examples for in-memory optimized  database engines. Bw-Tree~\cite{bw-tree}, a 
 data structure that is lock and latch free, follows a no-update-in-place philosophy to indexing.
 Others have worked on exploiting Hardware Transactional Memory~\cite{htm-old}
-for in-memory transaction processing~\cite{drtm} as well as lock free indexing~\cite{htm}.
+for in-memory transaction processing~\cite{drtm} as well as lock-free indexing~\cite{htm}.
 
 \section{RDMA in Databases}
 The merits of RDMA have been widely accepted by database researchers by now. The 
@@ -97,7 +97,7 @@ interest lately. Albatross~\cite{albatross} offered live reconfiguration with un
 300ms. Zephyr~\cite{zephyr} focuses on mitigating violations to Service Level Agreements (SLAs) and limits 
 change in average latency to 10-20\% but like Albatross, operates on latencies of the order of tens of milliseconds.  
 Squall~\cite{squall} employs reactive pulls and pre-partitioning
-of data for fast migrations and is the state of the art for low impact migrations that specifically work well for 
+of data for fast migrations and is the state-of-the-art for low impact migrations that specifically work well for 
 heavily skewed workloads. Like others, Squall also operates on platforms with throughput and latencies orders of 
 magnitude less than what is possible with today's hardware. The key challenge in implementing migration in a system 
 like RAMCloud is to maintain the latencies that are 1000$\times$ tighter than these systems.

@@ -62,7 +62,7 @@ Server Hekaton~\cite{hekaton} engine.
 
 In many ways, the Bw-Tree is a conventional paged B-link tree,
 but it also has unique characteristics that interact with network-layer
-design choices. Its lock-freedom, its elimination of update-in-place,
+design choices. Its lock freedom, its elimination of update-in-place,
 and its lazy consolidation of updated records in virtual memory give it
 tremendous flexibility in how query results are transmitted by the NIC.
 
@@ -121,7 +121,7 @@ prevent reclamation of memory that has been unlinked from the data structure.
 
 
 \section{NIC Implications for Bw-Tree}
-Lock-freedom has major implications on the in-memory layout of the
+Lock freedom has major implications on the in-memory layout of the
 Bw-Tree. Most importantly, readers (such as the NIC DMA engine) can collect a
 consistent view of the tree without interference from writers, and hold that
 view consistent without stalling concurrent readers or writers to the tree.  This
